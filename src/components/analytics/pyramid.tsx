@@ -70,7 +70,7 @@ export function Pyramid({ goalGrade, onGoalChange }: PyramidProps) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-0.5">
+      <div className="flex flex-col gap-1">
         {data.rows.map((row) => {
           const width = Math.max(10, Math.sqrt(row.sends / maxSends) * 100);
           const gradeColor = colorMap[row.label] || "var(--color-border)";
@@ -78,7 +78,7 @@ export function Pyramid({ goalGrade, onGoalChange }: PyramidProps) {
           return (
             <div key={row.label} className="flex items-center justify-center">
               <div
-                className="h-6 rounded-md flex items-center justify-center font-display text-xs transition-all"
+                className="h-8 rounded-lg flex items-center justify-center font-display text-sm transition-all"
                 style={{
                   width: `${width}%`,
                   backgroundColor: isGoal ? "transparent" : gradeColor,
