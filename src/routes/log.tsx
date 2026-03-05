@@ -57,7 +57,7 @@ function LogPage() {
   };
 
   return (
-    <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-4 h-[calc(100dvh-4rem)] overflow-hidden">
+    <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-4 overflow-hidden" style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}>
       <div className="flex items-center justify-between shrink-0">
         <button onClick={goBack} className="p-2 active:brightness-90">
           <CaretLeft size={24} weight="bold" />

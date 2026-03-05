@@ -18,7 +18,7 @@ function AnalyticsPage() {
   };
 
   return (
-    <div className="p-2 font-display max-w-lg mx-auto flex flex-col gap-1.5 h-[calc(100dvh-4rem)] overflow-hidden">
+    <div className="p-2 font-display max-w-lg mx-auto flex flex-col gap-1.5 overflow-hidden" style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}>
       <Pyramid goalGrade={goalGrade} onGoalChange={handleGoalChange} />
       <div className="grid grid-cols-2 gap-1.5 shrink-0">
         <SendRate goalGrade={goalGrade} />
