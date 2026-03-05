@@ -1,15 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { GRADES } from "../../lib/grades";
+import { api } from "@convex/_generated/api";
+import { GRADES, colorMap } from "../../lib/grades";
 import { CaretDown } from "@phosphor-icons/react";
-
-const zoneColors: Record<string, string> = {
-  "warm-up": "var(--color-accent)",
-  "build-base": "var(--color-tertiary)",
-  project: "var(--color-secondary)",
-  reach: "var(--color-primary)",
-};
 
 interface PyramidProps {
   goalGrade: string;
@@ -31,14 +24,16 @@ export function Pyramid({ goalGrade, onGoalChange }: PyramidProps) {
   const maxSends = Math.max(...data.rows.map((r) => r.sends), 1);
 
   return (
-    <div className="border-2 border-border rounded-lg p-4 bg-card-bg">
-      <div className="flex items-center justify-between mb-3">
+    <div className="border-2 border-border rounded-lg p-3 bg-card-bg">
+      <div className="flex items-center justify-between mb-2">
         <div className="relative">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="flex items-center gap-1 text-2xl font-display px-3 py-1 border-2 border-border rounded-full"
+            className="flex items-center gap-1.5 font-display px-2 py-0.5 border-2 border-border rounded-full"
           >
-            {goalGrade} <CaretDown size={16} weight="bold" />
+            <span className="text-lg text-black">Goal</span>
+            <span className="text-lg text-black">{goalGrade}</span>
+            <CaretDown size={12} weight="bold" className="opacity-50 text-black" />
           </button>
           {showDropdown && (
             <div className="absolute top-full left-0 mt-1 bg-card-bg border-2 border-border rounded-lg shadow-lg z-10">
@@ -46,7 +41,7 @@ export function Pyramid({ goalGrade, onGoalChange }: PyramidProps) {
                 <button
                   key={g}
                   onClick={() => handleSetGoal(g)}
-                  className="block w-full text-left px-4 py-2 text-lg hover:bg-neutral-bg font-display"
+                  className="block w-full text-left px-3 py-1.5 text-base hover:bg-neutral-bg font-display"
                 >
                   {g}
                 </button>
@@ -78,16 +73,22 @@ export function Pyramid({ goalGrade, onGoalChange }: PyramidProps) {
       <div className="flex flex-col gap-1">
         {data.rows.map((row) => {
           const width = Math.max(10, Math.sqrt(row.sends / maxSends) * 100);
-          const color = zoneColors[row.color] || "var(--color-border)";
+          const gradeColor = colorMap[row.label] || "var(--color-border)";
+          const isGoal = row.sends === 0;
           return (
-            <div key={row.label} className="flex items-center gap-2">
+            <div key={row.label} className="flex items-center justify-center">
               <div
-                className="h-8 rounded flex items-center px-2 text-white text-sm font-display transition-all"
-                style={{ width: `${width}%`, backgroundColor: color, minWidth: "2rem" }}
+                className="h-8 rounded-lg flex items-center justify-center font-display text-sm transition-all"
+                style={{
+                  width: `${width}%`,
+                  backgroundColor: isGoal ? "transparent" : gradeColor,
+                  color: isGoal ? "var(--color-border)" : row.label === "V4" ? "white" : "var(--color-border)",
+                  border: isGoal ? "2px dashed var(--color-border)" : "none",
+                  minWidth: "4rem",
+                }}
               >
-                {row.sends}
+                {row.label}: {row.sends}
               </div>
-              <span className="text-sm font-display whitespace-nowrap">{row.label}</span>
             </div>
           );
         })}

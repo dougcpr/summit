@@ -1,3 +1,4 @@
+import path from "node:path";
 import { defineConfig, loadEnv } from "@rsbuild/core";
 import { pluginReact } from "@rsbuild/plugin-react";
 import { TanStackRouterRspack } from "@tanstack/router-plugin/rspack";
@@ -11,6 +12,11 @@ export default defineConfig({
       index: "./src/index.tsx",
     },
     define: publicVars,
+  },
+  resolve: {
+    alias: {
+      "@convex": path.resolve(__dirname, "convex"),
+    },
   },
   html: {
     template: "./public/index.html",

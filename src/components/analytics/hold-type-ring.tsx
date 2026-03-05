@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 import { holdTypeConfig } from "../../lib/grades";
 import type { HoldType } from "../../lib/grades";
 
@@ -15,8 +15,7 @@ export function HoldTypeRing() {
 
   return (
     <div className="border-2 border-border rounded-lg p-4 bg-card-bg">
-      <h3 className="text-lg mb-2">Hold Focus</h3>
-      <div className="flex items-center justify-center">
+      <div className="flex flex-col items-center justify-center">
         <div className="relative w-28 h-28">
           <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
             {data.types.map((t) => {
@@ -43,19 +42,7 @@ export function HoldTypeRing() {
             {holdTypeConfig[data.focus as HoldType]?.letter}
           </span>
         </div>
-        <div className="ml-4 flex flex-col gap-1 text-sm">
-          {data.types.map((t) => {
-            const config = holdTypeConfig[t.type as HoldType];
-            return (
-              <div key={t.type} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: config?.color }} />
-                <span>
-                  {config?.label}: {t.percentage}%
-                </span>
-              </div>
-            );
-          })}
-        </div>
+        <span className="text-sm mt-1">Focus</span>
       </div>
     </div>
   );

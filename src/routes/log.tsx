@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
-import { api } from "../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 import { NoteEditor } from "../components/log/note-editor";
 import { GradeSelector } from "../components/log/grade-selector";
 import { HoldTypePicker } from "../components/log/hold-type-picker";
@@ -14,10 +14,20 @@ import type { HoldType } from "../lib/grades";
 
 export const Route = createFileRoute("/log")({
   component: LogPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    date: typeof search.date === "string" ? search.date : undefined,
+  }),
 });
 
 function LogPage() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const { date: dateParam } = Route.useSearch();
+  const [selectedDate, setSelectedDate] = useState(() => {
+    if (dateParam) {
+      const [y, m, d] = dateParam.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+    return new Date();
+  });
   const [grade, setGrade] = useState("V0");
   const [holdType, setHoldType] = useState<HoldType>("jug");
 
@@ -47,8 +57,8 @@ function LogPage() {
   };
 
   return (
-    <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-4 h-[calc(100dvh-4rem)] overflow-hidden">
+      <div className="flex items-center justify-between shrink-0">
         <button onClick={goBack} className="p-2 active:brightness-90">
           <CaretLeft size={24} weight="bold" />
         </button>
@@ -58,21 +68,28 @@ function LogPage() {
         </button>
       </div>
 
-      <NoteEditor selectedDate={selectedDate} />
-
-      <div className="flex items-center justify-between">
-        <GradeSelector grade={grade} onChange={setGrade} />
-        <HoldTypePicker selected={holdType} onChange={setHoldType} />
+      <div className="flex-[2] min-h-0">
+        <NoteEditor selectedDate={selectedDate} />
       </div>
 
-      <ActionButtons onAttempt={() => handleLog(false)} onSend={() => handleLog(true)} />
+      <div className="flex gap-2 flex-[3] min-h-0">
+        <div className="flex flex-col gap-3 shrink-0">
+          <GradeSelector grade={grade} onChange={setGrade} />
+          <HoldTypePicker selected={holdType} onChange={setHoldType} />
+          <ActionButtons onAttempt={() => handleLog(false)} onSend={() => handleLog(true)} />
+        </div>
 
-      {climbs && (
-        <>
-          <TodaySummary climbs={climbs} />
-          <ClimbList climbs={climbs} />
-        </>
-      )}
+        <div className="flex-1 flex flex-col gap-2 min-w-0 min-h-0">
+          {climbs && (
+            <>
+              <TodaySummary climbs={climbs} />
+              <div className="flex-1 min-h-0 border-2 border-border rounded-lg overflow-y-auto p-2">
+                <ClimbList climbs={climbs} />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

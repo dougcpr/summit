@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 
 const colorVars: Record<string, string> = {
   accent: "var(--color-accent)",
@@ -15,51 +15,41 @@ export function WeeklyZones({ goalGrade }: { goalGrade: string }) {
 
   return (
     <div className="border-2 border-border rounded-lg p-4 bg-card-bg">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg">Weekly Zones</h3>
-        <span className="text-sm px-2 py-1 border border-border rounded-full">
-          Today: {data.todayZone}
-        </span>
-      </div>
 
       <div className="flex flex-col gap-3">
         {data.zones.map((zone) => {
-          const sendPct = Math.min(100, (zone.sends / zone.target) * 100);
           const color = colorVars[zone.color] || "var(--color-border)";
+          const hasAttempts = zone.attemptTarget && zone.attemptTarget > 0;
+          const total = hasAttempts ? zone.attemptTarget : zone.target;
+          const sendPct = Math.min(100, (zone.sends / total) * 100);
+          const attemptPct = hasAttempts ? Math.min(100, (zone.attempts / total) * 100) : 0;
 
           return (
             <div key={zone.label}>
               <div className="flex items-center justify-between text-sm mb-1">
                 <span>
                   {zone.label}{" "}
-                  <span className="opacity-50">({zone.grade})</span>
+                  <span className="opacity-50 text-xs">{zone.grade}</span>
                 </span>
                 <span>
                   {zone.sends}/{zone.target}
+                  {hasAttempts && (
+                    <span className="opacity-50 text-xs ml-1">{zone.attempts}/{zone.attemptTarget}</span>
+                  )}
                 </span>
               </div>
-              <div className="h-3 bg-neutral-bg rounded-full overflow-hidden">
+              <div className="h-3 bg-neutral-bg rounded-full overflow-hidden relative">
+                {attemptPct > 0 && (
+                  <div
+                    className="h-full rounded-full transition-all absolute opacity-40"
+                    style={{ width: `${attemptPct}%`, backgroundColor: color }}
+                  />
+                )}
                 <div
-                  className="h-full rounded-full transition-all"
+                  className="h-full rounded-full transition-all relative"
                   style={{ width: `${sendPct}%`, backgroundColor: color }}
                 />
               </div>
-              {zone.attemptTarget && (
-                <div className="mt-1">
-                  <div className="flex justify-end text-xs opacity-50">
-                    attempts: {zone.attempts}/{zone.attemptTarget}
-                  </div>
-                  <div className="h-1.5 bg-neutral-bg rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all opacity-50"
-                      style={{
-                        width: `${Math.min(100, (zone.attempts / zone.attemptTarget) * 100)}%`,
-                        backgroundColor: color,
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
             </div>
           );
         })}

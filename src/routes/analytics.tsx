@@ -2,7 +2,6 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Pyramid } from "../components/analytics/pyramid";
 import { ActivityHeatmap } from "../components/analytics/activity-heatmap";
-import { HoldTypeRing } from "../components/analytics/hold-type-ring";
 import { WeeklyZones } from "../components/analytics/weekly-zones";
 import { SendRate } from "../components/analytics/send-rate";
 
@@ -19,14 +18,16 @@ function AnalyticsPage() {
   };
 
   return (
-    <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-4 pb-20">
+    <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-2 h-[calc(100dvh-4rem)] overflow-hidden">
       <Pyramid goalGrade={goalGrade} onGoalChange={handleGoalChange} />
-      <ActivityHeatmap />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <HoldTypeRing />
+      <div className="grid grid-cols-2 gap-2 shrink-0">
+        <ActivityHeatmap />
         <WeeklyZones goalGrade={goalGrade} />
       </div>
-      <SendRate goalGrade={goalGrade} />
+      <div className="flex-1 min-h-0">
+        <SendRate goalGrade={goalGrade} />
+      </div>
+
     </div>
   );
 }

@@ -7,20 +7,18 @@ interface ActionButtonsProps {
 
 export function ActionButtons({ onAttempt, onSend }: ActionButtonsProps) {
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-2">
       <button
         onClick={onAttempt}
-        className="flex-1 flex items-center justify-center gap-2 py-3 bg-secondary text-white rounded-lg text-xl active:brightness-90"
+        className="flex-1 flex items-center justify-center py-4 bg-secondary text-border border-2 border-border rounded-lg active:brightness-90"
       >
-        <Plus size={24} weight="bold" />
-        Attempt
+        <Plus size={32} weight="bold" />
       </button>
       <button
         onClick={onSend}
-        className="flex-1 flex items-center justify-center gap-2 py-3 bg-primary text-white rounded-lg text-xl active:brightness-90"
+        className="flex-1 flex items-center justify-center py-4 bg-primary text-border border-2 border-border rounded-lg active:brightness-90"
       >
-        <Check size={24} weight="bold" />
-        Send
+        <Check size={32} weight="bold" />
       </button>
     </div>
   );

@@ -40,57 +40,15 @@ export const pyramid = query({
       sendsByGrade[s.grade] = (sendsByGrade[s.grade] || 0) + 1;
     }
 
-    const projectIdx = goalIdx - 1;
-    const buildMaxIdx = goalIdx - 2;
-    const buildMinIdx = Math.max(0, goalIdx - 4);
-    const warmupMaxIdx = Math.max(0, buildMinIdx - 1);
-
     type PyramidRow = { label: string; sends: number; color: string };
     const rows: PyramidRow[] = [];
 
-    if (goalIdx >= 6) {
-      // Combine warm-up
-      let warmupSends = 0;
-      for (let i = 0; i <= warmupMaxIdx; i++) {
-        warmupSends += sendsByGrade[GRADES[i]] || 0;
-      }
-      rows.push({ label: `V0-${GRADES[warmupMaxIdx]}`, sends: warmupSends, color: "warm-up" });
-
-      // Combine build-base
-      let buildSends = 0;
-      for (let i = buildMinIdx; i <= buildMaxIdx; i++) {
-        buildSends += sendsByGrade[GRADES[i]] || 0;
-      }
+    for (let i = 0; i <= goalIdx; i++) {
       rows.push({
-        label: `${GRADES[buildMinIdx]}-${GRADES[buildMaxIdx]}`,
-        sends: buildSends,
-        color: "build-base",
+        label: GRADES[i],
+        sends: sendsByGrade[GRADES[i]] || 0,
+        color: GRADES[i],
       });
-
-      // Project
-      if (projectIdx >= 0) {
-        rows.push({
-          label: GRADES[projectIdx],
-          sends: sendsByGrade[GRADES[projectIdx]] || 0,
-          color: "project",
-        });
-      }
-
-      // Reach (goal grade)
-      rows.push({
-        label: GRADES[goalIdx],
-        sends: sendsByGrade[GRADES[goalIdx]] || 0,
-        color: "reach",
-      });
-    } else {
-      // Show individual grades up to goal
-      for (let i = 0; i <= goalIdx; i++) {
-        rows.push({
-          label: GRADES[i],
-          sends: sendsByGrade[GRADES[i]] || 0,
-          color: GRADES[i],
-        });
-      }
     }
 
     // Weeks remaining (52-week cycle, rough estimate from first climb)
@@ -131,8 +89,7 @@ export const heatmapData = query({
 
     return Object.entries(byDay).map(([date, { sum, count }]) => ({
       date,
-      avg: sum / count,
-      count,
+      count: Math.floor(sum / count) + 1, // 1-indexed avg grade: 1=V0, 2=V1, etc.
     }));
   },
 });
@@ -180,7 +137,7 @@ export const weeklyZones = query({
 
     const projectIdx = goalIdx - 1;
     const buildMaxIdx = goalIdx - 2;
-    const buildMinIdx = Math.max(0, goalIdx - 4);
+    const buildMinIdx = Math.max(0, goalIdx - 3);
     const warmupMaxIdx = Math.max(0, buildMinIdx - 1);
 
     const weekStart = getStartOfWeek(new Date());
@@ -270,7 +227,7 @@ export const sendRates = query({
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     const projectIdx = goalIdx - 1;
     const buildMaxIdx = goalIdx - 2;
-    const buildMinIdx = Math.max(0, goalIdx - 4);
+    const buildMinIdx = Math.max(0, goalIdx - 3);
     const warmupMaxIdx = Math.max(0, buildMinIdx - 1);
 
     const climbs = await ctx.db

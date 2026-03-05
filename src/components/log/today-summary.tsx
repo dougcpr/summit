@@ -1,4 +1,4 @@
-import type { Doc } from "../../convex/_generated/dataModel";
+import type { Doc } from "@convex/_generated/dataModel";
 
 interface TodaySummaryProps {
   climbs: Doc<"climbs">[];
@@ -10,8 +10,9 @@ export function TodaySummary({ climbs }: TodaySummaryProps) {
   const pct = total > 0 ? Math.round((sends / total) * 100) : 0;
 
   return (
-    <div className="text-center py-2 px-4 border-2 border-border rounded-full font-display text-lg">
-      {sends} / {total} ({pct}%)
+    <div className="text-right py-2 px-3 border-2 border-border rounded-lg font-display text-lg">
+      <span className="text-xl font-bold">{sends}/{total}</span>{" "}
+      <span className="opacity-60">({pct}%)</span>
     </div>
   );
 }

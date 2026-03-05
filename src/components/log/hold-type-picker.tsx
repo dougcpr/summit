@@ -25,14 +25,13 @@ export function HoldTypePicker({ selected, onChange }: HoldTypePickerProps) {
           <button
             key={type}
             onClick={() => onChange(type)}
-            className="flex items-center gap-1 px-3 py-2 rounded-lg border-2 border-border text-lg transition-opacity active:brightness-90"
+            className="flex items-center gap-2 px-4 py-3 rounded-lg border-2 border-border text-xl transition-opacity active:brightness-90"
             style={{
               opacity: isSelected ? 1 : 0.35,
-              backgroundColor: isSelected ? config.color : "transparent",
-              color: isSelected ? "white" : "inherit",
+              backgroundColor: isSelected ? config.bgColor : "transparent",
             }}
           >
-            <Icon size={20} weight="bold" />
+            <Icon size={24} weight="bold" />
             {config.letter}
           </button>
         );

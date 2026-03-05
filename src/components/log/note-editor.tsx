@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 import { getDateKey } from "../../lib/dates";
 
 export function NoteEditor({ selectedDate }: { selectedDate: Date }) {
@@ -46,7 +46,7 @@ export function NoteEditor({ selectedDate }: { selectedDate: Date }) {
       value={content}
       onChange={handleChange}
       placeholder="Enter notes here..."
-      className="w-full min-h-32 p-3 font-display text-lg bg-card-bg border-2 border-border rounded-lg resize-y focus:outline-none focus:border-secondary"
+      className="w-full h-full p-3 font-display text-lg bg-card-bg border-2 border-border rounded-lg resize-none focus:outline-none focus:border-secondary"
     />
   );
 }

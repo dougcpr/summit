@@ -3,3 +3,6 @@ dist/
 .env
 .env.local
 *.gen.ts
+.DS_Store
+*.jsonl
+*.csv
