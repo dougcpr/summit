@@ -80,7 +80,6 @@ function LogPage() {
           <ActionButtons
             onAttempt={() => handleLog(false)}
             onSend={() => handleLog(true)}
-            disabled={isRest}
           />
         </div>
 
