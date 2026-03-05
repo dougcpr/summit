@@ -9,7 +9,8 @@
   "rules": {
     "no-unused-vars": "error",
     "eqeqeq": "error",
-    "import/no-unassigned-import": "off"
+    "import/no-unassigned-import": "off",
+    "react/react-in-jsx-scope": "off"
   },
   "overrides": [
     {
