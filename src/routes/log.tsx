@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { api } from "../convex/_generated/api";
 import { NoteEditor } from "../components/log/note-editor";
 import { GradeSelector } from "../components/log/grade-selector";
 import { HoldTypePicker } from "../components/log/hold-type-picker";
 import { ActionButtons } from "../components/log/action-buttons";
-import { formatDisplayDate, normalizeToNoon } from "../lib/dates";
+import { TodaySummary } from "../components/log/today-summary";
+import { ClimbList } from "../components/log/climb-list";
+import { formatDisplayDate, normalizeToNoon, getLocalDayRange } from "../lib/dates";
 import type { HoldType } from "../lib/grades";
 
 export const Route = createFileRoute("/log")({
@@ -20,6 +22,8 @@ function LogPage() {
   const [holdType, setHoldType] = useState<HoldType>("jug");
 
   const addClimb = useMutation(api.climbs.add);
+  const { startTime, endTime } = getLocalDayRange(selectedDate);
+  const climbs = useQuery(api.climbs.getByDate, { startTime, endTime });
 
   const goBack = () => {
     const d = new Date(selectedDate);
@@ -62,6 +66,13 @@ function LogPage() {
       </div>
 
       <ActionButtons onAttempt={() => handleLog(false)} onSend={() => handleLog(true)} />
+
+      {climbs && (
+        <>
+          <TodaySummary climbs={climbs} />
+          <ClimbList climbs={climbs} />
+        </>
+      )}
     </div>
   );
 }

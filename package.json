@@ -16,6 +16,7 @@
     "@phosphor-icons/react": "^2.1.10",
     "@tanstack/react-router": "^1.166.2",
     "convex": "^1.32.0",
+    "framer-motion": "^12.35.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
