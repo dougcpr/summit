@@ -39,12 +39,12 @@ function RootLayout() {
         </button>
       </nav>
 
-      <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
+      <main className="flex-1 overflow-y-auto md:pb-0" style={{ paddingBottom: "calc(4rem + env(safe-area-inset-bottom))" }}>
         <Outlet />
       </main>
 
       {/* Mobile bottom tab bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 flex border-t-2 border-border bg-card-bg">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 flex border-t-2 border-border bg-card-bg" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <Link
           to="/log"
           search={{ date: undefined }}

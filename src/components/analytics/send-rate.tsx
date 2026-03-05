@@ -23,7 +23,7 @@ export function SendRate({ goalGrade }: { goalGrade: string }) {
                 <span className={passing ? "text-tertiary" : "text-secondary"} style={{ fontWeight: "bold" }}>
                   {row.actual}%
                 </span>
-                <span className="opacity-50 text-xs">(≥{row.expected}%)</span>
+                <span className="opacity-50 text-xs">({row.expected}%)</span>
               </div>
             </div>
           );
