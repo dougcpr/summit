@@ -12,6 +12,7 @@
   },
   "packageManager": "pnpm@10.28.0",
   "dependencies": {
+    "@clerk/clerk-react": "^5.61.3",
     "@phosphor-icons/react": "^2.1.10",
     "@tanstack/react-router": "^1.166.2",
     "convex": "^1.32.0",
