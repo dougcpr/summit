@@ -1,0 +1,8 @@
+{
+  "name": "Summit",
+  "short_name": "Summit",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f1e3",
+  "theme_color": "#f6f1e3"
+}
