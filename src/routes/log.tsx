@@ -88,7 +88,7 @@ function LogPage() {
             <>
               <TodaySummary climbs={climbs} />
               <div
-                className="flex-1 min-h-0 border-2 border-border rounded-lg overflow-y-auto p-2"
+                className="flex-1 min-h-0 border-2 border-border rounded-lg overflow-y-auto p-2 bg-white"
                 style={{ maxHeight: "13.25rem" }}
               >
                 <ClimbList climbs={climbs} isRest={isRest} />
