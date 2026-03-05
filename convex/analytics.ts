@@ -215,46 +215,206 @@ export const weeklyZones = query({
   },
 });
 
-// --- Send Rates (last 30 days) ---
+// --- Coach Nudges ---
 
-export const sendRates = query({
-  args: { goalGrade: v.string() },
+function computeRestDays(
+  climbs: { grade: string; completed: boolean }[],
+  buildMinIdx: number,
+  buildMaxIdx: number,
+  projectIdx: number,
+): number {
+  let buildSends = 0;
+  let buildTotal = 0;
+  let projectAttempts = 0;
+  for (const c of climbs) {
+    const gi = gradeIdx(c.grade);
+    if (gi >= buildMinIdx && gi <= buildMaxIdx) {
+      buildTotal++;
+      if (c.completed) buildSends++;
+    }
+    if (gi === projectIdx) projectAttempts++;
+  }
+  const buildRate = buildTotal > 0 ? buildSends / buildTotal : 1;
+  if (buildRate >= 0.7 && projectAttempts >= 6) return 3;
+  if (buildRate >= 0.5 || projectAttempts >= 3) return 4;
+  return 5;
+}
+
+function computeCyclePhase(
+  anchorStr: string,
+  transitionStr: string,
+  restDays: number,
+): { type: "rest"; day: number; total: number } | { type: "train"; week: number; totalWeeks: number } {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayMs = today.getTime();
+
+  const anchor = new Date(anchorStr + "T00:00:00");
+  const transition = new Date(transitionStr + "T00:00:00");
+  const DAY = 24 * 60 * 60 * 1000;
+
+  let cursor = anchor.getTime();
+  let phase: "rest" | "train" = "rest";
+
+  for (let i = 0; i < 100; i++) {
+    if (phase === "rest") {
+      const endMs = cursor + restDays * DAY;
+      if (todayMs < endMs) {
+        return { type: "rest", day: Math.floor((todayMs - cursor) / DAY) + 1, total: restDays };
+      }
+      cursor = endMs;
+      phase = "train";
+    } else {
+      const trainWeeks = cursor < transition.getTime() ? 3 : 2;
+      const endMs = cursor + trainWeeks * 7 * DAY;
+      if (todayMs < endMs) {
+        return { type: "train", week: Math.floor((todayMs - cursor) / (7 * DAY)) + 1, totalWeeks: trainWeeks };
+      }
+      cursor = endMs;
+      phase = "rest";
+    }
+  }
+
+  return { type: "train", week: 1, totalWeeks: 2 };
+}
+
+export const coachNudges = query({
+  args: {
+    goalGrade: v.string(),
+    cycleAnchor: v.string(),
+    ratioTransitionDate: v.string(),
+  },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
     const goalIdx = gradeIdx(args.goalGrade);
-    if (goalIdx < 0) return [];
+    if (goalIdx < 0) return { nudges: [], isRest: false };
 
-    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     const projectIdx = goalIdx - 1;
     const buildMaxIdx = goalIdx - 2;
     const buildMinIdx = Math.max(0, goalIdx - 3);
-    const warmupMaxIdx = Math.max(0, buildMinIdx - 1);
 
-    const climbs = await ctx.db
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+
+    const recentClimbs = await ctx.db
       .query("climbs")
       .withIndex("by_user_date", (q) =>
         q.eq("userId", userId).gte("climbedAt", thirtyDaysAgo),
       )
       .collect();
 
-    function rate(minIdx: number, maxIdx: number) {
-      let sends = 0;
-      let total = 0;
-      for (const c of climbs) {
-        const gi = gradeIdx(c.grade);
-        if (gi >= minIdx && gi <= maxIdx) {
-          total++;
-          if (c.completed) sends++;
-        }
-      }
-      return total > 0 ? Math.round((sends / total) * 100) : 0;
+    // Compute rest days and cycle phase
+    const restDays = computeRestDays(recentClimbs, buildMinIdx, buildMaxIdx, projectIdx);
+    const phase = computeCyclePhase(args.cycleAnchor, args.ratioTransitionDate, restDays);
+
+    const nudges: { message: string; type: "balance" | "holds" | "positive" }[] = [];
+
+    // During rest: show rest nudge + supplement suggestion
+    if (phase.type === "rest") {
+      nudges.push({
+        message: `Rest day ${phase.day} of ${phase.total} — recover and come back strong`,
+        type: "positive",
+      });
+
+      const restActivities = [
+        "Try a hangboard session — 3 sets of 10s hangs on your weakest grip",
+        "Antagonist training — push-ups, shoulder press, or tricep dips",
+        "Stretch and foam roll — focus on forearms and shoulders",
+        "Light finger boarding — repeaters at 50% effort",
+        "Core work — planks, leg raises, and hollow holds",
+      ];
+      nudges.push({
+        message: restActivities[(phase.day - 1) % restActivities.length],
+        type: "holds",
+      });
+
+      return { nudges, isRest: true };
     }
 
-    return [
-      { zone: "Warm Up", actual: rate(0, warmupMaxIdx), expected: 95 },
-      { zone: "Build Base", actual: rate(buildMinIdx, buildMaxIdx), expected: 90 },
-      { zone: "Project", actual: rate(projectIdx, projectIdx), expected: 20 },
-      { zone: "Reach", actual: rate(goalIdx, GRADES.length - 1), expected: 5 },
-    ];
+    const isRest = false;
+
+    // Training phase: show cycle context + training nudges
+    nudges.push({
+      message: `Training week ${phase.week} of ${phase.totalWeeks}`,
+      type: "positive",
+    });
+
+    const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
+    const weekStart = getStartOfWeek(new Date());
+
+    // Rule: Low project volume (< 2 attempts in 14 days)
+    const projectAttempts14d = recentClimbs.filter(
+      (c) => c.climbedAt >= fourteenDaysAgo && gradeIdx(c.grade) === projectIdx,
+    ).length;
+    if (projectAttempts14d < 2) {
+      nudges.push({
+        message: `Get more ${GRADES[projectIdx]} attempts in — only ${projectAttempts14d} in 2 weeks`,
+        type: "balance",
+      });
+      return { nudges: nudges.slice(0, 2), isRest };
+    }
+
+    // Rule: Too much warm-up (> 60% of this week's climbs)
+    const weekClimbs = recentClimbs.filter((c) => c.climbedAt >= weekStart.getTime());
+    if (weekClimbs.length >= 3) {
+      const warmupCount = weekClimbs.filter((c) => gradeIdx(c.grade) < buildMinIdx).length;
+      if (warmupCount / weekClimbs.length > 0.6) {
+        const buildGrades = buildMinIdx === buildMaxIdx
+          ? GRADES[buildMinIdx]
+          : `${GRADES[buildMinIdx]}-${GRADES[buildMaxIdx]}`;
+        nudges.push({
+          message: `Heavy on warm-ups — try more ${buildGrades}`,
+          type: "balance",
+        });
+        return { nudges: nudges.slice(0, 2), isRest };
+      }
+    }
+
+    // Rule: Neglected hold type (< 20% of last 30 days)
+    const holdCounts: Record<string, number> = { jug: 0, crimp: 0, sloper: 0 };
+    for (const c of recentClimbs) {
+      if (c.holdType in holdCounts) holdCounts[c.holdType]++;
+    }
+    const totalHolds = recentClimbs.length || 1;
+    for (const [type, count] of Object.entries(holdCounts)) {
+      if (count / totalHolds < 0.2) {
+        const suggestGrade = GRADES[Math.max(0, buildMinIdx)];
+        nudges.push({
+          message: `Try a ${suggestGrade} ${type} today`,
+          type: "holds",
+        });
+        return { nudges: nudges.slice(0, 2), isRest };
+      }
+    }
+
+    // Rule: Low build base send rate (< 50%)
+    let buildSends = 0;
+    let buildTotal = 0;
+    for (const c of recentClimbs) {
+      const gi = gradeIdx(c.grade);
+      if (gi >= buildMinIdx && gi <= buildMaxIdx) {
+        buildTotal++;
+        if (c.completed) buildSends++;
+      }
+    }
+    const buildRate = buildTotal > 0 ? Math.round((buildSends / buildTotal) * 100) : 100;
+    if (buildRate < 50) {
+      const buildGrades = buildMinIdx === buildMaxIdx
+        ? GRADES[buildMinIdx]
+        : `${GRADES[buildMinIdx]}-${GRADES[buildMaxIdx]}`;
+      nudges.push({
+        message: `Focus on sending ${buildGrades} — only ${buildRate}% send rate`,
+        type: "balance",
+      });
+      return { nudges: nudges.slice(0, 2), isRest };
+    }
+
+    // Positive fallback: hold focus
+    const weakest = Object.entries(holdCounts).reduce((a, b) => (a[1] < b[1] ? a : b));
+    nudges.push({
+      message: `Mix in more ${weakest[0]}s to round out your training`,
+      type: "holds",
+    });
+
+    return { nudges: nudges.slice(0, 2), isRest };
   },
 });
