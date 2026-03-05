@@ -17,6 +17,9 @@ importers:
       '@tanstack/react-router':
         specifier: ^1.166.2
         version: 1.166.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@uiw/react-heat-map':
+        specifier: ^2.3.3
+        version: 2.3.3(@babel/runtime@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       convex:
         specifier: ^1.32.0
         version: 1.32.0(@clerk/clerk-react@5.61.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
@@ -143,6 +146,10 @@ packages:
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
+
+  '@babel/runtime@7.28.6':
+    resolution: {integrity: sha512-05WQkdpL9COIMz4LjTxGpPNCdlpyimKppYNoJ5Di5EUObifl8t4tuLuUBBZEpoLYOmfvIWrsp9fCl0HoPRVTdA==}
+    engines: {node: '>=6.9.0'}
 
   '@babel/template@7.28.6':
     resolution: {integrity: sha512-YA6Ma2KsCdGb+WC6UpBVFJGXL58MDA6oyONbjyF/+5sBgxY/dwkhLogbMT2GXXyU84/IhRw/2D1Os1B/giz+BQ==}
@@ -1061,6 +1068,13 @@ packages:
   '@types/use-sync-external-store@0.0.6':
     resolution: {integrity: sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==}
 
+  '@uiw/react-heat-map@2.3.3':
+    resolution: {integrity: sha512-PMQ2v7am2yWCXNJcNz6OpbJmb3m6zNxf8NaRvPdCiRtF1NU58JJoGfkmEgXSjopNuu5eg8sBYX/VPC1Of8C0QQ==}
+    peerDependencies:
+      '@babel/runtime': '>=7.10.0'
+      react: '>=16.9.0'
+      react-dom: '>=16.9.0'
+
   acorn@8.16.0:
     resolution: {integrity: sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw==}
     engines: {node: '>=0.4.0'}
@@ -1753,6 +1767,8 @@ snapshots:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
 
+  '@babel/runtime@7.28.6': {}
+
   '@babel/template@7.28.6':
     dependencies:
       '@babel/code-frame': 7.29.0
@@ -2427,6 +2443,12 @@ snapshots:
       csstype: 3.2.3
 
   '@types/use-sync-external-store@0.0.6': {}
+
+  '@uiw/react-heat-map@2.3.3(@babel/runtime@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@babel/runtime': 7.28.6
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
 
   acorn@8.16.0: {}
 
