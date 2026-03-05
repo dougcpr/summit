@@ -18,15 +18,13 @@ function AnalyticsPage() {
   };
 
   return (
-    <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-2 h-[calc(100dvh-4rem)] overflow-hidden">
+    <div className="p-2 font-display max-w-lg mx-auto flex flex-col gap-1.5 h-[calc(100dvh-4rem)] overflow-hidden">
       <Pyramid goalGrade={goalGrade} onGoalChange={handleGoalChange} />
-      <div className="grid grid-cols-2 gap-2 shrink-0">
-        <ActivityHeatmap />
+      <div className="grid grid-cols-2 gap-1.5 shrink-0">
+        <SendRate goalGrade={goalGrade} />
         <WeeklyZones goalGrade={goalGrade} />
       </div>
-      <div className="flex-1 min-h-0">
-        <SendRate goalGrade={goalGrade} />
-      </div>
+      <ActivityHeatmap />
 
     </div>
   );
