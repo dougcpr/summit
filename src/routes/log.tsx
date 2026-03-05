@@ -68,22 +68,22 @@ function LogPage() {
         </button>
       </div>
 
-      <div className="flex-[2] min-h-0">
+      <div className="flex-1 min-h-0">
         <NoteEditor selectedDate={selectedDate} />
       </div>
 
-      <div className="flex gap-2 flex-[3] min-h-0">
+      <div className="flex gap-2 shrink-0 items-stretch">
         <div className="flex flex-col gap-3 shrink-0">
           <GradeSelector grade={grade} onChange={setGrade} />
           <HoldTypePicker selected={holdType} onChange={setHoldType} />
           <ActionButtons onAttempt={() => handleLog(false)} onSend={() => handleLog(true)} />
         </div>
 
-        <div className="flex-1 flex flex-col gap-2 min-w-0 min-h-0">
+        <div className="flex-1 flex flex-col gap-2 min-w-0">
           {climbs && (
             <>
               <TodaySummary climbs={climbs} />
-              <div className="flex-1 min-h-0 border-2 border-border rounded-lg overflow-y-auto p-2">
+              <div className="flex-1 min-h-0 border-2 border-border rounded-lg overflow-y-auto p-2" style={{ maxHeight: "13.25rem" }}>
                 <ClimbList climbs={climbs} />
               </div>
             </>
