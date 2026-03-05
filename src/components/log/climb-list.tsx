@@ -1,6 +1,5 @@
-import { motion } from "framer-motion";
 import { useMutation } from "convex/react";
-import { HandGrabbing, Hand, HandPalm } from "@phosphor-icons/react";
+import { HandGrabbing, Hand, HandPalm, X } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import type { HoldType } from "../../lib/grades";
@@ -24,14 +23,8 @@ function ClimbListItem({ climb }: { climb: Doc<"climbs"> }) {
   };
 
   return (
-    <motion.div
-      drag="x"
-      dragConstraints={{ left: -100, right: 0 }}
-      dragElastic={0.1}
-      onDragEnd={(_, info) => {
-        if (info.offset.x < -60) handleDelete();
-      }}
-      className="flex items-center justify-center gap-2 px-3 py-2 border-2 border-border rounded-lg cursor-grab active:cursor-grabbing"
+    <div
+      className="flex items-center justify-center gap-2 px-3 py-2 border-2 border-border rounded-lg relative"
       style={{
         backgroundColor: climb.completed ? "var(--color-primary)" : "var(--color-secondary)",
       }}
@@ -40,7 +33,13 @@ function ClimbListItem({ climb }: { climb: Doc<"climbs"> }) {
         {climb.grade}
       </span>
       {HoldIcon && <HoldIcon size={24} weight="bold" className="text-border opacity-80" />}
-    </motion.div>
+      <button
+        onClick={handleDelete}
+        className="absolute right-1 top-1 p-0.5 rounded-full opacity-40 hover:opacity-100 active:opacity-100"
+      >
+        <X size={14} weight="bold" className="text-border" />
+      </button>
+    </div>
   );
 }
 
