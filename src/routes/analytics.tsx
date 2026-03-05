@@ -1,14 +1,22 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { Pyramid } from "../components/analytics/pyramid";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
 });
 
 function AnalyticsPage() {
+  const [goalGrade, setGoalGrade] = useState(() => localStorage.getItem("summit-goal-grade") || "V5");
+
+  const handleGoalChange = (g: string) => {
+    setGoalGrade(g);
+    localStorage.setItem("summit-goal-grade", g);
+  };
+
   return (
-    <div className="p-4 font-display">
-      <h1 className="text-3xl text-accent">Analytics</h1>
-      <p className="text-lg mt-2">Charts and progress will go here.</p>
+    <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-4">
+      <Pyramid goalGrade={goalGrade} onGoalChange={handleGoalChange} />
     </div>
   );
 }
