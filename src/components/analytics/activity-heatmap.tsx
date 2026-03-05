@@ -49,7 +49,7 @@ export function ActivityHeatmap() {
 
   // ~17px per week column
   const weeks = Math.ceil((endDate.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
-  const width = Math.max(220, weeks * 14 + 40);
+  const width = Math.max(220, weeks * 18 + 40);
 
   return (
     <div ref={scrollRef} className="border-2 border-border rounded-lg p-2 bg-card-bg overflow-x-auto">
@@ -58,12 +58,12 @@ export function ActivityHeatmap() {
         width={width}
         startDate={startDate}
         endDate={endDate}
-        rectSize={12}
+        rectSize={16}
         space={2}
         legendCellSize={0}
         style={{ color: "var(--color-border)" }}
         panelColors={gradeColors}
-        rectProps={{ rx: 6 }}
+        rectProps={{ rx: 8 }}
         rectRender={(props, data) => {
           if (!data.count) return <rect {...props} />;
           return (
