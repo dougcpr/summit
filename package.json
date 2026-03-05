@@ -1,9 +1,8 @@
 {
   "name": "summit",
   "version": "1.0.0",
-  "description": "",
+  "private": true,
   "type": "module",
-  "main": "index.js",
   "scripts": {
     "dev": "rsbuild dev",
     "build": "rsbuild build",
@@ -11,9 +10,6 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "packageManager": "pnpm@10.28.0",
   "dependencies": {
     "react": "^19.2.4",
