@@ -58,6 +58,12 @@ function LogPage() {
     });
   };
 
+  const today = new Date();
+  const isToday =
+    selectedDate.getFullYear() === today.getFullYear() &&
+    selectedDate.getMonth() === today.getMonth() &&
+    selectedDate.getDate() === today.getDate();
+
   const goalGrade = localStorage.getItem("summit-goal-grade") || "V5";
 
   return (
@@ -98,14 +104,24 @@ function LogPage() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between shrink-0">
-        <button onClick={goBack} className="p-2 active:brightness-90">
-          <CaretLeft size={24} weight="bold" />
-        </button>
-        <span className="text-xl">{formatDisplayDate(selectedDate)}</span>
-        <button onClick={goForward} className="p-2 active:brightness-90">
-          <CaretRight size={24} weight="bold" />
-        </button>
+      <div className="flex flex-col items-center shrink-0">
+        <div className="flex items-center justify-between w-full">
+          <button onClick={goBack} className="p-2 active:brightness-90">
+            <CaretLeft size={24} weight="bold" />
+          </button>
+          <span className="text-xl">{formatDisplayDate(selectedDate)}</span>
+          <button onClick={goForward} className="p-2 active:brightness-90">
+            <CaretRight size={24} weight="bold" />
+          </button>
+        </div>
+        {!isToday && (
+          <button
+            onClick={() => setSelectedDate(new Date())}
+            className="text-sm opacity-50 hover:opacity-80 active:opacity-100"
+          >
+            Go to Today
+          </button>
+        )}
       </div>
     </div>
   );
