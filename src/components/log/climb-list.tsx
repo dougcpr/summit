@@ -27,7 +27,7 @@ function ClimbListItem({ climb }: { climb: Doc<"climbs"> }) {
     <div
       className="flex items-center justify-center gap-2 px-3 py-2 border-2 border-border rounded-lg relative"
       style={{
-        backgroundColor: climb.completed ? "var(--color-primary)" : "var(--color-accent)",
+        backgroundColor: climb.completed ? "var(--color-primary)" : "#d96c4f",
       }}
     >
       <span className="text-xl font-display text-border">
