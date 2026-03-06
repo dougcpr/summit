@@ -32,6 +32,6 @@ export type HoldType = "jug" | "crimp" | "sloper";
 
 export const holdTypeConfig: Record<HoldType, { label: string; letter: string; color: string; bgColor: string }> = {
   jug: { label: "Jug", letter: "J", color: "var(--color-primary)", bgColor: "rgba(228, 196, 77, 0.35)" },
-  crimp: { label: "Crimp", letter: "C", color: "var(--color-secondary)", bgColor: "rgba(217, 108, 79, 0.35)" },
+  crimp: { label: "Crimp", letter: "C", color: "var(--color-accent)", bgColor: "rgba(89, 149, 163, 0.35)" },
   sloper: { label: "Sloper", letter: "S", color: "var(--color-tertiary)", bgColor: "rgba(106, 153, 78, 0.35)" },
 };
