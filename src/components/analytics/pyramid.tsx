@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { colorMap } from "../../lib/grades";
+import { colorMap, borderColorMap } from "../../lib/grades";
 
 interface PyramidProps {
   goalGrade: string;
@@ -24,12 +24,12 @@ export function Pyramid({ goalGrade }: PyramidProps) {
           return (
             <div key={row.label} className="flex items-center justify-center">
               <div
-                className="h-8 rounded-lg flex items-center justify-center font-display text-sm transition-all"
+                className="h-6 rounded-lg flex items-center justify-center font-display text-sm transition-all"
                 style={{
                   width: `${width}%`,
                   backgroundColor: isGoal ? "transparent" : gradeColor,
                   color: isGoal ? "var(--color-border)" : row.label === "V4" ? "white" : "var(--color-border)",
-                  border: isGoal ? "2px dashed var(--color-border)" : "none",
+                  border: isGoal ? "2px dashed var(--color-border)" : `2px solid ${borderColorMap[row.label] || gradeColor}`,
                   minWidth: "4rem",
                 }}
               >

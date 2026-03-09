@@ -16,9 +16,9 @@ export function HoldTypeRing({ goalGrade }: { goalGrade: string }) {
   if (!data) return null;
 
   return (
-    <div className="border-2 border-border rounded-lg p-3 bg-card-bg flex-1">
+    <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex-1">
       <span className="text-xs opacity-50 uppercase tracking-wide">Hold Levels</span>
-      <div className="flex flex-col gap-2 mt-2">
+      <div className="flex flex-col gap-1 mt-1">
         {data.types.map((t) => {
           const config = holdTypeConfig[t.type as HoldType];
           const Icon = holdIcons[t.type as HoldType];
@@ -27,17 +27,17 @@ export function HoldTypeRing({ goalGrade }: { goalGrade: string }) {
           return (
             <div
               key={t.type}
-              className="flex items-center justify-between px-2 py-1.5 rounded-md"
+              className="flex items-center justify-between px-2 py-1 rounded-md"
               style={{
                 backgroundColor: isWeakest ? (fadedColorMap[t.gradeLevel] || "rgba(0,0,0,0.05)") : "transparent",
               }}
             >
               <div className="flex items-center gap-2">
                 {Icon && <Icon size={18} weight="bold" style={{ color: colorMap[t.gradeLevel] || config?.color }} />}
-                <span className="text-sm capitalize">{t.type}</span>
+                <span className="text-xs capitalize">{t.type}</span>
                 {isWeakest && <span className="text-xs opacity-50">(focus)</span>}
               </div>
-              <span className="text-lg font-display w-10 text-right">{t.gradeLevel}</span>
+              <span className="text-sm font-semibold w-10 text-right">{t.gradeLevel}</span>
             </div>
           );
         })}

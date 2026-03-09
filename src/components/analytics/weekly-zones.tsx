@@ -16,7 +16,7 @@ export function WeeklyZones({ goalGrade }: { goalGrade: string }) {
   return (
     <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex-1">
       <span className="text-xs opacity-50 uppercase tracking-wide">Weekly Zones</span>
-      <div className="flex flex-col gap-2 mt-1">
+      <div className="flex flex-col gap-1 mt-1">
         {data.zones.map((zone) => {
           const color = colorVars[zone.color] || "var(--color-border)";
           const hasAttempts = zone.attemptTarget && zone.attemptTarget > 0;
@@ -26,7 +26,7 @@ export function WeeklyZones({ goalGrade }: { goalGrade: string }) {
 
           return (
             <div key={zone.label}>
-              <div className="flex items-center justify-between text-sm mb-1">
+              <div className="flex items-center justify-between text-xs mb-1">
                 <span>
                   {zone.label}{" "}
                   <span className="opacity-50 text-xs">{zone.grade}</span>
@@ -38,7 +38,7 @@ export function WeeklyZones({ goalGrade }: { goalGrade: string }) {
                   )}
                 </span>
               </div>
-              <div className="h-3 bg-neutral-bg rounded-full overflow-hidden relative">
+              <div className="h-2 bg-neutral-bg rounded-full overflow-hidden relative">
                 {attemptPct > 0 && (
                   <div
                     className="h-full rounded-full transition-all absolute opacity-40"

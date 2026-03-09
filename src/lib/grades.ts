@@ -19,6 +19,15 @@ export const fadedColorMap: Record<string, string> = Object.fromEntries(
   Object.entries(colorMap).map(([k, v]) => [k, v.replace("0.8)", "0.3)")]),
 );
 
+export const borderColorMap: Record<string, string> = Object.fromEntries(
+  Object.entries(colorMap).map(([k, v]) => {
+    // Darken RGB values by 30% for a more prominent border
+    return [k, v.replace(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*[\d.]+\)/, (_, r, g, b) =>
+      `rgba(${Math.round(+r * 0.7)}, ${Math.round(+g * 0.7)}, ${Math.round(+b * 0.7)}, 1)`
+    )];
+  }),
+);
+
 export function gradeIndex(grade: string): number {
   return GRADES.indexOf(grade as Grade);
 }
