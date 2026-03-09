@@ -341,52 +341,23 @@ export const coachNudges = query({
     const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
     const weekStart = getStartOfWeek(new Date());
 
-    // Rule: Low project volume (< 2 attempts in 14 days)
-    const projectAttempts14d = recentClimbs.filter(
-      (c) => c.climbedAt >= fourteenDaysAgo && gradeIdx(c.grade) === projectIdx,
-    ).length;
-    if (projectAttempts14d < 2) {
-      nudges.push({
-        message: `Get more ${GRADES[projectIdx]} attempts in — only ${projectAttempts14d} in 2 weeks`,
-        type: "balance",
-      });
-      return { nudges: nudges.slice(0, 2), isRest };
-    }
-
-    // Rule: Too much warm-up (> 60% of this week's climbs)
-    const weekClimbs = recentClimbs.filter((c) => c.climbedAt >= weekStart.getTime());
-    if (weekClimbs.length >= 3) {
-      const warmupCount = weekClimbs.filter((c) => gradeIdx(c.grade) < buildMinIdx).length;
-      if (warmupCount / weekClimbs.length > 0.6) {
-        const buildGrades = buildMinIdx === buildMaxIdx
-          ? GRADES[buildMinIdx]
-          : `${GRADES[buildMinIdx]}-${GRADES[buildMaxIdx]}`;
-        nudges.push({
-          message: `Heavy on warm-ups — try more ${buildGrades}`,
-          type: "balance",
-        });
-        return { nudges: nudges.slice(0, 2), isRest };
-      }
-    }
-
-    // Rule: Neglected hold type (< 20% of last 30 days)
+    // Compute hold type stats (always needed for second nudge)
     const holdCounts: Record<string, number> = { jug: 0, crimp: 0, sloper: 0 };
     for (const c of recentClimbs) {
       if (c.holdType in holdCounts) holdCounts[c.holdType]++;
     }
     const totalHolds = recentClimbs.length || 1;
-    for (const [type, count] of Object.entries(holdCounts)) {
-      if (count / totalHolds < 0.2) {
-        const suggestGrade = GRADES[Math.max(0, buildMinIdx)];
-        nudges.push({
-          message: `Try a ${suggestGrade} ${type} today`,
-          type: "holds",
-        });
-        return { nudges: nudges.slice(0, 2), isRest };
-      }
-    }
+    const weakest = Object.entries(holdCounts).reduce((a, b) => (a[1] < b[1] ? a : b));
+    const weakestPct = Math.round((weakest[1] / totalHolds) * 100);
 
-    // Rule: Low build base send rate (< 50%)
+    // Primary nudge: pick the most important training focus
+    const projectAttempts14d = recentClimbs.filter(
+      (c) => c.climbedAt >= fourteenDaysAgo && gradeIdx(c.grade) === projectIdx,
+    ).length;
+
+    const weekClimbs = recentClimbs.filter((c) => c.climbedAt >= weekStart.getTime());
+    const warmupCount = weekClimbs.filter((c) => gradeIdx(c.grade) < buildMinIdx).length;
+
     let buildSends = 0;
     let buildTotal = 0;
     for (const c of recentClimbs) {
@@ -397,23 +368,45 @@ export const coachNudges = query({
       }
     }
     const buildRate = buildTotal > 0 ? Math.round((buildSends / buildTotal) * 100) : 100;
-    if (buildRate < 50) {
-      const buildGrades = buildMinIdx === buildMaxIdx
-        ? GRADES[buildMinIdx]
-        : `${GRADES[buildMinIdx]}-${GRADES[buildMaxIdx]}`;
+
+    const buildGrades = buildMinIdx === buildMaxIdx
+      ? GRADES[buildMinIdx]
+      : `${GRADES[buildMinIdx]}-${GRADES[buildMaxIdx]}`;
+
+    if (projectAttempts14d < 2) {
+      nudges.push({
+        message: `Get more ${GRADES[projectIdx]} attempts in — only ${projectAttempts14d} in 2 weeks`,
+        type: "balance",
+      });
+    } else if (weekClimbs.length >= 3 && warmupCount / weekClimbs.length > 0.6) {
+      nudges.push({
+        message: `Heavy on warm-ups — try more ${buildGrades}`,
+        type: "balance",
+      });
+    } else if (buildRate < 50) {
       nudges.push({
         message: `Focus on sending ${buildGrades} — only ${buildRate}% send rate`,
         type: "balance",
       });
-      return { nudges: nudges.slice(0, 2), isRest };
+    } else {
+      nudges.push({
+        message: `Solid session — keep pushing ${buildGrades}`,
+        type: "positive",
+      });
     }
 
-    // Positive fallback: hold focus
-    const weakest = Object.entries(holdCounts).reduce((a, b) => (a[1] < b[1] ? a : b));
-    nudges.push({
-      message: `Mix in more ${weakest[0]}s to round out your training`,
-      type: "holds",
-    });
+    // Secondary nudge: always show hold type awareness
+    if (weakestPct < 20) {
+      nudges.push({
+        message: `Try more ${weakest[0]}s — only ${weakestPct}% of your climbs`,
+        type: "holds",
+      });
+    } else {
+      nudges.push({
+        message: `Mix in more ${weakest[0]}s to round out your training`,
+        type: "holds",
+      });
+    }
 
     return { nudges: nudges.slice(0, 2), isRest };
   },
