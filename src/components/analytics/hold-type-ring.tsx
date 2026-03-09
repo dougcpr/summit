@@ -1,48 +1,48 @@
 import { useQuery } from "convex/react";
+import { HandGrabbing, Hand, HandPalm } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
 import { holdTypeConfig } from "../../lib/grades";
 import type { HoldType } from "../../lib/grades";
+
+const holdIcons: Record<HoldType, React.ElementType> = {
+  jug: HandGrabbing,
+  crimp: Hand,
+  sloper: HandPalm,
+};
 
 export function HoldTypeRing() {
   const data = useQuery(api.analytics.holdTypeBreakdown);
 
   if (!data) return null;
 
-  const radius = 40;
-  const strokeWidth = 12;
-  const circumference = 2 * Math.PI * radius;
-  let offset = 0;
-
   return (
-    <div className="border-2 border-border rounded-lg p-4 bg-card-bg">
-      <div className="flex flex-col items-center justify-center">
-        <div className="relative w-28 h-28">
-          <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-            {data.types.map((t) => {
-              const dashLen = (t.percentage / 100) * circumference;
-              const config = holdTypeConfig[t.type as HoldType];
-              const segment = (
-                <circle
-                  key={t.type}
-                  cx="50"
-                  cy="50"
-                  r={radius}
-                  fill="none"
-                  stroke={config?.color || "#ccc"}
-                  strokeWidth={strokeWidth}
-                  strokeDasharray={`${dashLen} ${circumference - dashLen}`}
-                  strokeDashoffset={-offset}
-                />
-              );
-              offset += dashLen;
-              return segment;
-            })}
-          </svg>
-          <span className="absolute inset-0 flex items-center justify-center text-2xl font-display">
-            {holdTypeConfig[data.focus as HoldType]?.letter}
-          </span>
-        </div>
-        <span className="text-sm mt-1">Focus</span>
+    <div className="border-2 border-border rounded-lg p-3 bg-card-bg">
+      <span className="text-xs opacity-50 uppercase tracking-wide">Hold Levels</span>
+      <div className="flex flex-col gap-2 mt-2">
+        {data.types.map((t) => {
+          const config = holdTypeConfig[t.type as HoldType];
+          const Icon = holdIcons[t.type as HoldType];
+          const isWeakest = t.type === data.weakest;
+
+          return (
+            <div
+              key={t.type}
+              className="flex items-center justify-between px-2 py-1.5 rounded-md"
+              style={{
+                backgroundColor: isWeakest ? (config?.bgColor || "transparent") : "transparent",
+              }}
+            >
+              <div className="flex items-center gap-2">
+                {Icon && <Icon size={18} weight="bold" style={{ color: config?.color }} />}
+                <span className="text-sm capitalize">{t.type}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg font-display">{t.gradeLevel}</span>
+                {isWeakest && <span className="text-xs opacity-50">focus</span>}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

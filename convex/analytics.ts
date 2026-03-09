@@ -100,29 +100,41 @@ export const holdTypeBreakdown = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getUserId(ctx);
-    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
     const climbs = await ctx.db
       .query("climbs")
-      .withIndex("by_user_date", (q) => q.eq("userId", userId).gte("climbedAt", thirtyDaysAgo))
+      .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    const counts: Record<string, number> = { jug: 0, crimp: 0, sloper: 0 };
+    // For each hold type, count sends per grade
+    const sendsByHoldAndGrade: Record<string, Record<string, number>> = {
+      jug: {}, crimp: {}, sloper: {},
+    };
     for (const c of climbs) {
-      if (c.holdType in counts) counts[c.holdType]++;
+      if (c.completed && c.holdType in sendsByHoldAndGrade) {
+        const g = c.grade;
+        sendsByHoldAndGrade[c.holdType][g] = (sendsByHoldAndGrade[c.holdType][g] || 0) + 1;
+      }
     }
 
-    const total = climbs.length || 1;
-    const types = Object.entries(counts).map(([type, count]) => ({
-      type,
-      count,
-      percentage: Math.round((count / total) * 100),
-    }));
+    // Highest grade with 3+ sends per hold type
+    const types = Object.entries(sendsByHoldAndGrade).map(([type, grades]) => {
+      let gradeLevel = "—";
+      let gradeLevelIdx = -1;
+      for (const [grade, count] of Object.entries(grades)) {
+        const idx = gradeIdx(grade);
+        if (count >= 3 && idx > gradeLevelIdx) {
+          gradeLevelIdx = idx;
+          gradeLevel = grade;
+        }
+      }
+      return { type, gradeLevel, gradeLevelIdx };
+    });
 
-    // Least climbed type
-    const focus = types.reduce((a, b) => (a.count < b.count ? a : b));
+    // Weakest by grade level
+    const weakest = types.reduce((a, b) => (a.gradeLevelIdx < b.gradeLevelIdx ? a : b));
 
-    return { types, focus: focus.type };
+    return { types, weakest: weakest.type };
   },
 });
 
@@ -341,14 +353,29 @@ export const coachNudges = query({
     const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
     const weekStart = getStartOfWeek(new Date());
 
-    // Compute hold type stats (always needed for second nudge)
-    const holdCounts: Record<string, number> = { jug: 0, crimp: 0, sloper: 0 };
+    // Compute hold type grade levels (highest grade with 3+ sends)
+    const sendsByHoldAndGrade: Record<string, Record<string, number>> = {
+      jug: {}, crimp: {}, sloper: {},
+    };
     for (const c of recentClimbs) {
-      if (c.holdType in holdCounts) holdCounts[c.holdType]++;
+      if (c.completed && c.holdType in sendsByHoldAndGrade) {
+        const g = c.grade;
+        sendsByHoldAndGrade[c.holdType][g] = (sendsByHoldAndGrade[c.holdType][g] || 0) + 1;
+      }
     }
-    const totalHolds = recentClimbs.length || 1;
-    const weakest = Object.entries(holdCounts).reduce((a, b) => (a[1] < b[1] ? a : b));
-    const weakestPct = Math.round((weakest[1] / totalHolds) * 100);
+    const holdGradeLevels = Object.entries(sendsByHoldAndGrade).map(([type, grades]) => {
+      let levelIdx = -1;
+      let level = "—";
+      for (const [grade, count] of Object.entries(grades)) {
+        const idx = gradeIdx(grade);
+        if (count >= 3 && idx > levelIdx) {
+          levelIdx = idx;
+          level = grade;
+        }
+      }
+      return { type, level, levelIdx };
+    });
+    const weakestHold = holdGradeLevels.reduce((a, b) => (a.levelIdx < b.levelIdx ? a : b));
 
     // Primary nudge: pick the most important training focus
     const projectAttempts14d = recentClimbs.filter(
@@ -395,15 +422,15 @@ export const coachNudges = query({
       });
     }
 
-    // Secondary nudge: always show hold type awareness
-    if (weakestPct < 20) {
+    // Secondary nudge: grade-aware hold type suggestion
+    if (weakestHold.level === "—") {
       nudges.push({
-        message: `Try more ${weakest[0]}s — only ${weakestPct}% of your climbs`,
+        message: `Get 3+ ${weakestHold.type} sends to establish a baseline`,
         type: "holds",
       });
     } else {
       nudges.push({
-        message: `Mix in more ${weakest[0]}s to round out your training`,
+        message: `${weakestHold.type}s at ${weakestHold.level} — try a ${weakestHold.level} ${weakestHold.type} send`,
         type: "holds",
       });
     }
