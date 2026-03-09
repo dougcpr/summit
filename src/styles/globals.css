@@ -23,7 +23,7 @@
   }
 
   body {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-display);
     background-color: var(--color-neutral-bg);
     color: var(--color-border);
     min-height: 100dvh;
