@@ -97,13 +97,16 @@ export const heatmapData = query({
 // --- Hold Type Breakdown (last 30 days) ---
 
 export const holdTypeBreakdown = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { goalGrade: v.string() },
+  handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
+    const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
+    const goalIdx = gradeIdx(args.goalGrade);
+    const suggestedStartGrade = GRADES[Math.max(0, goalIdx - 3)] || "V0";
 
     const climbs = await ctx.db
       .query("climbs")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user_date", (q) => q.eq("userId", userId).gte("climbedAt", ninetyDaysAgo))
       .collect();
 
     // For each hold type, count sends per grade
@@ -111,22 +114,37 @@ export const holdTypeBreakdown = query({
       jug: {}, crimp: {}, sloper: {},
     };
     for (const c of climbs) {
-      if (c.completed && c.holdType in sendsByHoldAndGrade) {
+      const ht = c.holdType.toLowerCase();
+      if (c.completed && ht in sendsByHoldAndGrade) {
         const g = c.grade;
-        sendsByHoldAndGrade[c.holdType][g] = (sendsByHoldAndGrade[c.holdType][g] || 0) + 1;
+        sendsByHoldAndGrade[ht][g] = (sendsByHoldAndGrade[ht][g] || 0) + 1;
       }
     }
 
-    // Highest grade with 3+ sends per hold type
+    // Highest grade with 2+ sends per hold type, fallback to highest single send
     const types = Object.entries(sendsByHoldAndGrade).map(([type, grades]) => {
       let gradeLevel = "—";
       let gradeLevelIdx = -1;
+      let bestSingleIdx = -1;
+      let bestSingleGrade = "—";
       for (const [grade, count] of Object.entries(grades)) {
         const idx = gradeIdx(grade);
-        if (count >= 3 && idx > gradeLevelIdx) {
+        if (count >= 2 && idx > gradeLevelIdx) {
           gradeLevelIdx = idx;
           gradeLevel = grade;
         }
+        if (idx > bestSingleIdx) {
+          bestSingleIdx = idx;
+          bestSingleGrade = grade;
+        }
+      }
+      if (gradeLevelIdx < 0 && bestSingleIdx >= 0) {
+        gradeLevel = bestSingleGrade;
+        gradeLevelIdx = bestSingleIdx;
+      }
+      if (gradeLevelIdx < 0) {
+        gradeLevel = suggestedStartGrade;
+        gradeLevelIdx = gradeIdx(suggestedStartGrade);
       }
       return { type, gradeLevel, gradeLevelIdx };
     });
@@ -353,25 +371,36 @@ export const coachNudges = query({
     const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
     const weekStart = getStartOfWeek(new Date());
 
-    // Compute hold type grade levels (highest grade with 3+ sends)
+    // Compute hold type grade levels (highest grade with 2+ sends)
     const sendsByHoldAndGrade: Record<string, Record<string, number>> = {
       jug: {}, crimp: {}, sloper: {},
     };
     for (const c of recentClimbs) {
-      if (c.completed && c.holdType in sendsByHoldAndGrade) {
+      const ht = c.holdType.toLowerCase();
+      if (c.completed && ht in sendsByHoldAndGrade) {
         const g = c.grade;
-        sendsByHoldAndGrade[c.holdType][g] = (sendsByHoldAndGrade[c.holdType][g] || 0) + 1;
+        sendsByHoldAndGrade[ht][g] = (sendsByHoldAndGrade[ht][g] || 0) + 1;
       }
     }
     const holdGradeLevels = Object.entries(sendsByHoldAndGrade).map(([type, grades]) => {
       let levelIdx = -1;
       let level = "—";
+      let bestSingleIdx = -1;
+      let bestSingleGrade = "—";
       for (const [grade, count] of Object.entries(grades)) {
         const idx = gradeIdx(grade);
-        if (count >= 3 && idx > levelIdx) {
+        if (count >= 2 && idx > levelIdx) {
           levelIdx = idx;
           level = grade;
         }
+        if (idx > bestSingleIdx) {
+          bestSingleIdx = idx;
+          bestSingleGrade = grade;
+        }
+      }
+      if (levelIdx < 0 && bestSingleIdx >= 0) {
+        level = bestSingleGrade;
+        levelIdx = bestSingleIdx;
       }
       return { type, level, levelIdx };
     });

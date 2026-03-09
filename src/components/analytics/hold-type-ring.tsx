@@ -1,7 +1,7 @@
 import { useQuery } from "convex/react";
 import { HandGrabbing, Hand, HandPalm } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
-import { holdTypeConfig } from "../../lib/grades";
+import { holdTypeConfig, colorMap, fadedColorMap } from "../../lib/grades";
 import type { HoldType } from "../../lib/grades";
 
 const holdIcons: Record<HoldType, React.ElementType> = {
@@ -10,13 +10,13 @@ const holdIcons: Record<HoldType, React.ElementType> = {
   sloper: HandPalm,
 };
 
-export function HoldTypeRing() {
-  const data = useQuery(api.analytics.holdTypeBreakdown);
+export function HoldTypeRing({ goalGrade }: { goalGrade: string }) {
+  const data = useQuery(api.analytics.holdTypeBreakdown, { goalGrade });
 
   if (!data) return null;
 
   return (
-    <div className="border-2 border-border rounded-lg p-3 bg-card-bg">
+    <div className="border-2 border-border rounded-lg p-3 bg-card-bg flex-1">
       <span className="text-xs opacity-50 uppercase tracking-wide">Hold Levels</span>
       <div className="flex flex-col gap-2 mt-2">
         {data.types.map((t) => {
@@ -29,17 +29,15 @@ export function HoldTypeRing() {
               key={t.type}
               className="flex items-center justify-between px-2 py-1.5 rounded-md"
               style={{
-                backgroundColor: isWeakest ? (config?.bgColor || "transparent") : "transparent",
+                backgroundColor: isWeakest ? (fadedColorMap[t.gradeLevel] || "rgba(0,0,0,0.05)") : "transparent",
               }}
             >
               <div className="flex items-center gap-2">
-                {Icon && <Icon size={18} weight="bold" style={{ color: config?.color }} />}
+                {Icon && <Icon size={18} weight="bold" style={{ color: colorMap[t.gradeLevel] || config?.color }} />}
                 <span className="text-sm capitalize">{t.type}</span>
+                {isWeakest && <span className="text-xs opacity-50">(focus)</span>}
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-lg font-display">{t.gradeLevel}</span>
-                {isWeakest && <span className="text-xs opacity-50">focus</span>}
-              </div>
+              <span className="text-lg font-display w-10 text-right">{t.gradeLevel}</span>
             </div>
           );
         })}
