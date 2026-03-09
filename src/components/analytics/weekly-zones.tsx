@@ -15,8 +15,8 @@ export function WeeklyZones({ goalGrade }: { goalGrade: string }) {
 
   return (
     <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex-1">
-
-      <div className="flex flex-col gap-2">
+      <span className="text-xs opacity-50 uppercase tracking-wide">Weekly Zones</span>
+      <div className="flex flex-col gap-2 mt-1">
         {data.zones.map((zone) => {
           const color = colorVars[zone.color] || "var(--color-border)";
           const hasAttempts = zone.attemptTarget && zone.attemptTarget > 0;

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { JourneyTimeline } from "../components/analytics/journey-timeline";
 import { Pyramid } from "../components/analytics/pyramid";
 import { ActivityHeatmap } from "../components/analytics/activity-heatmap";
 import { WeeklyZones } from "../components/analytics/weekly-zones";
@@ -19,6 +20,7 @@ function AnalyticsPage() {
 
   return (
     <div className="p-2 font-display max-w-lg mx-auto flex flex-col gap-1.5 overflow-hidden" style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}>
+      <JourneyTimeline goalGrade={goalGrade} />
       <Pyramid goalGrade={goalGrade} onGoalChange={handleGoalChange} />
       <div className="flex gap-1.5 items-stretch">
         <div className="flex-1 min-w-0 flex">

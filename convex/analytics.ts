@@ -245,6 +245,55 @@ export const weeklyZones = query({
   },
 });
 
+// --- Timeline Milestones ---
+
+export const timelineMilestones = query({
+  args: { goalGrade: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+    const climbs = await ctx.db
+      .query("climbs")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    if (climbs.length === 0) return null;
+
+    const sorted = [...climbs].sort((a, b) => a.climbedAt - b.climbedAt);
+    const startDate = sorted[0].climbedAt;
+    const endDate = startDate + 52 * 7 * 24 * 60 * 60 * 1000;
+
+    // Date of 3rd send per grade (consistently reached)
+    const firstSends: { grade: string; date: number }[] = [];
+    const sendCounts: Record<string, number> = {};
+    const recorded = new Set<string>();
+    for (const c of sorted) {
+      if (c.completed && !recorded.has(c.grade)) {
+        sendCounts[c.grade] = (sendCounts[c.grade] || 0) + 1;
+        if (sendCounts[c.grade] >= 3) {
+          recorded.add(c.grade);
+          const gi = gradeIdx(c.grade);
+          const goalGi = gradeIdx(args.goalGrade);
+          if (gi >= 0 && gi <= goalGi) {
+            firstSends.push({ grade: c.grade, date: c.climbedAt });
+          }
+        }
+      }
+    }
+
+    // Detect gaps of 14+ days
+    const gaps: { start: number; end: number }[] = [];
+    const GAP_THRESHOLD = 14 * 24 * 60 * 60 * 1000;
+    for (let i = 1; i < sorted.length; i++) {
+      const diff = sorted[i].climbedAt - sorted[i - 1].climbedAt;
+      if (diff >= GAP_THRESHOLD) {
+        gaps.push({ start: sorted[i - 1].climbedAt, end: sorted[i].climbedAt });
+      }
+    }
+
+    return { startDate, endDate, now: Date.now(), firstSends, gaps };
+  },
+});
+
 // --- Coach Nudges ---
 
 function computeRestDays(

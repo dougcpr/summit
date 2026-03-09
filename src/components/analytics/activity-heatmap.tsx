@@ -52,7 +52,8 @@ export function ActivityHeatmap() {
   const width = Math.max(220, weeks * 18 + 40);
 
   return (
-    <div ref={scrollRef} className="border-2 border-border rounded-lg p-2 bg-card-bg overflow-x-auto">
+    <div className="border-2 border-border rounded-lg p-2 bg-card-bg">
+      <div ref={scrollRef} className="overflow-x-auto">
       <HeatMap
         value={heatData}
         width={width}
@@ -78,6 +79,7 @@ export function ActivityHeatmap() {
           );
         }}
       />
+      </div>
     </div>
   );
 }
