@@ -11,7 +11,7 @@ const colorVars: Record<string, string> = {
 export function WeeklyZones({ goalGrade }: { goalGrade: string }) {
   const data = useQuery(api.analytics.weeklyZones, { goalGrade });
 
-  if (!data) return null;
+  if (!data) return <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex-1" />;
 
   return (
     <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex-1">

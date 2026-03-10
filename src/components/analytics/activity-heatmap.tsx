@@ -31,7 +31,7 @@ export function ActivityHeatmap() {
     }
   }, [data]);
 
-  if (!data) return null;
+  if (!data) return <div className="border-2 border-border rounded-lg p-2 bg-card-bg h-[9.5rem]" />;
 
   const heatData = data.map((d) => ({
     date: d.date.replace(/-/g, "/"),

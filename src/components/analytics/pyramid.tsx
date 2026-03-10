@@ -10,7 +10,7 @@ interface PyramidProps {
 export function Pyramid({ goalGrade }: PyramidProps) {
   const data = useQuery(api.analytics.pyramid, { goalGrade });
 
-  if (!data) return null;
+  if (!data) return <div className="border-2 border-border rounded-lg p-2 bg-card-bg h-[11rem]" />;
 
   const maxSends = Math.max(...data.rows.map((r) => r.sends), 1);
 
