@@ -40,13 +40,16 @@ export const pyramid = query({
       sendsByGrade[s.grade] = (sendsByGrade[s.grade] || 0) + 1;
     }
 
-    type PyramidRow = { label: string; sends: number; color: string };
+    type PyramidRow = { label: string; sends: number; target: number; color: string };
     const rows: PyramidRow[] = [];
 
     for (let i = 0; i <= goalIdx; i++) {
+      const stepsBelow = goalIdx - i;
+      const target = stepsBelow === 0 ? 1 : Math.pow(2, stepsBelow + 1);
       rows.push({
         label: GRADES[i],
         sends: sendsByGrade[GRADES[i]] || 0,
+        target,
         color: GRADES[i],
       });
     }
