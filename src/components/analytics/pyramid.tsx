@@ -24,9 +24,9 @@ export function Pyramid({ goalGrade }: PyramidProps) {
           const fadedColor = fadedColorMap[row.label] || "var(--color-border)";
           const isGoal = row.label === goalGrade && row.sends === 0;
           return (
-            <div key={row.label} className="flex items-center justify-center">
+            <div key={row.label}>
               <div
-                className="h-8 rounded-lg flex items-center justify-center font-display text-sm transition-all overflow-hidden relative"
+                className="h-8 rounded-lg flex items-center justify-center font-display text-sm transition-all overflow-hidden relative mx-auto"
                 style={{
                   width: `${barWidth}%`,
                   backgroundColor: isGoal ? "transparent" : fadedColor,
