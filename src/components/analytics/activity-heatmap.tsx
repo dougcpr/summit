@@ -3,22 +3,16 @@ import { useQuery } from "convex/react";
 import { useNavigate } from "@tanstack/react-router";
 import HeatMap from "@uiw/react-heat-map";
 import { api } from "@convex/_generated/api";
+import { GRADES, colorMap } from "../../lib/grades";
+
+const emptyColor = "#f6f1e3";
 
 // count = avg grade + 1 (1=V0, 2=V1, ..., 11=V10)
-const gradeColors: Record<number, string> = {
-  0: "#f6f1e3",
-  1: "rgba(106, 153, 78, 0.8)",  // V0 green
-  2: "rgba(217, 108, 79, 0.8)",  // V1 orange
-  3: "rgba(228, 196, 77, 0.8)",  // V2 yellow
-  4: "rgba(89, 149, 163, 0.8)",  // V3 teal
-  5: "rgba(120, 120, 120, 0.6)", // V4 gray (lightened)
-  6: "rgba(78, 104, 168, 0.8)",  // V5 blue
-  7: "rgba(133, 94, 152, 0.8)",  // V6 purple
-  8: "rgba(179, 84, 57, 0.8)",   // V7 burnt orange
-  9: "rgba(72, 111, 77, 0.8)",   // V8 dark green
-  10: "rgba(212, 136, 132, 0.8)", // V9 pink
-  11: "rgba(140, 140, 140, 0.8)", // V10 gray
-};
+function countToFill(count: number): string {
+  if (!count) return emptyColor;
+  const grade = GRADES[count - 1];
+  return grade ? colorMap[grade] : emptyColor;
+}
 
 export function ActivityHeatmap() {
   const navigate = useNavigate();
@@ -63,13 +57,15 @@ export function ActivityHeatmap() {
         space={2}
         legendCellSize={0}
         style={{ color: "var(--color-border)" }}
-        panelColors={gradeColors}
+        panelColors={{ 0: emptyColor, 1: emptyColor }}
         rectProps={{ rx: 8 }}
         rectRender={(props, data) => {
-          if (!data.count) return <rect {...props} />;
+          const fill = countToFill(data.count || 0);
+          if (!data.count) return <rect {...props} fill={fill} />;
           return (
             <rect
               {...props}
+              fill={fill}
               onClick={() => {
                 const dateStr = data.date.replace(/\//g, "-");
                 navigate({ to: "/log", search: { date: dateStr } });
