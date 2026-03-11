@@ -45,7 +45,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
                   />
                 )}
                 <span className="relative z-10">
-                  {row.label}: {row.sends}/{row.target}
+                  {row.label}: {row.sends}/{row.attempts}
                 </span>
               </div>
             </div>

@@ -34,13 +34,16 @@ export const pyramid = query({
     const goalIdx = gradeIdx(args.goalGrade);
     if (goalIdx < 0) return { rows: [], weeksRemaining: 0 };
 
-    const sends = climbs.filter((c) => c.completed);
     const sendsByGrade: Record<string, number> = {};
-    for (const s of sends) {
-      sendsByGrade[s.grade] = (sendsByGrade[s.grade] || 0) + 1;
+    const attemptsByGrade: Record<string, number> = {};
+    for (const c of climbs) {
+      attemptsByGrade[c.grade] = (attemptsByGrade[c.grade] || 0) + 1;
+      if (c.completed) {
+        sendsByGrade[c.grade] = (sendsByGrade[c.grade] || 0) + 1;
+      }
     }
 
-    type PyramidRow = { label: string; sends: number; target: number; color: string };
+    type PyramidRow = { label: string; sends: number; attempts: number; target: number; color: string };
     const rows: PyramidRow[] = [];
 
     for (let i = 0; i <= goalIdx; i++) {
@@ -49,6 +52,7 @@ export const pyramid = query({
       rows.push({
         label: GRADES[i],
         sends: sendsByGrade[GRADES[i]] || 0,
+        attempts: attemptsByGrade[GRADES[i]] || 0,
         target,
         color: GRADES[i],
       });
