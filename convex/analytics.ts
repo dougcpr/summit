@@ -460,6 +460,36 @@ export const coachNudges = query({
       (c) => c.climbedAt >= fourteenDaysAgo && gradeIdx(c.grade) === projectIdx,
     ).length;
 
+    // Zero-send-rate detection at project/reach grades (30-day window)
+    let zeroSendNudge: { message: string; type: "balance" } | null = null;
+    {
+      let projectAttempts30d = 0;
+      let projectSends30d = 0;
+      let reachAttempts30d = 0;
+      let reachSends30d = 0;
+      for (const c of recentClimbs) {
+        const gi = gradeIdx(c.grade);
+        if (gi === projectIdx) {
+          projectAttempts30d++;
+          if (c.completed) projectSends30d++;
+        } else if (gi === goalIdx) {
+          reachAttempts30d++;
+          if (c.completed) reachSends30d++;
+        }
+      }
+      if (reachAttempts30d >= 10 && reachSends30d === 0) {
+        zeroSendNudge = {
+          message: `0/${reachAttempts30d} on ${GRADES[goalIdx]} — scale to ${GRADES[projectIdx]} for volume, then retry`,
+          type: "balance",
+        };
+      } else if (projectAttempts30d >= 10 && projectSends30d === 0) {
+        zeroSendNudge = {
+          message: `0/${projectAttempts30d} on ${GRADES[projectIdx]} — drop to ${GRADES[buildMaxIdx]} and focus on clean sends before returning`,
+          type: "balance",
+        };
+      }
+    }
+
     const weekClimbs = recentClimbs.filter((c) => c.climbedAt >= weekStart.getTime());
     const warmupCount = weekClimbs.filter((c) => gradeIdx(c.grade) < buildMinIdx).length;
 
@@ -478,7 +508,9 @@ export const coachNudges = query({
       ? GRADES[buildMinIdx]
       : `${GRADES[buildMinIdx]}-${GRADES[buildMaxIdx]}`;
 
-    if (projectAttempts14d < 2) {
+    if (zeroSendNudge) {
+      nudges.push(zeroSendNudge);
+    } else if (projectAttempts14d < 2) {
       nudges.push({
         message: `Get more ${GRADES[projectIdx]} attempts in — only ${projectAttempts14d} in 2 weeks`,
         type: "balance",
