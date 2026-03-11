@@ -32,7 +32,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
                   backgroundColor: isGoal ? "transparent" : fadedColor,
                   color: isGoal ? "var(--color-border)" : row.label === "V4" ? "white" : "var(--color-border)",
                   border: isGoal ? "2px dashed var(--color-border)" : `2px solid ${borderColorMap[row.label] || gradeColor}`,
-                  minWidth: "5rem",
+                  minWidth: "3rem",
                 }}
               >
                 {!isGoal && (
