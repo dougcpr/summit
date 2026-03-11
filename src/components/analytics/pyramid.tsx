@@ -13,9 +13,13 @@ export function Pyramid({ goalGrade }: PyramidProps) {
   if (!data) return <div className="border-2 border-border rounded-lg p-2 bg-card-bg h-[11rem]" />;
 
   const maxTarget = Math.max(...data.rows.map((r) => r.target), 1);
+  const totalClimbs = data.rows.reduce((sum, r) => sum + r.attempts, 0);
 
   return (
     <div className="border-2 border-border rounded-lg p-2 bg-card-bg">
+      <div className="flex justify-end mb-1">
+        <span className="text-xs opacity-50 font-display">{totalClimbs} climbs</span>
+      </div>
       <div className="flex flex-col gap-1">
         {data.rows.map((row) => {
           const barWidth = 20 + (row.target / maxTarget) * 80;
@@ -45,7 +49,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
                   />
                 )}
                 <span className="relative z-10">
-                  {row.label}: {row.sends}/{row.attempts}
+                  {row.label}: {row.sends}
                 </span>
               </div>
             </div>
