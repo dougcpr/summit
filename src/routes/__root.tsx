@@ -1,6 +1,6 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { useClerk } from "@clerk/clerk-react";
-import { PencilSimple, ChartBar, SignOut, ArrowsClockwise } from "@phosphor-icons/react";
+import { PencilSimple, ChartBar, SignOut } from "@phosphor-icons/react";
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -31,12 +31,6 @@ function RootLayout() {
           <ChartBar size={24} weight="bold" />
         </Link>
         <div className="flex-1" />
-        <button
-          onClick={() => window.location.reload()}
-          className="flex flex-col items-center p-2 rounded-lg text-sm text-border/50 hover:text-border"
-        >
-          <ArrowsClockwise size={24} weight="bold" />
-        </button>
         <button
           onClick={() => signOut()}
           className="flex flex-col items-center p-2 rounded-lg text-sm text-border/50 hover:text-border"
@@ -70,13 +64,6 @@ function RootLayout() {
           <ChartBar size={24} weight="bold" />
           <span>Analytics</span>
         </Link>
-        <button
-          onClick={() => window.location.reload()}
-          className="flex-1 flex flex-col items-center py-2 text-sm text-border/50"
-        >
-          <ArrowsClockwise size={24} weight="bold" />
-          <span>Refresh</span>
-        </button>
         <button
           onClick={() => signOut()}
           className="flex-1 flex flex-col items-center py-2 text-sm text-border/50"

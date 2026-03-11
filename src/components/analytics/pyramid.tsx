@@ -24,7 +24,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
           return (
             <div key={row.label} className="flex items-center justify-center">
               <div
-                className="h-6 rounded-lg flex items-center justify-center font-display text-sm transition-all"
+                className="h-8 rounded-lg flex items-center justify-center font-display text-sm transition-all"
                 style={{
                   width: `${width}%`,
                   backgroundColor: isGoal ? "transparent" : gradeColor,
