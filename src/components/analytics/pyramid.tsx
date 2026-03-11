@@ -18,7 +18,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
     <div className="border-2 border-border rounded-lg p-2 bg-card-bg">
       <div className="flex flex-col gap-1">
         {data.rows.map((row) => {
-          const barWidth = Math.max(10, Math.sqrt(row.target / maxTarget) * 100);
+          const barWidth = Math.max(15, (row.target / maxTarget) * 100);
           const fillPct = Math.min(100, (row.sends / row.target) * 100);
           const gradeColor = colorMap[row.label] || "var(--color-border)";
           const fadedColor = fadedColorMap[row.label] || "var(--color-border)";
