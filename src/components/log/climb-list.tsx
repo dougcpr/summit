@@ -1,5 +1,5 @@
 import { useMutation } from "convex/react";
-import { HandGrabbing, Hand, HandPalm, X } from "@phosphor-icons/react";
+import { HandGrabbing, Hand, HandPalm, HandPointing, X } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import type { HoldType } from "../../lib/grades";
@@ -8,6 +8,7 @@ const holdIcons: Record<HoldType, React.ElementType> = {
   jug: HandGrabbing,
   crimp: Hand,
   sloper: HandPalm,
+  pinch: HandPointing,
 };
 
 interface ClimbListProps {

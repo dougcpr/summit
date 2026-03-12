@@ -12,8 +12,15 @@ export function Pyramid({ goalGrade }: PyramidProps) {
 
   if (!data) return <div className="border-2 border-border rounded-lg p-2 bg-card-bg h-[11rem]" />;
 
-  const maxTarget = Math.max(...data.rows.map((r) => r.target), 1);
   const totalClimbs = data.rows.reduce((sum, r) => sum + r.attempts, 0);
+
+  const splitIdx = data.rows.findIndex((r) => r.sends >= 150);
+  const minVisible = 2;
+  const cutoff = splitIdx < 0 ? data.rows.length : Math.max(splitIdx, minVisible);
+  const activeRows = data.rows.slice(0, cutoff);
+  const completedRows = data.rows.slice(cutoff);
+
+  const maxSends = Math.max(...activeRows.map((r) => r.sends), 1);
 
   return (
     <div className="border-2 border-border rounded-lg p-2 bg-card-bg">
@@ -21,8 +28,8 @@ export function Pyramid({ goalGrade }: PyramidProps) {
         <span className="text-xs opacity-50 font-display">{totalClimbs} climbs</span>
       </div>
       <div className="flex flex-col gap-1">
-        {data.rows.map((row) => {
-          const barWidth = 20 + (row.target / maxTarget) * 80;
+        {activeRows.map((row) => {
+          const barWidth = 20 + (row.sends / maxSends) * 80;
           const fillPct = Math.min(100, (row.sends / row.target) * 100);
           const gradeColor = colorMap[row.label] || "var(--color-border)";
           const fadedColor = fadedColorMap[row.label] || "var(--color-border)";
@@ -30,7 +37,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
           return (
             <div key={row.label}>
               <div
-                className="h-7 rounded-lg flex items-center justify-center font-display text-sm transition-all overflow-hidden relative mx-auto"
+                className="h-6 rounded-lg flex items-center justify-center font-display text-sm transition-all overflow-hidden relative mx-auto"
                 style={{
                   width: `${barWidth}%`,
                   backgroundColor: isGoal ? "transparent" : fadedColor,
@@ -55,6 +62,20 @@ export function Pyramid({ goalGrade }: PyramidProps) {
             </div>
           );
         })}
+
+        {completedRows.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 mt-1 opacity-50">
+            {completedRows.map((row) => (
+              <span key={row.label} className="font-display text-xs flex items-center gap-1">
+                <span
+                  className="inline-block w-2 h-2 rounded-full"
+                  style={{ backgroundColor: colorMap[row.label] || "var(--color-border)" }}
+                />
+                {row.label}: {row.sends}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

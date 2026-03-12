@@ -1,4 +1,4 @@
-import { HandGrabbing, Hand, HandPalm } from "@phosphor-icons/react";
+import { HandGrabbing, Hand, HandPalm, HandPointing } from "@phosphor-icons/react";
 import type { HoldType } from "../../lib/grades";
 import { holdTypeConfig } from "../../lib/grades";
 
@@ -11,11 +11,12 @@ const icons: Record<HoldType, React.ElementType> = {
   jug: HandGrabbing,
   crimp: Hand,
   sloper: HandPalm,
+  pinch: HandPointing,
 };
 
 export function HoldTypePicker({ selected, onChange }: HoldTypePickerProps) {
   return (
-    <div className="flex gap-2">
+    <div className="grid grid-cols-2 gap-1.5">
       {(Object.keys(holdTypeConfig) as HoldType[]).map((type) => {
         const config = holdTypeConfig[type];
         const Icon = icons[type];
@@ -25,13 +26,13 @@ export function HoldTypePicker({ selected, onChange }: HoldTypePickerProps) {
           <button
             key={type}
             onClick={() => onChange(type)}
-            className="flex items-center gap-2 px-4 py-3 rounded-lg border-2 border-border text-xl transition-opacity active:brightness-90"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border-2 border-border text-lg transition-opacity active:brightness-90"
             style={{
               opacity: isSelected ? 1 : 0.35,
               backgroundColor: isSelected ? config.bgColor : "transparent",
             }}
           >
-            <Icon size={24} weight="bold" />
+            <Icon size={20} weight="bold" />
             {config.letter}
           </button>
         );

@@ -80,7 +80,7 @@ function LogPage() {
       </div>
 
       <div className="flex gap-2 shrink-0 items-stretch">
-        <div className="flex flex-col gap-3 shrink-0">
+        <div className="flex flex-col gap-3" style={{ width: "60%" }}>
           <GradeSelector grade={grade} onChange={setGrade} />
           <HoldTypePicker selected={holdType} onChange={setHoldType} />
           <ActionButtons
@@ -89,11 +89,11 @@ function LogPage() {
           />
         </div>
 
-        <div className="flex-1 flex flex-col gap-2 min-w-0">
+        <div className="flex flex-col gap-2 min-w-0" style={{ width: "40%" }}>
           <TodaySummary climbs={climbs ?? []} />
           <div
             className="flex-1 min-h-0 border-2 border-border rounded-lg overflow-y-auto p-2 bg-white"
-            style={{ maxHeight: "13.25rem" }}
+            style={{ maxHeight: "16rem" }}
           >
             <ClimbList climbs={climbs ?? []} isRest={isRest} />
           </div>
