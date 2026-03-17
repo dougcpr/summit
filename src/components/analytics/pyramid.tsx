@@ -37,7 +37,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
           return (
             <div key={row.label}>
               <div
-                className="h-6 rounded-lg flex items-center justify-center font-display text-sm transition-all overflow-hidden relative mx-auto"
+                className="h-7 rounded-lg flex items-center justify-center font-display text-sm transition-all overflow-hidden relative mx-auto"
                 style={{
                   width: `${barWidth}%`,
                   backgroundColor: isGoal ? "transparent" : fadedColor,

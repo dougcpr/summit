@@ -27,9 +27,9 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
       <span className="text-xs opacity-50 uppercase tracking-wide">Journey</span>
 
       {/* Timeline track */}
-      <div className="relative w-full h-10 mt-1">
+      <div className="relative w-full h-12 mt-1">
         {/* Bar track */}
-        <div className="absolute bottom-0 left-0 right-0 h-4 bg-border/15 rounded-full" />
+        <div className="absolute bottom-0 left-0 right-0 h-5 bg-border/15 rounded-full" />
 
         {/* Grade milestones with lines to bar */}
         {firstSends.map((ms) => {
@@ -74,7 +74,7 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
 
         {/* Progress fill */}
         <div
-          className="absolute bottom-0 left-0 h-4 rounded-full"
+          className="absolute bottom-0 left-0 h-5 rounded-full"
           style={{
             width: `${Math.max(1, progressPct)}%`,
             backgroundColor: "var(--color-tertiary)",
@@ -88,7 +88,7 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
           return (
             <div
               key={`gap-${i}`}
-              className="absolute bottom-0 h-4 rounded-sm"
+              className="absolute bottom-0 h-5 rounded-sm"
               style={{
                 left: `${left}%`,
                 width: `${Math.max(1, width)}%`,
