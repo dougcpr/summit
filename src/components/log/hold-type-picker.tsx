@@ -1,4 +1,4 @@
-import { HandGrabbing, Hand, HandPalm, HandPointing } from "@phosphor-icons/react";
+import { HandGrabbing, Hand, HandPalm } from "@phosphor-icons/react";
 import type { HoldType } from "../../lib/grades";
 import { holdTypeConfig } from "../../lib/grades";
 
@@ -11,7 +11,6 @@ const icons: Record<HoldType, React.ElementType> = {
   jug: HandGrabbing,
   crimp: Hand,
   sloper: HandPalm,
-  pinch: HandPointing,
 };
 
 export function HoldTypePicker({ selected, onChange }: HoldTypePickerProps) {

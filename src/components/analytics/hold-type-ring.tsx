@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { HandGrabbing, Hand, HandPalm, HandPointing } from "@phosphor-icons/react";
+import { HandGrabbing, Hand, HandPalm } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
 import { holdTypeConfig, colorMap, fadedColorMap } from "../../lib/grades";
 import type { HoldType } from "../../lib/grades";
@@ -8,7 +8,6 @@ const holdIcons: Record<HoldType, React.ElementType> = {
   jug: HandGrabbing,
   crimp: Hand,
   sloper: HandPalm,
-  pinch: HandPointing,
 };
 
 export function HoldTypeRing({ goalGrade }: { goalGrade: string }) {
