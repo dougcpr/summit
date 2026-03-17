@@ -31,7 +31,6 @@ function LogPage() {
   });
   const [grade, setGrade] = useState("V0");
   const [holdType, setHoldType] = useState<HoldType>("jug");
-  const [isRest, setIsRest] = useState(false);
 
   const addClimb = useMutation(api.climbs.add);
   const { startTime, endTime } = getLocalDayRange(selectedDate);
@@ -68,12 +67,7 @@ function LogPage() {
 
   return (
     <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-4 overflow-hidden" style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}>
-      <CoachCard
-        goalGrade={goalGrade}
-        cycleAnchor="2026-03-05"
-        ratioTransitionDate="2026-03-27"
-        onRestStatus={setIsRest}
-      />
+      <CoachCard goalGrade={goalGrade} />
 
       <div className="flex-1 min-h-0">
         <NoteEditor selectedDate={selectedDate} />
@@ -95,7 +89,7 @@ function LogPage() {
             className="flex-1 min-h-0 border-2 border-border rounded-lg overflow-y-auto p-2 bg-white"
             style={{ maxHeight: "16rem" }}
           >
-            <ClimbList climbs={climbs ?? []} isRest={isRest} />
+            <ClimbList climbs={climbs ?? []} />
           </div>
         </div>
       </div>

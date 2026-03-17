@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 
@@ -8,21 +7,8 @@ const dotColors: Record<string, string> = {
   positive: "var(--color-accent)",
 };
 
-interface CoachCardProps {
-  goalGrade: string;
-  cycleAnchor: string;
-  ratioTransitionDate: string;
-  onRestStatus?: (isRest: boolean) => void;
-}
-
-export function CoachCard({ goalGrade, cycleAnchor, ratioTransitionDate, onRestStatus }: CoachCardProps) {
-  const data = useQuery(api.analytics.coachNudges, { goalGrade, cycleAnchor, ratioTransitionDate });
-
-  useEffect(() => {
-    if (data && onRestStatus) {
-      onRestStatus(data.isRest);
-    }
-  }, [data, onRestStatus]);
+export function CoachCard({ goalGrade }: { goalGrade: string }) {
+  const data = useQuery(api.analytics.coachNudges, { goalGrade });
 
   if (!data) return <div className="border-2 border-border rounded-lg p-2 bg-card-bg h-[4.5rem]" />;
 

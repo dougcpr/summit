@@ -12,7 +12,6 @@ const holdIcons: Record<HoldType, React.ElementType> = {
 
 interface ClimbListProps {
   climbs: Doc<"climbs">[];
-  isRest?: boolean;
 }
 
 function ClimbListItem({ climb }: { climb: Doc<"climbs"> }) {
@@ -44,15 +43,7 @@ function ClimbListItem({ climb }: { climb: Doc<"climbs"> }) {
   );
 }
 
-export function ClimbList({ climbs, isRest }: ClimbListProps) {
-  if (isRest && climbs.length === 0) {
-    return (
-      <div className="flex items-center justify-center" style={{ height: "calc(13.25rem - 1rem)" }}>
-        <span className="text-sm opacity-50">Rest day — enjoy the recovery.</span>
-      </div>
-    );
-  }
-
+export function ClimbList({ climbs }: ClimbListProps) {
   return (
     <div className="flex flex-col gap-2">
       {climbs.map((climb) => (
