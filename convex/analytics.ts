@@ -496,3 +496,122 @@ export const coachNudges = query({
     return { nudges: nudges.slice(0, 2) };
   },
 });
+
+// --- Weekly Highlights ---
+
+export const weeklyHighlights = query({
+  args: { goalGrade: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+    const goalIdx = gradeIdx(args.goalGrade);
+    if (goalIdx < 0) return { highlights: [] };
+
+    const projectIdx = goalIdx - 1;
+    const buildMinIdx = Math.max(0, goalIdx - 3);
+
+    const now = new Date();
+    const thisWeekStart = getStartOfWeek(now);
+    const lastWeekStart = new Date(thisWeekStart);
+    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+
+    // Fetch all climbs (needed for milestone detection)
+    const allClimbs = await ctx.db
+      .query("climbs")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    const thisWeekClimbs = allClimbs.filter((c) => c.climbedAt >= thisWeekStart.getTime());
+    const lastWeekClimbs = allClimbs.filter(
+      (c) => c.climbedAt >= lastWeekStart.getTime() && c.climbedAt < thisWeekStart.getTime(),
+    );
+    const beforeThisWeek = allClimbs.filter((c) => c.climbedAt < thisWeekStart.getTime());
+
+    const highlights: { message: string; type: "milestone" | "holdup" | "sendrate" }[] = [];
+
+    // --- Priority 1: Grade consistency milestones ---
+    // 3rd+ send at any grade happened this week
+    const sendsBeforeThisWeek: Record<string, number> = {};
+    for (const c of beforeThisWeek) {
+      if (c.completed) {
+        sendsBeforeThisWeek[c.grade] = (sendsBeforeThisWeek[c.grade] || 0) + 1;
+      }
+    }
+    const sendsThisWeek: Record<string, number> = {};
+    for (const c of thisWeekClimbs) {
+      if (c.completed) {
+        sendsThisWeek[c.grade] = (sendsThisWeek[c.grade] || 0) + 1;
+      }
+    }
+    // Check each grade (highest first): if before < 3 and before + thisWeek >= 3
+    for (let i = GRADES.length - 1; i >= 0; i--) {
+      const grade = GRADES[i];
+      const before = sendsBeforeThisWeek[grade] || 0;
+      const thisWeek = sendsThisWeek[grade] || 0;
+      if (before < 3 && before + thisWeek >= 3) {
+        highlights.push({
+          message: `${grade} locked in — 3 consistent sends`,
+          type: "milestone",
+        });
+      }
+    }
+
+    // --- Priority 2: Hold type level-up ---
+    // Highest grade with 2+ sends improved this week vs last week
+    const holdTypes = ["jug", "crimp", "sloper"];
+    function highestHoldLevel(climbs: typeof allClimbs, holdType: string): number {
+      const sendsByGrade: Record<string, number> = {};
+      for (const c of climbs) {
+        if (c.completed && c.holdType.toLowerCase() === holdType) {
+          sendsByGrade[c.grade] = (sendsByGrade[c.grade] || 0) + 1;
+        }
+      }
+      let highest = -1;
+      for (const [grade, count] of Object.entries(sendsByGrade)) {
+        const idx = gradeIdx(grade);
+        if (count >= 2 && idx > highest) highest = idx;
+      }
+      return highest;
+    }
+    for (const ht of holdTypes) {
+      const thisLevel = highestHoldLevel(thisWeekClimbs, ht);
+      const lastLevel = highestHoldLevel(lastWeekClimbs, ht);
+      if (thisLevel > lastLevel && lastLevel >= 0) {
+        highlights.push({
+          message: `${ht} level up: ${GRADES[lastLevel]} → ${GRADES[thisLevel]}`,
+          type: "holdup",
+        });
+      }
+    }
+
+    // --- Priority 3: Send rate improvement ---
+    // Build/project grade send rate improved 10+ points this week vs last (min 3 attempts both)
+    for (let i = buildMinIdx; i <= projectIdx; i++) {
+      const grade = GRADES[i];
+      let twSends = 0, twTotal = 0, lwSends = 0, lwTotal = 0;
+      for (const c of thisWeekClimbs) {
+        if (c.grade === grade) {
+          twTotal++;
+          if (c.completed) twSends++;
+        }
+      }
+      for (const c of lastWeekClimbs) {
+        if (c.grade === grade) {
+          lwTotal++;
+          if (c.completed) lwSends++;
+        }
+      }
+      if (twTotal >= 3 && lwTotal >= 3) {
+        const twRate = Math.round((twSends / twTotal) * 100);
+        const lwRate = Math.round((lwSends / lwTotal) * 100);
+        if (twRate - lwRate >= 10) {
+          highlights.push({
+            message: `${grade} send rate: ${lwRate}% → ${twRate}%`,
+            type: "sendrate",
+          });
+        }
+      }
+    }
+
+    return { highlights };
+  },
+});
