@@ -16,7 +16,7 @@ export function CoachCard({ goalGrade }: { goalGrade: string }) {
   if (!data) return <div className="border-2 border-border rounded-lg p-2 bg-card-bg h-[4.5rem]" />;
 
   return (
-    <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex flex-col gap-1.5">
+    <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex flex-col gap-1.5 flex-1">
       <span className="text-xs opacity-50 uppercase tracking-wide">Coach</span>
       {data.nudges.map((nudge, i) => (
         <div key={i} className="flex items-start gap-2">

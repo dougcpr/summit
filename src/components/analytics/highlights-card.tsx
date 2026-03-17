@@ -17,14 +17,14 @@ export function HighlightsCard({ goalGrade, compact }: HighlightsCardProps) {
   const data = useQuery(api.analytics.weeklyHighlights, { goalGrade });
 
   if (!data) {
-    return <div className="border-2 border-border rounded-lg p-2 bg-card-bg h-[4.5rem]" />;
+    return <div className="border-2 border-border rounded-lg p-2 bg-card-bg h-[4.5rem] flex-1" />;
   }
 
   const { highlights } = data;
 
   if (highlights.length === 0) {
     return (
-      <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex flex-col gap-1.5">
+      <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex flex-col gap-1.5 flex-1">
         <span className="text-xs opacity-50 uppercase tracking-wide">This Week</span>
         <span className="text-sm opacity-40">Keep climbing — highlights build as the week goes</span>
       </div>
@@ -34,7 +34,7 @@ export function HighlightsCard({ goalGrade, compact }: HighlightsCardProps) {
   if (compact) {
     const top = highlights[0];
     return (
-      <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex flex-col gap-1.5">
+      <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex flex-col gap-1.5 flex-1">
         <span className="text-xs opacity-50 uppercase tracking-wide">This Week</span>
         <div className="flex items-start gap-2">
           <Star size={14} weight="fill" className="mt-1 shrink-0" style={{ color: typeColors[top.type] }} />

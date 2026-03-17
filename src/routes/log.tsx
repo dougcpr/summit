@@ -68,11 +68,11 @@ function LogPage() {
 
   return (
     <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-4 overflow-hidden" style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}>
-      <div className="flex gap-2">
-        <div className="flex-1 min-w-0">
+      <div className="flex gap-2 items-stretch">
+        <div className="flex-1 min-w-0 flex">
           <CoachCard goalGrade={goalGrade} />
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 flex">
           <HighlightsCard goalGrade={goalGrade} compact />
         </div>
       </div>
