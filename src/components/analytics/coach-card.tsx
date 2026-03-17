@@ -2,11 +2,11 @@ import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 
 const dotColors: Record<string, string> = {
-  fatigue: "var(--color-secondary)",
+  fatigue: "var(--color-danger)",
   overreach: "var(--color-tertiary)",
   regression: "var(--color-tertiary)",
-  push: "var(--color-accent)",
-  solid: "var(--color-primary)",
+  push: "var(--color-primary)",
+  solid: "var(--color-accent)",
   holds: "var(--color-secondary)",
 };
 
