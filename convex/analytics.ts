@@ -118,7 +118,7 @@ export const holdTypeBreakdown = query({
 
     // For each hold type, count sends per grade
     const sendsByHoldAndGrade: Record<string, Record<string, number>> = {
-      jug: {}, crimp: {}, sloper: {}, pinch: {},
+      jug: {}, crimp: {}, sloper: {},
     };
     for (const c of climbs) {
       const ht = c.holdType.toLowerCase();
@@ -429,7 +429,7 @@ export const coachNudges = query({
 
     // Compute hold type grade levels (highest grade with 2+ sends)
     const sendsByHoldAndGrade: Record<string, Record<string, number>> = {
-      jug: {}, crimp: {}, sloper: {}, pinch: {},
+      jug: {}, crimp: {}, sloper: {},
     };
     for (const c of recentClimbs) {
       const ht = c.holdType.toLowerCase();
