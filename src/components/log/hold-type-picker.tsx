@@ -15,7 +15,7 @@ const icons: Record<HoldType, React.ElementType> = {
 
 export function HoldTypePicker({ selected, onChange }: HoldTypePickerProps) {
   return (
-    <div className="grid grid-cols-2 gap-1.5">
+    <div className="grid grid-cols-3 gap-1.5">
       {(Object.keys(holdTypeConfig) as HoldType[]).map((type) => {
         const config = holdTypeConfig[type];
         const Icon = icons[type];

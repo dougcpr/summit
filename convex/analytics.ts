@@ -478,14 +478,17 @@ export const coachNudges = query({
     });
     const weakestHold = holdGradeLevels.reduce((a, b) => (a.levelIdx < b.levelIdx ? a : b));
 
+    // Suggest weak hold at build zone, not at whatever low grade it's at
+    const suggestGrade = GRADES[buildMinIdx];
     if (weakestHold.level === "—") {
       nudges.push({
-        message: `Get 3+ ${weakestHold.type} sends to establish a baseline`,
+        message: `No ${weakestHold.type} baseline yet — try ${suggestGrade} ${weakestHold.type}s`,
         type: "holds",
       });
     } else {
+      const suggestIdx = Math.min(weakestHold.levelIdx + 1, buildMaxIdx);
       nudges.push({
-        message: `${weakestHold.type}s at ${weakestHold.level} — try a ${weakestHold.level} ${weakestHold.type} send`,
+        message: `${weakestHold.type}s weakest at ${weakestHold.level} — work ${GRADES[suggestIdx]} ${weakestHold.type}s`,
         type: "holds",
       });
     }
