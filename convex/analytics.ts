@@ -306,179 +306,178 @@ export const timelineMilestones = query({
 export const coachNudges = query({
   args: {
     goalGrade: v.string(),
-    cycleAnchor: v.string(),
-    ratioTransitionDate: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
     const goalIdx = gradeIdx(args.goalGrade);
-    if (goalIdx < 0) return { nudges: [], isRest: false };
+    if (goalIdx < 0) return { nudges: [] };
 
     const projectIdx = goalIdx - 1;
     const buildMaxIdx = goalIdx - 2;
     const buildMinIdx = Math.max(0, goalIdx - 3);
 
-    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-
+    // Fetch last 90 days of climbs
+    const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
     const recentClimbs = await ctx.db
       .query("climbs")
       .withIndex("by_user_date", (q) =>
-        q.eq("userId", userId).gte("climbedAt", thirtyDaysAgo),
+        q.eq("userId", userId).gte("climbedAt", ninetyDaysAgo),
       )
       .collect();
 
-    // Compute rest days and cycle phase
-    const restDays = computeRestDays(recentClimbs, buildMinIdx, buildMaxIdx, projectIdx);
-    const phase = computeCyclePhase(args.cycleAnchor, args.ratioTransitionDate, restDays);
+    // Group by session (distinct climbedAt dates)
+    const sessionMap = new Map<number, typeof recentClimbs>();
+    for (const c of recentClimbs) {
+      const existing = sessionMap.get(c.climbedAt) || [];
+      existing.push(c);
+      sessionMap.set(c.climbedAt, existing);
+    }
+    const sessionDates = [...sessionMap.keys()].sort((a, b) => b - a);
 
-    const nudges: { message: string; type: "balance" | "holds" | "positive" }[] = [];
+    if (sessionDates.length === 0) return { nudges: [] };
 
-    // During rest: show rest nudge + supplement suggestion
-    if (phase.type === "rest") {
-      nudges.push({
-        message: `Rest day ${phase.day} of ${phase.total} — recover and come back strong`,
-        type: "positive",
-      });
+    // Short window: last 3 sessions
+    const short3Dates = sessionDates.slice(0, 3);
+    const short3Climbs = short3Dates.flatMap((d) => sessionMap.get(d)!);
 
-      const restActivities = [
-        "Try a hangboard session — 3 sets of 10s hangs on your weakest grip",
-        "Antagonist training — push-ups, shoulder press, or tricep dips",
-        "Stretch and foam roll — focus on forearms and shoulders",
-        "Light finger boarding — repeaters at 50% effort",
-        "Core work — planks, leg raises, and hollow holds",
-      ];
-      nudges.push({
-        message: restActivities[(phase.day - 1) % restActivities.length],
-        type: "holds",
-      });
+    // Medium window: sessions 4-10 (baseline, excludes recent 3)
+    const baselineDates = sessionDates.slice(3, 10);
+    const baselineClimbs = baselineDates.flatMap((d) => sessionMap.get(d)!);
 
-      return { nudges, isRest: true };
+    // Helper: compute send rate for a grade range in a set of climbs
+    function sendRateForRange(
+      climbs: typeof recentClimbs,
+      minIdx: number,
+      maxIdx: number,
+    ): { sends: number; total: number; rate: number } {
+      let sends = 0;
+      let total = 0;
+      for (const c of climbs) {
+        const gi = gradeIdx(c.grade);
+        if (gi >= minIdx && gi <= maxIdx) {
+          total++;
+          if (c.completed) sends++;
+        }
+      }
+      return { sends, total, rate: total > 0 ? Math.round((sends / total) * 100) : -1 };
     }
 
-    const isRest = false;
+    // Helper: send rate for a single grade
+    function sendRateForGrade(
+      climbs: typeof recentClimbs,
+      idx: number,
+    ): { sends: number; total: number; rate: number } {
+      return sendRateForRange(climbs, idx, idx);
+    }
 
-    // Training phase: show cycle context + training nudges
-    nudges.push({
-      message: `Training week ${phase.week} of ${phase.totalWeeks}`,
-      type: "positive",
-    });
+    const nudges: { message: string; type: string }[] = [];
 
-    const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
-    const weekStart = getStartOfWeek(new Date());
+    // --- Rule 1: Fatigue detection ---
+    // Overall send rate drops 15+ points from baseline to recent 3
+    const overallRecent = sendRateForRange(short3Climbs, 0, GRADES.length - 1);
+    const overallBaseline = sendRateForRange(baselineClimbs, 0, GRADES.length - 1);
+    if (
+      overallBaseline.rate >= 0 &&
+      overallRecent.rate >= 0 &&
+      overallBaseline.rate - overallRecent.rate >= 15
+    ) {
+      nudges.push({
+        message: `Send rates dropping across the board — consider a rest day or easy session`,
+        type: "fatigue",
+      });
+    }
 
-    // Compute hold type grade levels (highest grade with 2+ sends)
+    // --- Rule 2: Grade overreach ---
+    // Any build/project grade < 50% over last 3 sessions (min 3 attempts)
+    if (nudges.length === 0) {
+      for (let i = buildMinIdx; i <= projectIdx; i++) {
+        const stats = sendRateForGrade(short3Climbs, i);
+        if (stats.total >= 3 && stats.rate < 50) {
+          nudges.push({
+            message: `${GRADES[i]}s at ${stats.rate}% — focus on clean sends there before pushing up`,
+            type: "overreach",
+          });
+          break;
+        }
+      }
+    }
+
+    // --- Rule 3: Regression alert ---
+    // Grade was 70%+ over sessions 4-10, now < 50% in last 3
+    if (nudges.length === 0 && baselineClimbs.length > 0) {
+      for (let i = buildMinIdx; i <= projectIdx; i++) {
+        const recent = sendRateForGrade(short3Climbs, i);
+        const baseline = sendRateForGrade(baselineClimbs, i);
+        if (
+          baseline.total >= 3 &&
+          baseline.rate >= 70 &&
+          recent.total >= 3 &&
+          recent.rate < 50
+        ) {
+          nudges.push({
+            message: `${GRADES[i]} send rate dropped from ${baseline.rate}% to ${recent.rate}% — something's off, revisit those`,
+            type: "regression",
+          });
+          break;
+        }
+      }
+    }
+
+    // --- Rule 4: Ready to push ---
+    // All build grades at 70%+ over last 3 sessions (min 3 attempts each)
+    if (nudges.length === 0) {
+      let allSolid = true;
+      for (let i = buildMinIdx; i <= buildMaxIdx; i++) {
+        const stats = sendRateForGrade(short3Climbs, i);
+        if (stats.total < 3 || stats.rate < 70) {
+          allSolid = false;
+          break;
+        }
+      }
+      if (allSolid && buildMinIdx <= buildMaxIdx) {
+        nudges.push({
+          message: `${GRADES[projectIdx]}s looking smooth — try a ${GRADES[goalIdx]} when it feels right`,
+          type: "push",
+        });
+      }
+    }
+
+    // --- Rule 5: Solid fallback ---
+    if (nudges.length === 0) {
+      const buildGrades =
+        buildMinIdx === buildMaxIdx
+          ? GRADES[buildMinIdx]
+          : `${GRADES[buildMinIdx]}-${GRADES[buildMaxIdx]}`;
+      nudges.push({
+        message: `Base looks solid — keep building volume at ${buildGrades}`,
+        type: "solid",
+      });
+    }
+
+    // --- Secondary nudge: hold type ---
     const sendsByHoldAndGrade: Record<string, Record<string, number>> = {
       jug: {}, crimp: {}, sloper: {},
     };
-    for (const c of recentClimbs) {
+    for (const c of short3Climbs) {
       const ht = c.holdType.toLowerCase();
       if (c.completed && ht in sendsByHoldAndGrade) {
-        const g = c.grade;
-        sendsByHoldAndGrade[ht][g] = (sendsByHoldAndGrade[ht][g] || 0) + 1;
+        sendsByHoldAndGrade[ht][c.grade] = (sendsByHoldAndGrade[ht][c.grade] || 0) + 1;
       }
     }
     const holdGradeLevels = Object.entries(sendsByHoldAndGrade).map(([type, grades]) => {
       let levelIdx = -1;
       let level = "—";
-      let bestSingleIdx = -1;
-      let bestSingleGrade = "—";
       for (const [grade, count] of Object.entries(grades)) {
         const idx = gradeIdx(grade);
         if (count >= 2 && idx > levelIdx) {
           levelIdx = idx;
           level = grade;
         }
-        if (idx > bestSingleIdx) {
-          bestSingleIdx = idx;
-          bestSingleGrade = grade;
-        }
-      }
-      if (levelIdx < 0 && bestSingleIdx >= 0) {
-        level = bestSingleGrade;
-        levelIdx = bestSingleIdx;
       }
       return { type, level, levelIdx };
     });
     const weakestHold = holdGradeLevels.reduce((a, b) => (a.levelIdx < b.levelIdx ? a : b));
 
-    // Primary nudge: pick the most important training focus
-    const projectAttempts14d = recentClimbs.filter(
-      (c) => c.climbedAt >= fourteenDaysAgo && gradeIdx(c.grade) === projectIdx,
-    ).length;
-
-    // Zero-send-rate detection at project/reach grades (30-day window)
-    let zeroSendNudge: { message: string; type: "balance" } | null = null;
-    {
-      let projectAttempts30d = 0;
-      let projectSends30d = 0;
-      let reachAttempts30d = 0;
-      let reachSends30d = 0;
-      for (const c of recentClimbs) {
-        const gi = gradeIdx(c.grade);
-        if (gi === projectIdx) {
-          projectAttempts30d++;
-          if (c.completed) projectSends30d++;
-        } else if (gi === goalIdx) {
-          reachAttempts30d++;
-          if (c.completed) reachSends30d++;
-        }
-      }
-      if (reachAttempts30d >= 10 && reachSends30d === 0) {
-        zeroSendNudge = {
-          message: `0/${reachAttempts30d} on ${GRADES[goalIdx]} — scale to ${GRADES[projectIdx]} for volume, then retry`,
-          type: "balance",
-        };
-      } else if (projectAttempts30d >= 10 && projectSends30d === 0) {
-        zeroSendNudge = {
-          message: `0/${projectAttempts30d} on ${GRADES[projectIdx]} — drop to ${GRADES[buildMaxIdx]} and focus on clean sends before returning`,
-          type: "balance",
-        };
-      }
-    }
-
-    const weekClimbs = recentClimbs.filter((c) => c.climbedAt >= weekStart.getTime());
-    const warmupCount = weekClimbs.filter((c) => gradeIdx(c.grade) < buildMinIdx).length;
-
-    let buildSends = 0;
-    let buildTotal = 0;
-    for (const c of recentClimbs) {
-      const gi = gradeIdx(c.grade);
-      if (gi >= buildMinIdx && gi <= buildMaxIdx) {
-        buildTotal++;
-        if (c.completed) buildSends++;
-      }
-    }
-    const buildRate = buildTotal > 0 ? Math.round((buildSends / buildTotal) * 100) : 100;
-
-    const buildGrades = buildMinIdx === buildMaxIdx
-      ? GRADES[buildMinIdx]
-      : `${GRADES[buildMinIdx]}-${GRADES[buildMaxIdx]}`;
-
-    if (zeroSendNudge) {
-      nudges.push(zeroSendNudge);
-    } else if (projectAttempts14d < 2) {
-      nudges.push({
-        message: `Get more ${GRADES[projectIdx]} attempts in — only ${projectAttempts14d} in 2 weeks`,
-        type: "balance",
-      });
-    } else if (weekClimbs.length >= 3 && warmupCount / weekClimbs.length > 0.6) {
-      nudges.push({
-        message: `Heavy on warm-ups — try more ${buildGrades}`,
-        type: "balance",
-      });
-    } else if (buildRate < 50) {
-      nudges.push({
-        message: `Focus on sending ${buildGrades} — only ${buildRate}% send rate`,
-        type: "balance",
-      });
-    } else {
-      nudges.push({
-        message: `Solid session — keep pushing ${buildGrades}`,
-        type: "positive",
-      });
-    }
-
-    // Secondary nudge: grade-aware hold type suggestion
     if (weakestHold.level === "—") {
       nudges.push({
         message: `Get 3+ ${weakestHold.type} sends to establish a baseline`,
@@ -491,6 +490,6 @@ export const coachNudges = query({
       });
     }
 
-    return { nudges: nudges.slice(0, 2), isRest };
+    return { nudges: nudges.slice(0, 2) };
   },
 });
