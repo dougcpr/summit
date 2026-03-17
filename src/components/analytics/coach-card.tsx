@@ -2,9 +2,12 @@ import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 
 const dotColors: Record<string, string> = {
-  balance: "var(--color-tertiary)",
+  fatigue: "var(--color-secondary)",
+  overreach: "var(--color-tertiary)",
+  regression: "var(--color-tertiary)",
+  push: "var(--color-accent)",
+  solid: "var(--color-primary)",
   holds: "var(--color-secondary)",
-  positive: "var(--color-accent)",
 };
 
 export function CoachCard({ goalGrade }: { goalGrade: string }) {
