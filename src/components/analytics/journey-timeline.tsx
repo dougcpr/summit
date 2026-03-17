@@ -42,7 +42,7 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
               style={{ left: `${pct(ms.date)}%`, top: 0, bottom: 0, transform: "translateX(-50%)" }}
             >
               <span
-                className="text-[10px] font-display font-bold leading-none rounded-full px-1.5 py-0.5"
+                className="text-xs font-display font-bold leading-none rounded-full px-1.5 py-0.5"
                 style={{ backgroundColor: bg, color: textColor }}
               >
                 {ms.grade}
