@@ -303,67 +303,6 @@ export const timelineMilestones = query({
 
 // --- Coach Nudges ---
 
-function computeRestDays(
-  climbs: { grade: string; completed: boolean }[],
-  buildMinIdx: number,
-  buildMaxIdx: number,
-  projectIdx: number,
-): number {
-  let buildSends = 0;
-  let buildTotal = 0;
-  let projectAttempts = 0;
-  for (const c of climbs) {
-    const gi = gradeIdx(c.grade);
-    if (gi >= buildMinIdx && gi <= buildMaxIdx) {
-      buildTotal++;
-      if (c.completed) buildSends++;
-    }
-    if (gi === projectIdx) projectAttempts++;
-  }
-  const buildRate = buildTotal > 0 ? buildSends / buildTotal : 1;
-  if (buildRate >= 0.7 && projectAttempts >= 6) return 3;
-  if (buildRate >= 0.5 || projectAttempts >= 3) return 4;
-  return 5;
-}
-
-function computeCyclePhase(
-  anchorStr: string,
-  transitionStr: string,
-  restDays: number,
-): { type: "rest"; day: number; total: number } | { type: "train"; week: number; totalWeeks: number } {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayMs = today.getTime();
-
-  const anchor = new Date(anchorStr + "T00:00:00");
-  const transition = new Date(transitionStr + "T00:00:00");
-  const DAY = 24 * 60 * 60 * 1000;
-
-  let cursor = anchor.getTime();
-  let phase: "rest" | "train" = "rest";
-
-  for (let i = 0; i < 100; i++) {
-    if (phase === "rest") {
-      const endMs = cursor + restDays * DAY;
-      if (todayMs < endMs) {
-        return { type: "rest", day: Math.floor((todayMs - cursor) / DAY) + 1, total: restDays };
-      }
-      cursor = endMs;
-      phase = "train";
-    } else {
-      const trainWeeks = cursor < transition.getTime() ? 3 : 2;
-      const endMs = cursor + trainWeeks * 7 * DAY;
-      if (todayMs < endMs) {
-        return { type: "train", week: Math.floor((todayMs - cursor) / (7 * DAY)) + 1, totalWeeks: trainWeeks };
-      }
-      cursor = endMs;
-      phase = "rest";
-    }
-  }
-
-  return { type: "train", week: 1, totalWeeks: 2 };
-}
-
 export const coachNudges = query({
   args: {
     goalGrade: v.string(),
