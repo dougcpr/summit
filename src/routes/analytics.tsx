@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { JourneyTimeline } from "../components/analytics/journey-timeline";
 import { Pyramid } from "../components/analytics/pyramid";
 import { ActivityHeatmap } from "../components/analytics/activity-heatmap";
-import { WeeklyZones } from "../components/analytics/weekly-zones";
+import { HighlightsCard } from "../components/analytics/highlights-card";
 import { HoldTypeRing } from "../components/analytics/hold-type-ring";
 
 export const Route = createFileRoute("/analytics")({
@@ -24,7 +24,7 @@ function AnalyticsPage() {
       <Pyramid goalGrade={goalGrade} onGoalChange={handleGoalChange} />
       <div className="flex gap-1 items-stretch">
         <div className="flex-1 min-w-0 flex">
-          <WeeklyZones goalGrade={goalGrade} />
+          <HighlightsCard goalGrade={goalGrade} />
         </div>
         <div className="flex-1 min-w-0 flex">
           <HoldTypeRing goalGrade={goalGrade} />
