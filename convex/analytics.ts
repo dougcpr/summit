@@ -82,21 +82,22 @@ export const heatmapData = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    const byDay: Record<string, { sum: number; count: number }> = {};
+    const byDay: Record<string, { weightedSum: number; totalWeight: number }> = {};
     for (const c of climbs) {
       const d = new Date(c.climbedAt);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       const num = gradeIdx(c.grade);
       if (num >= 0) {
-        if (!byDay[key]) byDay[key] = { sum: 0, count: 0 };
-        byDay[key].sum += num;
-        byDay[key].count += 1;
+        if (!byDay[key]) byDay[key] = { weightedSum: 0, totalWeight: 0 };
+        const weight = num + 1; // V0=1, V1=2, ... V10=11
+        byDay[key].weightedSum += num * weight;
+        byDay[key].totalWeight += weight;
       }
     }
 
-    return Object.entries(byDay).map(([date, { sum, count }]) => ({
+    return Object.entries(byDay).map(([date, { weightedSum, totalWeight }]) => ({
       date,
-      count: Math.floor(sum / count) + 1, // 1-indexed avg grade: 1=V0, 2=V1, etc.
+      count: Math.round(weightedSum / totalWeight) + 1, // 1-indexed weighted grade
     }));
   },
 });
