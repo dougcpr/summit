@@ -38,8 +38,8 @@ export function HighlightsCard({ goalGrade, compact }: HighlightsCardProps) {
     return (
       <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex flex-col gap-1.5 flex-1">
         <span className="text-xs opacity-50 uppercase tracking-wide">This Week</span>
-        <div className="flex items-start gap-2">
-          <Star size={14} weight="fill" className="mt-1 shrink-0" style={{ color: typeColors[top.type] }} />
+        <div className="flex items-center gap-2">
+          <Star size={14} weight="fill" className="shrink-0" style={{ color: typeColors[top.type] }} />
           <span className="text-sm leading-snug">{top.message}</span>
         </div>
       </div>
