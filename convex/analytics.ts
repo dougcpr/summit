@@ -302,6 +302,51 @@ export const timelineMilestones = query({
   },
 });
 
+// --- Hold Type Timelines ---
+
+export const holdTypeTimelines = query({
+  args: { goalGrade: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+    const climbs = await ctx.db
+      .query("climbs")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    if (climbs.length === 0) return null;
+
+    const sorted = [...climbs].sort((a, b) => a.climbedAt - b.climbedAt);
+    const startDate = sorted[0].climbedAt;
+    const endDate = startDate + 52 * 7 * 24 * 60 * 60 * 1000;
+    const goalGi = gradeIdx(args.goalGrade);
+
+    const holdTypes = ["jug", "crimp", "sloper"] as const;
+    const timelines = holdTypes.map((ht) => {
+      const milestones: { grade: string; date: number }[] = [];
+      const sendCounts: Record<string, number> = {};
+      const recorded = new Set<string>();
+
+      for (const c of sorted) {
+        const climbHoldType = c.holdType.toLowerCase();
+        if (c.completed && climbHoldType === ht && !recorded.has(c.grade)) {
+          sendCounts[c.grade] = (sendCounts[c.grade] || 0) + 1;
+          if (sendCounts[c.grade] >= 3) {
+            recorded.add(c.grade);
+            const gi = gradeIdx(c.grade);
+            if (gi >= 0 && gi <= goalGi) {
+              milestones.push({ grade: c.grade, date: c.climbedAt });
+            }
+          }
+        }
+      }
+
+      return { holdType: ht, milestones };
+    });
+
+    return { startDate, endDate, now: Date.now(), timelines };
+  },
+});
+
 // --- Coach Nudges ---
 
 export const coachNudges = query({

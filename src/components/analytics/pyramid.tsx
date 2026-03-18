@@ -14,11 +14,8 @@ export function Pyramid({ goalGrade }: PyramidProps) {
 
   const totalClimbs = data.rows.reduce((sum, r) => sum + r.attempts, 0);
 
-  const splitIdx = data.rows.findIndex((r) => r.sends >= 150);
-  const minVisible = 2;
-  const cutoff = splitIdx < 0 ? data.rows.length : Math.max(splitIdx, minVisible);
-  const activeRows = data.rows.slice(0, cutoff);
-  const completedRows = data.rows.slice(cutoff);
+  const activeRows = data.rows;
+  const completedRows: typeof data.rows = [];
 
   const maxSends = Math.max(...activeRows.map((r) => r.sends), 1);
 

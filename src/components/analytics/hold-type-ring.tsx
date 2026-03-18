@@ -13,34 +13,34 @@ const holdIcons: Record<HoldType, React.ElementType> = {
 export function HoldTypeRing({ goalGrade }: { goalGrade: string }) {
   const data = useQuery(api.analytics.holdTypeBreakdown, { goalGrade });
 
-  if (!data) return <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex-1" />;
+  if (!data) return <div className="border-2 border-border rounded-lg p-2 bg-card-bg h-16" />;
 
   return (
-    <div className="border-2 border-border rounded-lg p-2 bg-card-bg flex-1">
+    <div className="border-2 border-border rounded-lg p-2 bg-card-bg">
       <span className="text-xs opacity-50 uppercase tracking-wide">Hold Levels</span>
-      <div className="flex flex-col gap-2 mt-2">
-        {data.types.map((t) => {
-          const config = holdTypeConfig[t.type as HoldType];
-          const Icon = holdIcons[t.type as HoldType];
-          const isWeakest = t.type === data.weakest;
+      <div className="flex gap-1 mt-1.5">
+      {data.types.map((t) => {
+        const config = holdTypeConfig[t.type as HoldType];
+        const Icon = holdIcons[t.type as HoldType];
+        const isWeakest = t.type === data.weakest;
 
-          return (
-            <div
-              key={t.type}
-              className="flex items-center justify-between px-2 py-2 rounded-md"
-              style={{
-                backgroundColor: isWeakest ? (fadedColorMap[t.gradeLevel] || "rgba(0,0,0,0.05)") : "transparent",
-              }}
-            >
-              <div className="flex items-center gap-2">
-                {Icon && <Icon size={22} weight="bold" style={{ color: colorMap[t.gradeLevel] || config?.color }} />}
-                <span className="text-sm capitalize">{t.type}</span>
-                {isWeakest && <span className="text-xs opacity-50">(focus)</span>}
-              </div>
-              <span className="text-base font-semibold w-10 text-right">{t.gradeLevel}</span>
+        return (
+          <div
+            key={t.type}
+            className="flex-1 flex items-center justify-between px-3 py-2 rounded-lg border-2"
+            style={{
+              backgroundColor: fadedColorMap[t.gradeLevel] || "rgba(0,0,0,0.05)",
+              borderColor: isWeakest ? (colorMap[t.gradeLevel] || "var(--color-border)") : "var(--color-border)",
+            }}
+          >
+            <div className="flex items-center gap-1.5">
+              {Icon && <Icon size={18} weight="bold" style={{ color: colorMap[t.gradeLevel] || config?.color }} />}
+              <span className="text-xs capitalize">{t.type}</span>
             </div>
-          );
-        })}
+            <span className="text-sm font-semibold">{t.gradeLevel}</span>
+          </div>
+        );
+      })}
       </div>
     </div>
   );

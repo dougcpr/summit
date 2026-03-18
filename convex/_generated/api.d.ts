@@ -10,6 +10,7 @@
 
 import type * as analytics from "../analytics.js";
 import type * as climbs from "../climbs.js";
+import type * as migrations from "../migrations.js";
 import type * as notes from "../notes.js";
 
 import type {
@@ -21,6 +22,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   analytics: typeof analytics;
   climbs: typeof climbs;
+  migrations: typeof migrations;
   notes: typeof notes;
 }>;
 

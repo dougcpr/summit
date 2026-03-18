@@ -10,7 +10,6 @@ import { ActionButtons } from "../components/log/action-buttons";
 import { TodaySummary } from "../components/log/today-summary";
 import { ClimbList } from "../components/log/climb-list";
 import { CoachCard } from "../components/analytics/coach-card";
-import { HighlightsCard } from "../components/analytics/highlights-card";
 import { formatDisplayDate, normalizeToNoon, getLocalDayRange } from "../lib/dates";
 import type { HoldType } from "../lib/grades";
 
@@ -68,14 +67,7 @@ function LogPage() {
 
   return (
     <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-4 overflow-hidden" style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}>
-      <div className="flex gap-2 items-stretch">
-        <div className="flex-1 min-w-0 flex">
-          <CoachCard goalGrade={goalGrade} />
-        </div>
-        <div className="flex-1 min-w-0 flex">
-          <HighlightsCard goalGrade={goalGrade} compact />
-        </div>
-      </div>
+      <CoachCard goalGrade={goalGrade} />
 
       <div className="flex-1 min-h-0">
         <NoteEditor selectedDate={selectedDate} />
