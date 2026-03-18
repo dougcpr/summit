@@ -112,14 +112,12 @@ function LogPage() {
             <CaretRight size={24} weight="bold" />
           </button>
         </div>
-        {!isToday && (
-          <button
-            onClick={() => setSelectedDate(new Date())}
-            className="text-sm opacity-50 hover:opacity-80 active:opacity-100"
-          >
-            Go to Today
-          </button>
-        )}
+        <button
+          onClick={() => setSelectedDate(new Date())}
+          className={`text-sm opacity-50 hover:opacity-80 active:opacity-100 ${isToday ? "invisible" : ""}`}
+        >
+          Go to Today
+        </button>
       </div>
     </div>
   );
