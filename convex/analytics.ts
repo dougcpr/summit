@@ -556,7 +556,7 @@ export const weeklyHighlights = query({
       }
     }
 
-    // --- Priority 2: Hold type level-up ---
+    // --- Priority 2: Hold type base building ---
     // Highest grade with 2+ sends improved this week vs last week
     const holdTypes = ["jug", "crimp", "sloper"];
     function highestHoldLevel(climbs: typeof allClimbs, holdType: string): number {
@@ -578,7 +578,7 @@ export const weeklyHighlights = query({
       const lastLevel = highestHoldLevel(lastWeekClimbs, ht);
       if (thisLevel > lastLevel && lastLevel >= 0) {
         highlights.push({
-          message: `${ht} level up: ${GRADES[lastLevel]} → ${GRADES[thisLevel]}`,
+          message: `${GRADES[thisLevel]} ${ht}s feeling solid!`,
           type: "holdup",
         });
       }
