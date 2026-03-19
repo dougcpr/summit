@@ -97,7 +97,7 @@ export function ActivityHeatmap() {
   return (
     <div className="px-4">
       {/* Summary stat */}
-      <div className="text-xs opacity-50 mb-2 text-center">
+      <div className="text-xs opacity-50 mb-1 text-center">
         {activeWeeks} of {totalWeeks} weeks active
       </div>
 
