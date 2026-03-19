@@ -10,7 +10,7 @@ interface PyramidProps {
 export function Pyramid({ goalGrade }: PyramidProps) {
   const data = useQuery(api.analytics.pyramid, { goalGrade });
 
-  if (!data) return <div className="border-2 border-border rounded-lg p-2 bg-card-bg h-[11rem]" />;
+  if (!data) return <div className="h-[11rem]" />;
 
   const totalClimbs = data.rows.reduce((sum, r) => sum + r.attempts, 0);
 
@@ -20,7 +20,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
   const maxSends = Math.max(...activeRows.map((r) => r.sends), 1);
 
   return (
-    <div className="border-2 border-border rounded-lg p-2 bg-card-bg">
+    <div className="p-2">
       <div className="flex justify-end mb-1">
         <span className="text-xs opacity-50 font-display">{totalClimbs} climbs</span>
       </div>
