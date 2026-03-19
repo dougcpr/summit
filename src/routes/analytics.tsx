@@ -5,6 +5,7 @@ import { Pyramid } from "../components/analytics/pyramid";
 import { JourneyTimeline } from "../components/analytics/journey-timeline";
 import { HoldTypeTimeline } from "../components/analytics/hold-type-timeline";
 import { ActivityHeatmap } from "../components/analytics/activity-heatmap";
+import { Focus } from "../components/analytics/focus";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
@@ -35,6 +36,9 @@ function AnalyticsPage() {
       className="p-4 pb-1 font-display max-w-lg mx-auto flex flex-col overflow-hidden"
       style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
     >
+      {/* Focus */}
+      <Focus goalGrade={GOAL_GRADE} />
+
       {/* Chapter 1: Where I Am */}
       <div className="text-[10px] uppercase tracking-widest opacity-40 mb-1">
         Where I Am
