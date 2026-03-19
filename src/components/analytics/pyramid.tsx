@@ -53,16 +53,15 @@ export function Pyramid({ goalGrade }: PyramidProps) {
           const isGoal = row.label === goalGrade && row.sends === 0;
           const holds = holdsByGrade[row.label] || [];
           return (
-            <div key={row.label} className="flex items-center gap-1.5">
+            <div key={row.label}>
               <div
-                className="h-6 rounded-lg flex items-center justify-center font-display text-xs transition-all overflow-hidden relative flex-1"
+                className="h-6 rounded-lg flex items-center justify-center font-display text-xs transition-all overflow-hidden relative mx-auto"
                 style={{
-                  maxWidth: `${barWidth}%`,
+                  width: `${barWidth}%`,
                   backgroundColor: isGoal ? "transparent" : fadedColor,
                   color: isGoal ? "var(--color-border)" : row.label === "V4" ? "white" : "var(--color-border)",
                   border: isGoal ? "2px dashed var(--color-border)" : `2px solid ${borderColorMap[row.label] || gradeColor}`,
                   minWidth: "3rem",
-                  marginLeft: "auto",
                 }}
               >
                 {!isGoal && (
@@ -74,14 +73,12 @@ export function Pyramid({ goalGrade }: PyramidProps) {
                     }}
                   />
                 )}
-                <span className="relative z-10">
+                <span className="relative z-10 flex items-center gap-1">
                   {row.label}: {row.sends}
+                  {holds.map(({ type, Icon }) => (
+                    <Icon key={type} size={12} weight="bold" />
+                  ))}
                 </span>
-              </div>
-              <div className="w-8 flex gap-0.5 justify-start">
-                {holds.map(({ type, Icon }) => (
-                  <Icon key={type} size={14} weight="bold" className="opacity-40" />
-                ))}
               </div>
             </div>
           );
