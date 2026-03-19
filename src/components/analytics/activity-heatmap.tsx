@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { useNavigate } from "@tanstack/react-router";
+import { Moon } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
 import { GRADES, colorMap } from "../../lib/grades";
 
@@ -74,6 +75,9 @@ export function ActivityHeatmap() {
   const totalWeeks = weeks.length;
   const activeWeeks = weeks.filter((w) => w.days > 0).length;
 
+  // Find first active week index to distinguish "before journey" from "rest"
+  const firstActiveIdx = weeks.findIndex((w) => w.days > 0);
+
   // Month labels at first week of each month
   const monthLabels: { index: number; label: string }[] = [];
   let lastMonth = -1;
@@ -117,11 +121,12 @@ export function ActivityHeatmap() {
             const grade = week.avgGrade > 0 ? GRADES[week.avgGrade - 1] : null;
             const fill = grade ? colorMap[grade] : emptyColor;
             const isActive = week.days > 0;
+            const isRest = !isActive && i > firstActiveIdx;
 
             return (
               <button
                 key={i}
-                className="rounded-md shrink-0"
+                className="rounded-md shrink-0 flex items-center justify-center"
                 style={{
                   backgroundColor: fill,
                   width: CELL_SIZE,
@@ -136,8 +141,10 @@ export function ActivityHeatmap() {
                     navigate({ to: "/log", search: { date: dateStr } });
                   }
                 }}
-                title={isActive ? `${formatWeekLabel(week.start)}: ${week.days} day${week.days > 1 ? "s" : ""}` : ""}
-              />
+                title={isRest ? `${formatWeekLabel(week.start)}: rest` : isActive ? `${formatWeekLabel(week.start)}: ${week.days} day${week.days > 1 ? "s" : ""}` : ""}
+              >
+                {isRest && <Moon size={10} weight="fill" className="opacity-20" />}
+              </button>
             );
           })}
         </div>
