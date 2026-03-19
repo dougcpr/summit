@@ -5,7 +5,6 @@ import { Pyramid } from "../components/analytics/pyramid";
 import { JourneyTimeline } from "../components/analytics/journey-timeline";
 import { HoldTypeTimeline } from "../components/analytics/hold-type-timeline";
 import { ActivityHeatmap } from "../components/analytics/activity-heatmap";
-import { Observations } from "../components/analytics/observations";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
@@ -33,7 +32,7 @@ function AnalyticsPage() {
 
   return (
     <div
-      className="p-2 pb-1 font-display max-w-lg mx-auto flex flex-col overflow-hidden"
+      className="p-4 pb-1 font-display max-w-lg mx-auto flex flex-col overflow-hidden"
       style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
     >
       {/* Chapter 1: Where I Am */}
@@ -51,16 +50,13 @@ function AnalyticsPage() {
       <JourneyTimeline goalGrade={GOAL_GRADE} />
       <div className="mt-1" />
       <HoldTypeTimeline goalGrade={GOAL_GRADE} />
-      <div className="mt-1" />
-      <ActivityHeatmap />
-
       <hr className="border-border/30 my-1.5" />
 
-      {/* Chapter 3: What's Next */}
+      {/* Chapter 3: Activity */}
       <div className="text-[10px] uppercase tracking-widest opacity-40 mb-1">
-        What's Next
+        Activity
       </div>
-      <Observations goalGrade={GOAL_GRADE} />
+      <ActivityHeatmap />
     </div>
   );
 }
