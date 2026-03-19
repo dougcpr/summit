@@ -4,7 +4,6 @@ import { colorMap, fadedColorMap, borderColorMap } from "../../lib/grades";
 
 interface PyramidProps {
   goalGrade: string;
-  onGoalChange: (grade: string) => void;
 }
 
 export function Pyramid({ goalGrade }: PyramidProps) {
