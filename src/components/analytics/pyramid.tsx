@@ -44,7 +44,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
       <div className="flex justify-end">
         <span className="text-xs opacity-50 font-display">{totalClimbs} climbs</span>
       </div>
-      <div className="flex flex-col gap-0.5">
+      <div className="flex flex-col gap-1">
         {activeRows.map((row) => {
           const barWidth = 20 + (row.sends / maxSends) * 80;
           const fillPct = Math.min(100, (row.sends / row.target) * 100);
@@ -55,7 +55,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
           return (
             <div key={row.label}>
               <div
-                className="h-6 rounded-lg flex items-center justify-center font-display text-xs transition-all overflow-hidden relative mx-auto"
+                className="h-8 rounded-lg flex items-center justify-center font-display text-sm transition-all overflow-hidden relative mx-auto"
                 style={{
                   width: `${barWidth}%`,
                   backgroundColor: isGoal ? "transparent" : fadedColor,
@@ -76,7 +76,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
                 <span className="relative z-10 flex items-center gap-1">
                   {row.label}: {row.sends}
                   {holds.map(({ type, Icon }) => (
-                    <Icon key={type} size={12} weight="bold" />
+                    <Icon key={type} size={14} weight="bold" />
                   ))}
                 </span>
               </div>

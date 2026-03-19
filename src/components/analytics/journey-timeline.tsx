@@ -15,7 +15,7 @@ function formatDate(ts: number): string {
 export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
   const timeline = useQuery(api.analytics.timelineMilestones, { goalGrade });
 
-  if (!timeline) return <div className="h-[5rem]" />;
+  if (!timeline) return <div className="h-[5.5rem]" />;
 
   const { startDate, endDate, now, firstSends, gaps } = timeline;
   const totalSpan = endDate - startDate;
@@ -25,7 +25,7 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
   return (
     <div className="px-2">
       {/* Timeline track */}
-      <div className="relative w-full h-11">
+      <div className="relative w-full h-12">
         {/* Bar track */}
         <div className="absolute bottom-0 left-0 right-0 h-5 bg-border/15 rounded-full" />
 

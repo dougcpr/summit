@@ -6,7 +6,7 @@ import { api } from "@convex/_generated/api";
 import { GRADES, colorMap } from "../../lib/grades";
 
 const emptyColor = "#f6f1e3";
-const CELL_SIZE = 18;
+const CELL_SIZE = 22;
 const CELL_GAP = 3;
 
 function getWeekStart(date: Date): Date {
