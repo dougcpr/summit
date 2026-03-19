@@ -15,7 +15,7 @@ function formatDate(ts: number): string {
 export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
   const timeline = useQuery(api.analytics.timelineMilestones, { goalGrade });
 
-  if (!timeline) return <div className="h-[5.5rem]" />;
+  if (!timeline) return <div className="h-[5rem]" />;
 
   const { startDate, endDate, now, firstSends, gaps } = timeline;
   const totalSpan = endDate - startDate;
@@ -23,9 +23,9 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
   const progressPct = pct(now);
 
   return (
-    <div className="p-2">
+    <div className="px-2">
       {/* Timeline track */}
-      <div className="relative w-full h-12 mt-1">
+      <div className="relative w-full h-11">
         {/* Bar track */}
         <div className="absolute bottom-0 left-0 right-0 h-5 bg-border/15 rounded-full" />
 
@@ -99,7 +99,7 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
       </div>
 
       {/* Start and end dates below the bar */}
-      <div className="flex items-center justify-between mt-1.5">
+      <div className="flex items-center justify-between mt-1">
         <div className="flex items-center gap-1 opacity-60">
           <Mountains size={14} weight="fill" className="text-border" />
           <span className="text-[10px] font-display text-border">{formatDate(startDate)}</span>

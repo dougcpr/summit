@@ -19,13 +19,13 @@ interface HoldTypeTimelineProps {
 export function HoldTypeTimeline({ goalGrade }: HoldTypeTimelineProps) {
   const data = useQuery(api.analytics.holdTypeTimelines, { goalGrade });
 
-  if (!data) return <div className="h-[7rem]" />;
+  if (!data) return <div className="h-[6rem]" />;
 
   const { startDate, now, timelines } = data;
 
   // Shared time range: earliest milestone across all hold types → now
   const allDates = timelines.flatMap((tl) => tl.milestones.map((m) => m.date));
-  if (allDates.length === 0) return <div className="h-[7rem]" />;
+  if (allDates.length === 0) return <div className="h-[6rem]" />;
 
   const rangeStart = Math.min(startDate, ...allDates);
   const rangeEnd = now;
@@ -46,8 +46,8 @@ export function HoldTypeTimeline({ goalGrade }: HoldTypeTimelineProps) {
   }
 
   return (
-    <div className="p-2 pb-3">
-      <div className="relative mt-1">
+    <div className="px-2 pb-1">
+      <div className="relative">
         {/* Month grid lines - clipped to this container */}
         <div className="absolute inset-0 ml-16 overflow-hidden pointer-events-none">
           {monthTicks.map((tick) => (
