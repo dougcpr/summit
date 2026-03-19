@@ -46,7 +46,7 @@ export function NoteEditor({ selectedDate }: { selectedDate: Date }) {
       value={content}
       onChange={handleChange}
       placeholder="Enter notes here..."
-      className="w-full h-full p-3 font-display text-lg bg-card-bg border-2 border-border rounded-lg resize-none focus:outline-none focus:border-secondary"
+      className="w-full h-full p-3 font-display text-lg bg-transparent border border-border rounded-lg resize-none focus:outline-none focus:border-secondary"
     />
   );
 }

@@ -18,7 +18,7 @@ export function GradeSelector({ grade, onChange }: GradeSelectorProps) {
   };
 
   return (
-    <div className="flex items-center gap-2 border-2 border-border rounded-lg p-2 bg-white">
+    <div className="flex items-center gap-2 border-2 border-border rounded-lg p-2">
       <div className="flex flex-col gap-1">
         <button
           onClick={up}

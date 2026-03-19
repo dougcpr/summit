@@ -85,7 +85,7 @@ function LogPage() {
 
         <div className="flex flex-col gap-2 min-w-0" style={{ width: "40%" }}>
           <TodaySummary climbs={climbs ?? []} />
-          <div className="flex-1 min-h-0 border-2 border-border rounded-lg overflow-y-auto p-2 bg-white">
+          <div className="flex-1 min-h-0 border-2 border-border rounded-lg overflow-y-auto p-2">
             <ClimbList climbs={climbs ?? []} />
           </div>
         </div>
