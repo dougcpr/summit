@@ -17,4 +17,13 @@ export default defineSchema({
     content: v.string(),
     date: v.string(),
   }).index("by_user_date", ["userId", "date"]),
+
+  analyticsCache: defineTable({
+    userId: v.string(),
+    queryKey: v.string(),  // e.g. "pyramid:V5", "heatmapData", "holdTypeBreakdown:V5"
+    result: v.string(),     // JSON-serialized query result
+    updatedAt: v.number(),  // Date.now() when last recomputed
+  })
+    .index("by_user_key", ["userId", "queryKey"])
+    .index("by_user", ["userId"]),
 });
