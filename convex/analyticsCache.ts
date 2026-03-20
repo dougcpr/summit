@@ -11,6 +11,9 @@ import {
   type ClimbDoc,
 } from "./analyticsHelpers";
 
+// Bump this when computation logic changes to invalidate stale caches.
+export const CACHE_VERSION = 2;
+
 async function upsertCache(
   ctx: { db: any },
   userId: string,
@@ -41,7 +44,7 @@ export async function getGoalGradeFromCache(ctx: { db: any }, userId: string): P
     .withIndex("by_user", (q: any) => q.eq("userId", userId))
     .collect();
   for (const entry of entries) {
-    const match = entry.queryKey.match(/^pyramid:(.+)$/);
+    const match = entry.queryKey.match(/^v\d+:pyramid:(.+)$/);
     if (match) return match[1];
   }
   return "V5";
@@ -52,14 +55,16 @@ export const recompute = internalMutation({
   handler: async (ctx, args) => {
     const { userId, goalGrade } = args;
 
-    // Clean up cache entries from a different goalGrade (handles grade changes)
+    // Clean up old-version or wrong-goalGrade cache entries
+    const cv = CACHE_VERSION;
     const oldEntries = await ctx.db
       .query("analyticsCache")
       .withIndex("by_user", (q: any) => q.eq("userId", userId))
       .collect();
     for (const entry of oldEntries) {
-      // Keep heatmapData (no grade) and entries matching current goalGrade
-      if (entry.queryKey !== "heatmapData" && !entry.queryKey.endsWith(`:${goalGrade}`)) {
+      const isCurrentVersion = entry.queryKey.startsWith(`v${cv}:`);
+      const matchesGrade = entry.queryKey.endsWith(`:${goalGrade}`) || entry.queryKey === `v${cv}:heatmapData`;
+      if (!isCurrentVersion || !matchesGrade) {
         await ctx.db.delete(entry._id);
       }
     }
@@ -82,12 +87,12 @@ export const recompute = internalMutation({
     const recentClimbs = allClimbs.filter((c) => c.climbedAt >= ninetyDaysAgo);
 
     // Compute all analytics from the single fetch
-    await upsertCache(ctx, userId, `pyramid:${goalGrade}`, computePyramid(allClimbs, goalGrade));
-    await upsertCache(ctx, userId, "heatmapData", computeHeatmapData(allClimbs));
-    await upsertCache(ctx, userId, `holdTypeBreakdown:${goalGrade}`, computeHoldTypeBreakdown(recentClimbs, goalGrade));
-    await upsertCache(ctx, userId, `timelineMilestones:${goalGrade}`, computeTimelineMilestones(allClimbs, goalGrade));
-    await upsertCache(ctx, userId, `holdTypeTimelines:${goalGrade}`, computeHoldTypeTimelines(allClimbs, goalGrade));
-    await upsertCache(ctx, userId, `coachNudges:${goalGrade}`, computeCoachNudges(recentClimbs, goalGrade));
+    await upsertCache(ctx, userId, `v${cv}:pyramid:${goalGrade}`, computePyramid(allClimbs, goalGrade));
+    await upsertCache(ctx, userId, `v${cv}:heatmapData`, computeHeatmapData(allClimbs));
+    await upsertCache(ctx, userId, `v${cv}:holdTypeBreakdown:${goalGrade}`, computeHoldTypeBreakdown(recentClimbs, goalGrade));
+    await upsertCache(ctx, userId, `v${cv}:timelineMilestones:${goalGrade}`, computeTimelineMilestones(allClimbs, goalGrade));
+    await upsertCache(ctx, userId, `v${cv}:holdTypeTimelines:${goalGrade}`, computeHoldTypeTimelines(allClimbs, goalGrade));
+    await upsertCache(ctx, userId, `v${cv}:coachNudges:${goalGrade}`, computeCoachNudges(recentClimbs, goalGrade));
   },
 });
 
@@ -99,11 +104,11 @@ export const ensureCache = mutation({
     if (!identity) throw new Error("Not authenticated");
     const userId = identity.tokenIdentifier;
 
-    // Check if cache exists for this specific goalGrade (handles grade changes)
+    // Check if cache exists for this specific goalGrade and version
     const existing = await ctx.db
       .query("analyticsCache")
       .withIndex("by_user_key", (q) =>
-        q.eq("userId", userId).eq("queryKey", `pyramid:${args.goalGrade}`),
+        q.eq("userId", userId).eq("queryKey", `v${CACHE_VERSION}:pyramid:${args.goalGrade}`),
       )
       .unique();
 

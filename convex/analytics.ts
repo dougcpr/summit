@@ -8,6 +8,7 @@ import {
   computeHoldTypeTimelines,
   computeCoachNudges,
 } from "./analyticsHelpers";
+import { CACHE_VERSION } from "./analyticsCache";
 
 async function getUserId(ctx: { auth: { getUserIdentity: () => Promise<{ tokenIdentifier: string } | null> } }) {
   const identity = await ctx.auth.getUserIdentity();
@@ -32,7 +33,7 @@ export const pyramid = query({
   args: { goalGrade: v.string() },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
-    const cached = await readCache(ctx, userId, `pyramid:${args.goalGrade}`);
+    const cached = await readCache(ctx, userId, `v${CACHE_VERSION}:pyramid:${args.goalGrade}`);
     if (cached.hit) return cached.value as ReturnType<typeof computePyramid>;
 
     const climbs = await ctx.db
@@ -49,7 +50,7 @@ export const heatmapData = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getUserId(ctx);
-    const cached = await readCache(ctx, userId, "heatmapData");
+    const cached = await readCache(ctx, userId, `v${CACHE_VERSION}:heatmapData`);
     if (cached.hit) return cached.value as ReturnType<typeof computeHeatmapData>;
 
     const climbs = await ctx.db
@@ -66,7 +67,7 @@ export const holdTypeBreakdown = query({
   args: { goalGrade: v.string() },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
-    const cached = await readCache(ctx, userId, `holdTypeBreakdown:${args.goalGrade}`);
+    const cached = await readCache(ctx, userId, `v${CACHE_VERSION}:holdTypeBreakdown:${args.goalGrade}`);
     if (cached.hit) return cached.value as ReturnType<typeof computeHoldTypeBreakdown>;
 
     const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
@@ -84,7 +85,7 @@ export const timelineMilestones = query({
   args: { goalGrade: v.string() },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
-    const cached = await readCache(ctx, userId, `timelineMilestones:${args.goalGrade}`);
+    const cached = await readCache(ctx, userId, `v${CACHE_VERSION}:timelineMilestones:${args.goalGrade}`);
     if (cached.hit) {
       if (cached.value === null) return null;
       const v = cached.value as NonNullable<ReturnType<typeof computeTimelineMilestones>>;
@@ -106,7 +107,7 @@ export const holdTypeTimelines = query({
   args: { goalGrade: v.string() },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
-    const cached = await readCache(ctx, userId, `holdTypeTimelines:${args.goalGrade}`);
+    const cached = await readCache(ctx, userId, `v${CACHE_VERSION}:holdTypeTimelines:${args.goalGrade}`);
     if (cached.hit) {
       if (cached.value === null) return null;
       const v = cached.value as NonNullable<ReturnType<typeof computeHoldTypeTimelines>>;
@@ -128,7 +129,7 @@ export const coachNudges = query({
   args: { goalGrade: v.string() },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
-    const cached = await readCache(ctx, userId, `coachNudges:${args.goalGrade}`);
+    const cached = await readCache(ctx, userId, `v${CACHE_VERSION}:coachNudges:${args.goalGrade}`);
     if (cached.hit) return cached.value as ReturnType<typeof computeCoachNudges>;
 
     const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
