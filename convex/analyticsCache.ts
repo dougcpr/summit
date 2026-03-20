@@ -38,18 +38,33 @@ async function upsertCache(
   }
 }
 
+export async function getGoalGradeFromCache(ctx: { db: any }, userId: string): Promise<string> {
+  const entries = await ctx.db
+    .query("analyticsCache")
+    .withIndex("by_user", (q: any) => q.eq("userId", userId))
+    .collect();
+  for (const entry of entries) {
+    const match = entry.queryKey.match(/^pyramid:(.+)$/);
+    if (match) return match[1];
+  }
+  return "V5";
+}
+
 export const recompute = internalMutation({
   args: { userId: v.string(), goalGrade: v.string() },
   handler: async (ctx, args) => {
     const { userId, goalGrade } = args;
 
-    // Clean up any old cache entries for this user (handles goalGrade changes)
+    // Clean up cache entries from a different goalGrade (handles grade changes)
     const oldEntries = await ctx.db
       .query("analyticsCache")
       .withIndex("by_user", (q: any) => q.eq("userId", userId))
       .collect();
     for (const entry of oldEntries) {
-      await ctx.db.delete(entry._id);
+      // Keep heatmapData (no grade) and entries matching current goalGrade
+      if (entry.queryKey !== "heatmapData" && !entry.queryKey.endsWith(`:${goalGrade}`)) {
+        await ctx.db.delete(entry._id);
+      }
     }
 
     // Single fetch of all climbs
