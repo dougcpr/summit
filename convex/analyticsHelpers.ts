@@ -98,7 +98,7 @@ export function computeHoldTypeBreakdown(recentClimbs: ClimbDoc[], goalGrade: st
     let bestSingleGrade = "—";
     for (const [grade, count] of Object.entries(grades)) {
       const idx = gradeIdx(grade);
-      if (count >= 2 && idx > gradeLevelIdx) {
+      if (count >= 3 && idx > gradeLevelIdx) {
         gradeLevelIdx = idx;
         gradeLevel = grade;
       }
