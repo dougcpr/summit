@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 
 async function getUserId(ctx: {
   auth: { getUserIdentity: () => Promise<{ tokenIdentifier: string } | null> };
@@ -47,7 +48,21 @@ export const add = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
-    return await ctx.db.insert("climbs", { ...args, userId });
+    const result = await ctx.db.insert("climbs", { ...args, userId });
+
+    // Schedule analytics cache recomputation
+    const cachedEntry = await ctx.db
+      .query("analyticsCache")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+    let goalGrade = "V5";
+    if (cachedEntry) {
+      const parts = cachedEntry.queryKey.split(":");
+      if (parts.length > 1) goalGrade = parts[1];
+    }
+    await ctx.scheduler.runAfter(0, internal.analyticsCache.recompute, { userId, goalGrade });
+
+    return result;
   },
 });
 
@@ -58,5 +73,17 @@ export const remove = mutation({
     const climb = await ctx.db.get(args.id);
     if (!climb || climb.userId !== userId) throw new Error("Not found");
     await ctx.db.delete(args.id);
+
+    // Schedule analytics cache recomputation
+    const cachedEntry = await ctx.db
+      .query("analyticsCache")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+    let goalGrade = "V5";
+    if (cachedEntry) {
+      const parts = cachedEntry.queryKey.split(":");
+      if (parts.length > 1) goalGrade = parts[1];
+    }
+    await ctx.scheduler.runAfter(0, internal.analyticsCache.recompute, { userId, goalGrade });
   },
 });
