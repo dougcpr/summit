@@ -150,8 +150,8 @@ export function computeWeeklyZones(weekClimbs: ClimbDoc[], goalGrade: string) {
   const reach = countZone(goalIdx, GRADES.length - 1);
 
   const zones = [
-    { label: "Warm Up", grade: `V0-${GRADES[warmupMaxIdx]}`, target: 8, ...warmUp, color: "accent" },
-    { label: "Build Base", grade: `${GRADES[buildMinIdx]}-${GRADES[buildMaxIdx]}`, target: 6, ...buildBase, color: "tertiary" },
+    { label: "Warm Up", grade: `V0-${GRADES[warmupMaxIdx]}`, target: 8, attemptTarget: 0, ...warmUp, color: "accent" },
+    { label: "Build Base", grade: `${GRADES[buildMinIdx]}-${GRADES[buildMaxIdx]}`, target: 6, attemptTarget: 0, ...buildBase, color: "tertiary" },
     { label: "Project", grade: GRADES[projectIdx] || "—", target: 3, attemptTarget: 8, ...project, color: "secondary" },
     { label: "Reach", grade: `${GRADES[goalIdx]}+`, target: 1, attemptTarget: 6, ...reach, color: "primary" },
   ];

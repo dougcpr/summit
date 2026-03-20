@@ -37,7 +37,7 @@ export const pyramid = query({
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
     const cached = await readCache(ctx, userId, `pyramid:${args.goalGrade}`);
-    if (cached.hit) return cached.value;
+    if (cached.hit) return cached.value as ReturnType<typeof computePyramid>;
 
     const climbs = await ctx.db
       .query("climbs")
@@ -54,7 +54,7 @@ export const heatmapData = query({
   handler: async (ctx) => {
     const userId = await getUserId(ctx);
     const cached = await readCache(ctx, userId, "heatmapData");
-    if (cached.hit) return cached.value;
+    if (cached.hit) return cached.value as ReturnType<typeof computeHeatmapData>;
 
     const climbs = await ctx.db
       .query("climbs")
@@ -71,7 +71,7 @@ export const holdTypeBreakdown = query({
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
     const cached = await readCache(ctx, userId, `holdTypeBreakdown:${args.goalGrade}`);
-    if (cached.hit) return cached.value;
+    if (cached.hit) return cached.value as ReturnType<typeof computeHoldTypeBreakdown>;
 
     const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
     const climbs = await ctx.db
@@ -91,7 +91,7 @@ export const weeklyZones = query({
     const cached = await readCache(ctx, userId, `weeklyZones:${args.goalGrade}`);
     if (cached.hit) {
       // Add todayZone at read time (not cached — depends on current day)
-      const value = cached.value as { zones: unknown[] };
+      const value = cached.value as ReturnType<typeof computeWeeklyZones>;
       return { ...value, todayZone: computeTodayZone() };
     }
 
@@ -114,7 +114,8 @@ export const timelineMilestones = query({
     const cached = await readCache(ctx, userId, `timelineMilestones:${args.goalGrade}`);
     if (cached.hit) {
       if (cached.value === null) return null;
-      return { ...(cached.value as object), now: Date.now() };
+      const v = cached.value as NonNullable<ReturnType<typeof computeTimelineMilestones>>;
+      return { ...v, now: Date.now() };
     }
 
     const climbs = await ctx.db
@@ -135,7 +136,8 @@ export const holdTypeTimelines = query({
     const cached = await readCache(ctx, userId, `holdTypeTimelines:${args.goalGrade}`);
     if (cached.hit) {
       if (cached.value === null) return null;
-      return { ...(cached.value as object), now: Date.now() };
+      const v = cached.value as NonNullable<ReturnType<typeof computeHoldTypeTimelines>>;
+      return { ...v, now: Date.now() };
     }
 
     const climbs = await ctx.db
@@ -154,7 +156,7 @@ export const coachNudges = query({
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
     const cached = await readCache(ctx, userId, `coachNudges:${args.goalGrade}`);
-    if (cached.hit) return cached.value;
+    if (cached.hit) return cached.value as ReturnType<typeof computeCoachNudges>;
 
     const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
     const climbs = await ctx.db
@@ -172,7 +174,7 @@ export const weeklyHighlights = query({
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
     const cached = await readCache(ctx, userId, `weeklyHighlights:${args.goalGrade}`);
-    if (cached.hit) return cached.value;
+    if (cached.hit) return cached.value as ReturnType<typeof computeWeeklyHighlights>;
 
     const climbs = await ctx.db
       .query("climbs")
