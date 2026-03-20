@@ -94,22 +94,12 @@ export function computeHoldTypeBreakdown(recentClimbs: ClimbDoc[], goalGrade: st
   const types = Object.entries(sendsByHoldAndGrade).map(([type, grades]) => {
     let gradeLevel = "—";
     let gradeLevelIdx = -1;
-    let bestSingleIdx = -1;
-    let bestSingleGrade = "—";
     for (const [grade, count] of Object.entries(grades)) {
       const idx = gradeIdx(grade);
       if (count >= 3 && idx > gradeLevelIdx) {
         gradeLevelIdx = idx;
         gradeLevel = grade;
       }
-      if (idx > bestSingleIdx) {
-        bestSingleIdx = idx;
-        bestSingleGrade = grade;
-      }
-    }
-    if (gradeLevelIdx < 0 && bestSingleIdx >= 0) {
-      gradeLevel = bestSingleGrade;
-      gradeLevelIdx = bestSingleIdx;
     }
     if (gradeLevelIdx < 0) {
       gradeLevel = suggestedStartGrade;
