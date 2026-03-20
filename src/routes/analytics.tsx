@@ -1,4 +1,5 @@
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
+import { useEffect } from "react";
 import { api } from "@convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { Pyramid } from "../components/analytics/pyramid";
@@ -14,6 +15,9 @@ export const Route = createFileRoute("/analytics")({
 const GOAL_GRADE = "V5";
 
 function AnalyticsPage() {
+  const ensureCache = useMutation(api.analyticsCache.ensureCache);
+  useEffect(() => { ensureCache({ goalGrade: GOAL_GRADE }); }, [GOAL_GRADE]);
+
   // Empty state check
   const heatmap = useQuery(api.analytics.heatmapData);
   const isEmpty = heatmap && heatmap.length < 10;
