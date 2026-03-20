@@ -16,21 +16,26 @@ interface PyramidProps {
 
 export function Pyramid({ goalGrade }: PyramidProps) {
   const data = useQuery(api.analytics.pyramid, { goalGrade });
-  const holdData = useQuery(api.analytics.holdTypeBreakdown, { goalGrade });
+  const timelineData = useQuery(api.analytics.holdTypeTimelines, { goalGrade });
 
   if (!data) return <div className="h-[9rem]" />;
 
   const totalClimbs = data.rows.reduce((sum, r) => sum + r.attempts, 0);
 
-  // Map grade -> hold types at that level
+  // Map grade -> hold types using the same data source as the hold-type timeline
   const holdsByGrade: Record<string, { type: HoldType; Icon: React.ElementType }[]> = {};
-  if (holdData) {
-    for (const t of holdData.types) {
-      if (t.gradeLevel !== "—") {
-        if (!holdsByGrade[t.gradeLevel]) holdsByGrade[t.gradeLevel] = [];
-        holdsByGrade[t.gradeLevel].push({
-          type: t.type as HoldType,
-          Icon: holdIcons[t.type as HoldType],
+  if (timelineData) {
+    for (const tl of timelineData.timelines) {
+      // Use highest milestone grade for each hold type
+      const maxMilestone = tl.milestones.reduce<{ grade: string; gi: number } | null>((best, ms) => {
+        const gi = parseInt(ms.grade.replace("V", ""), 10);
+        return !best || gi > best.gi ? { grade: ms.grade, gi } : best;
+      }, null);
+      if (maxMilestone) {
+        if (!holdsByGrade[maxMilestone.grade]) holdsByGrade[maxMilestone.grade] = [];
+        holdsByGrade[maxMilestone.grade].push({
+          type: tl.holdType as HoldType,
+          Icon: holdIcons[tl.holdType as HoldType],
         });
       }
     }
