@@ -5,12 +5,9 @@ import {
   computePyramid,
   computeHeatmapData,
   computeHoldTypeBreakdown,
-  computeWeeklyZones,
   computeTimelineMilestones,
   computeHoldTypeTimelines,
   computeCoachNudges,
-  computeWeeklyHighlights,
-  getStartOfWeek,
   type ClimbDoc,
 } from "./analyticsHelpers";
 
@@ -83,18 +80,14 @@ export const recompute = internalMutation({
     // Time-filtered subsets
     const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
     const recentClimbs = allClimbs.filter((c) => c.climbedAt >= ninetyDaysAgo);
-    const weekStart = getStartOfWeek(new Date());
-    const weekClimbs = allClimbs.filter((c) => c.climbedAt >= weekStart.getTime());
 
     // Compute all analytics from the single fetch
     await upsertCache(ctx, userId, `pyramid:${goalGrade}`, computePyramid(allClimbs, goalGrade));
     await upsertCache(ctx, userId, "heatmapData", computeHeatmapData(allClimbs));
     await upsertCache(ctx, userId, `holdTypeBreakdown:${goalGrade}`, computeHoldTypeBreakdown(recentClimbs, goalGrade));
-    await upsertCache(ctx, userId, `weeklyZones:${goalGrade}`, computeWeeklyZones(weekClimbs, goalGrade));
     await upsertCache(ctx, userId, `timelineMilestones:${goalGrade}`, computeTimelineMilestones(allClimbs, goalGrade));
     await upsertCache(ctx, userId, `holdTypeTimelines:${goalGrade}`, computeHoldTypeTimelines(allClimbs, goalGrade));
     await upsertCache(ctx, userId, `coachNudges:${goalGrade}`, computeCoachNudges(recentClimbs, goalGrade));
-    await upsertCache(ctx, userId, `weeklyHighlights:${goalGrade}`, computeWeeklyHighlights(allClimbs, goalGrade));
   },
 });
 

@@ -4,13 +4,9 @@ import {
   computePyramid,
   computeHeatmapData,
   computeHoldTypeBreakdown,
-  computeWeeklyZones,
   computeTimelineMilestones,
   computeHoldTypeTimelines,
   computeCoachNudges,
-  computeWeeklyHighlights,
-  computeTodayZone,
-  getStartOfWeek,
 } from "./analyticsHelpers";
 
 async function getUserId(ctx: { auth: { getUserIdentity: () => Promise<{ tokenIdentifier: string } | null> } }) {
@@ -82,29 +78,6 @@ export const holdTypeBreakdown = query({
   },
 });
 
-// --- Weekly Training Zones ---
-
-export const weeklyZones = query({
-  args: { goalGrade: v.string() },
-  handler: async (ctx, args) => {
-    const userId = await getUserId(ctx);
-    const cached = await readCache(ctx, userId, `weeklyZones:${args.goalGrade}`);
-    if (cached.hit) {
-      // Add todayZone at read time (not cached — depends on current day)
-      const value = cached.value as ReturnType<typeof computeWeeklyZones>;
-      return { ...value, todayZone: computeTodayZone() };
-    }
-
-    const weekStart = getStartOfWeek(new Date());
-    const climbs = await ctx.db
-      .query("climbs")
-      .withIndex("by_user_date", (q: any) => q.eq("userId", userId).gte("climbedAt", weekStart.getTime()))
-      .collect();
-    const result = computeWeeklyZones(climbs, args.goalGrade);
-    return { ...result, todayZone: computeTodayZone() };
-  },
-});
-
 // --- Timeline Milestones ---
 
 export const timelineMilestones = query({
@@ -167,19 +140,3 @@ export const coachNudges = query({
   },
 });
 
-// --- Weekly Highlights ---
-
-export const weeklyHighlights = query({
-  args: { goalGrade: v.string() },
-  handler: async (ctx, args) => {
-    const userId = await getUserId(ctx);
-    const cached = await readCache(ctx, userId, `weeklyHighlights:${args.goalGrade}`);
-    if (cached.hit) return cached.value as ReturnType<typeof computeWeeklyHighlights>;
-
-    const climbs = await ctx.db
-      .query("climbs")
-      .withIndex("by_user", (q: any) => q.eq("userId", userId))
-      .collect();
-    return computeWeeklyHighlights(climbs, args.goalGrade);
-  },
-});

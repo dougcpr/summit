@@ -9,6 +9,8 @@
  */
 
 import type * as analytics from "../analytics.js";
+import type * as analyticsCache from "../analyticsCache.js";
+import type * as analyticsHelpers from "../analyticsHelpers.js";
 import type * as climbs from "../climbs.js";
 import type * as migrations from "../migrations.js";
 import type * as notes from "../notes.js";
@@ -21,6 +23,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   analytics: typeof analytics;
+  analyticsCache: typeof analyticsCache;
+  analyticsHelpers: typeof analyticsHelpers;
   climbs: typeof climbs;
   migrations: typeof migrations;
   notes: typeof notes;
