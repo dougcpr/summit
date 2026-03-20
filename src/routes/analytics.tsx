@@ -44,7 +44,7 @@ function AnalyticsPage() {
       <Focus goalGrade={GOAL_GRADE} />
 
       {/* Chapter 1: Where I Am */}
-      <div className="text-[10px] uppercase tracking-widest opacity-40 mb-1">
+      <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
         Where I Am
       </div>
       <Pyramid goalGrade={GOAL_GRADE} />
@@ -52,7 +52,7 @@ function AnalyticsPage() {
       <hr className="border-border/30 my-1.5" />
 
       {/* Chapter 2: How I Got Here */}
-      <div className="text-[10px] uppercase tracking-widest opacity-40 mb-1">
+      <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
         How I Got Here
       </div>
       <JourneyTimeline goalGrade={GOAL_GRADE} />
@@ -61,7 +61,7 @@ function AnalyticsPage() {
       <hr className="border-border/30 my-1.5" />
 
       {/* Chapter 3: Activity */}
-      <div className="text-[10px] uppercase tracking-widest opacity-40 mb-1">
+      <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
         Activity
       </div>
       <ActivityHeatmap />
