@@ -58,22 +58,27 @@ export function computePyramid(climbs: ClimbDoc[], goalGrade: string) {
 }
 
 export function computeHeatmapData(climbs: ClimbDoc[]) {
-  const byDay: Record<string, { weightedSum: number; totalWeight: number }> = {};
+  const byDay: Record<string, { weightedSum: number; totalWeight: number; holdTypes: Set<string> }> = {};
   for (const c of climbs) {
     const d = new Date(c.climbedAt);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     const num = gradeIdx(c.grade);
     if (num >= 0) {
-      if (!byDay[key]) byDay[key] = { weightedSum: 0, totalWeight: 0 };
+      if (!byDay[key]) byDay[key] = { weightedSum: 0, totalWeight: 0, holdTypes: new Set() };
       const weight = num + 1;
       byDay[key].weightedSum += num * weight;
       byDay[key].totalWeight += weight;
+      const ht = c.holdType.toLowerCase();
+      if (ht === "jug" || ht === "crimp" || ht === "sloper") {
+        byDay[key].holdTypes.add(ht);
+      }
     }
   }
 
-  return Object.entries(byDay).map(([date, { weightedSum, totalWeight }]) => ({
+  return Object.entries(byDay).map(([date, { weightedSum, totalWeight, holdTypes }]) => ({
     date,
     count: Math.round(weightedSum / totalWeight) + 1,
+    holdTypes: [...holdTypes],
   }));
 }
 

@@ -1,13 +1,15 @@
 import { useRef, useEffect } from "react";
 import { useQuery } from "convex/react";
-import { useNavigate } from "@tanstack/react-router";
 import { Moon } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
-import { GRADES, colorMap } from "../../lib/grades";
+import { GRADES, colorMap, borderColorMap } from "../../lib/grades";
 
 const emptyColor = "#f6f1e3";
-const CELL_SIZE = 22;
+const CELL_SIZE = 24;
 const CELL_GAP = 3;
+
+// Grades whose backgrounds are too dark for dark text
+const lightTextGrades = new Set(["V4", "V5", "V6", "V7", "V8", "V10"]);
 
 function getWeekStart(date: Date): Date {
   const d = new Date(date);
@@ -16,13 +18,7 @@ function getWeekStart(date: Date): Date {
   return d;
 }
 
-function formatWeekLabel(date: Date): string {
-  const month = date.toLocaleString("default", { month: "short" });
-  return `${month} ${date.getDate()}`;
-}
-
 export function ActivityHeatmap() {
-  const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
   const data = useQuery(api.analytics.heatmapData);
 
@@ -92,6 +88,41 @@ export function ActivityHeatmap() {
     }
   }
 
+  // Build color for each week
+  const weekColors = weeks.map((week, i) => {
+    const grade = week.avgGrade > 0 ? GRADES[week.avgGrade - 1] : null;
+    const fill = grade ? colorMap[grade] : emptyColor;
+    const isActive = week.days > 0;
+    const isRest = !isActive && i > firstActiveIdx;
+    return { fill, isActive, isRest };
+  });
+
+  // Group consecutive weeks with the same color
+  const groups: {
+    startIdx: number;
+    count: number;
+    fill: string;
+    isActive: boolean;
+    isRest: boolean;
+    weeks: typeof weeks;
+  }[] = [];
+  for (let i = 0; i < weeks.length; i++) {
+    const prev = groups[groups.length - 1];
+    if (prev && prev.fill === weekColors[i].fill) {
+      prev.count++;
+      prev.weeks.push(weeks[i]);
+    } else {
+      groups.push({
+        startIdx: i,
+        count: 1,
+        fill: weekColors[i].fill,
+        isActive: weekColors[i].isActive,
+        isRest: weekColors[i].isRest,
+        weeks: [weeks[i]],
+      });
+    }
+  }
+
   const stripeWidth = weeks.length * (CELL_SIZE + CELL_GAP) - CELL_GAP;
 
   return (
@@ -115,36 +146,48 @@ export function ActivityHeatmap() {
           ))}
         </div>
 
-        {/* Week stripe */}
+        {/* Week stripe with merged cells */}
         <div className="flex mt-1" style={{ gap: CELL_GAP, width: stripeWidth }}>
-          {weeks.map((week, i) => {
-            const grade = week.avgGrade > 0 ? GRADES[week.avgGrade - 1] : null;
-            const fill = grade ? colorMap[grade] : emptyColor;
-            const isActive = week.days > 0;
-            const isRest = !isActive && i > firstActiveIdx;
+          {groups.map((group) => {
+            const groupWidth =
+              group.count * CELL_SIZE + (group.count - 1) * CELL_GAP;
+
+            // Grade label for active groups
+            const grade =
+              group.isActive && group.weeks[0].avgGrade > 0
+                ? GRADES[group.weeks[0].avgGrade - 1]
+                : null;
 
             return (
-              <button
-                key={i}
-                className="rounded-md shrink-0 flex items-center justify-center"
+              <div
+                key={group.startIdx}
+                className="rounded-lg shrink-0 flex items-center justify-center overflow-hidden"
                 style={{
-                  backgroundColor: fill,
-                  width: CELL_SIZE,
+                  backgroundColor: group.fill,
+                  width: groupWidth,
                   height: CELL_SIZE,
-                  border: isActive ? "none" : "1px solid rgba(59,59,59,0.1)",
-                  cursor: isActive ? "pointer" : "default",
+                  border: grade
+                    ? `2px solid ${borderColorMap[grade] || group.fill}`
+                    : "1px solid rgba(59,59,59,0.1)",
                 }}
-                onClick={() => {
-                  if (isActive) {
-                    const d = week.start;
-                    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-                    navigate({ to: "/log", search: { date: dateStr } });
-                  }
-                }}
-                title={isRest ? `${formatWeekLabel(week.start)}: rest` : isActive ? `${formatWeekLabel(week.start)}: ${week.days} day${week.days > 1 ? "s" : ""}` : ""}
               >
-                {isRest && <Moon size={10} weight="fill" className="opacity-20" />}
-              </button>
+                {group.isRest && (
+                  <Moon size={10} weight="fill" className="opacity-20" />
+                )}
+                {grade && (
+                  <span
+                    className="font-display text-[10px] leading-none select-none"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: lightTextGrades.has(grade)
+                        ? "white"
+                        : "var(--color-border)",
+                    }}
+                  >
+                    {grade}
+                  </span>
+                )}
+              </div>
             );
           })}
         </div>

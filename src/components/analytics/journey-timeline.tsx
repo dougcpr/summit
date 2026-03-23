@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { colorMap } from "../../lib/grades";
+import { colorMap, borderColorMap } from "../../lib/grades";
 import { Mountains, FlagCheckered, FirstAid, Heartbeat } from "@phosphor-icons/react";
 
 interface JourneyTimelineProps {
@@ -27,7 +27,10 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
       {/* Timeline track */}
       <div className="relative w-full h-12">
         {/* Bar track */}
-        <div className="absolute bottom-0 left-0 right-0 h-5 bg-border/15 rounded-full" />
+        <div
+          className="absolute bottom-0 left-0 right-0 h-6 rounded-lg"
+          style={{ backgroundColor: "#f6f1e3", border: "1px solid rgba(59,59,59,0.1)" }}
+        />
 
         {/* Grade milestones with lines to bar */}
         {firstSends.map((ms) => {
@@ -40,8 +43,12 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
               style={{ left: `${pct(ms.date)}%`, top: 0, bottom: 0, transform: "translateX(-50%)" }}
             >
               <span
-                className="text-xs font-display font-bold leading-none rounded-full px-1.5 py-0.5"
-                style={{ backgroundColor: bg, color: textColor }}
+                className="text-xs font-display font-bold leading-none rounded-lg px-1.5 py-0.5"
+                style={{
+                  backgroundColor: bg,
+                  color: textColor,
+                  border: `2px solid ${borderColorMap[ms.grade] || bg}`,
+                }}
               >
                 {ms.grade}
               </span>
@@ -72,10 +79,11 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
 
         {/* Progress fill */}
         <div
-          className="absolute bottom-0 left-0 h-5 rounded-full"
+          className="absolute bottom-0 left-0 h-6 rounded-lg"
           style={{
             width: `${Math.max(1, progressPct)}%`,
             backgroundColor: "var(--color-tertiary)",
+            border: `2px solid ${borderColorMap["V0"] || "var(--color-tertiary)"}`,
           }}
         />
 
@@ -86,7 +94,7 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
           return (
             <div
               key={`gap-${i}`}
-              className="absolute bottom-0 h-5 rounded-sm"
+              className="absolute bottom-0 h-6"
               style={{
                 left: `${left}%`,
                 width: `${Math.max(1, width)}%`,
