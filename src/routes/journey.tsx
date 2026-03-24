@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { api } from "@convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { GOAL_GRADE } from "../lib/grades";
-import { JourneyTimeline } from "../components/analytics/journey-timeline";
 import { YearCalendar } from "../components/analytics/year-calendar";
 
 export const Route = createFileRoute("/journey")({
@@ -44,14 +43,6 @@ function JourneyPage() {
       className="p-4 pb-2 font-display max-w-lg mx-auto flex flex-col overflow-y-auto"
       style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
     >
-      {/* How I Got Here */}
-      <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
-        How I Got Here
-      </div>
-      <JourneyTimeline goalGrade={GOAL_GRADE} />
-
-      <hr className="border-border/30 my-1.5" />
-
       {/* Year at a Glance */}
       <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
         Year at a Glance
