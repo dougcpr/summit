@@ -19,7 +19,7 @@ function getFirstDayOfMonth(year: number, month: number): number {
   return new Date(year, month, 1).getDay();
 }
 
-export function YearCalendar({ data }: { data: HeatmapEntry[] }) {
+export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDate?: string | null }) {
   const now = new Date();
   const currentYear = now.getFullYear();
   const todayStr = `${currentYear}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -44,7 +44,7 @@ export function YearCalendar({ data }: { data: HeatmapEntry[] }) {
   return (
     <div>
       {/* Year navigation */}
-      <div className="flex items-center justify-center gap-3 mb-2">
+      <div className="flex items-center justify-center gap-3 mb-1">
         <button
           onClick={() => canGoBack && setSelectedYear((y) => y - 1)}
           className={`p-1 ${canGoBack ? "opacity-50 hover:opacity-100" : "opacity-15 cursor-default"}`}
@@ -65,26 +65,18 @@ export function YearCalendar({ data }: { data: HeatmapEntry[] }) {
       </div>
 
       {/* 3x4 month grid */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-x-1 gap-y-0.5">
         {MONTH_NAMES.map((monthName, monthIdx) => {
           const daysInMonth = getDaysInMonth(selectedYear, monthIdx);
           const firstDay = getFirstDayOfMonth(selectedYear, monthIdx);
 
           return (
-            <div key={monthName} className="px-1">
-              <div className="text-[7px] uppercase tracking-wider opacity-40 text-center mb-0.5">
+            <div key={monthName}>
+              <div className="text-[6px] uppercase tracking-wider opacity-40 text-center mb-0.5">
                 {monthName}
               </div>
-              {/* Day-of-week headers */}
-              <div className="grid grid-cols-7 gap-px mb-px">
-                {DAY_HEADERS.map((d, i) => (
-                  <div key={i} className="text-[5px] text-center opacity-25">
-                    {d}
-                  </div>
-                ))}
-              </div>
               {/* Day cells */}
-              <div className="grid grid-cols-7 gap-px">
+              <div className="grid grid-cols-7 gap-[1px]">
                 {/* Blank offset cells */}
                 {Array.from({ length: firstDay }).map((_, i) => (
                   <div key={`blank-${i}`} className="aspect-square" />
@@ -95,9 +87,14 @@ export function YearCalendar({ data }: { data: HeatmapEntry[] }) {
                   const dateStr = `${selectedYear}-${String(monthIdx + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                   const count = dayMap.get(dateStr);
                   const isFuture = dateStr > todayStr;
+                  const isGoalDate = goalDate === dateStr;
 
                   let bg = EMPTY_COLOR;
                   let border = "none";
+
+                  if (isGoalDate) {
+                    border = "2px solid rgba(202, 164, 43, 0.9)";
+                  }
 
                   if (isFuture) {
                     bg = "rgba(59,59,59,0.04)";
@@ -105,7 +102,9 @@ export function YearCalendar({ data }: { data: HeatmapEntry[] }) {
                     const grade = GRADES[count - 1];
                     if (grade) {
                       bg = colorMap[grade];
-                      border = "1px solid rgba(59,59,59,0.1)";
+                      if (!isGoalDate) {
+                        border = "1px solid rgba(59,59,59,0.1)";
+                      }
                     }
                   }
 
@@ -113,7 +112,11 @@ export function YearCalendar({ data }: { data: HeatmapEntry[] }) {
                     <div
                       key={day}
                       className="aspect-square rounded-[2px]"
-                      style={{ backgroundColor: bg, border }}
+                      style={{
+                        backgroundColor: bg,
+                        border,
+                        boxSizing: "border-box",
+                      }}
                     />
                   );
                 })}

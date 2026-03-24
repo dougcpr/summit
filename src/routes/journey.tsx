@@ -4,7 +4,6 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { GOAL_GRADE } from "../lib/grades";
 import { JourneyTimeline } from "../components/analytics/journey-timeline";
-import { HoldTypeTimeline } from "../components/analytics/hold-type-timeline";
 import { YearCalendar } from "../components/analytics/year-calendar";
 
 export const Route = createFileRoute("/journey")({
@@ -16,6 +15,7 @@ function JourneyPage() {
   useEffect(() => { ensureCache({ goalGrade: GOAL_GRADE }); }, [GOAL_GRADE]);
 
   const heatmap = useQuery(api.analytics.heatmapData);
+  const timeline = useQuery(api.analytics.timelineMilestones, { goalGrade: GOAL_GRADE });
   const isEmpty = heatmap && heatmap.length < 10;
 
   if (heatmap && isEmpty) {
@@ -31,9 +31,17 @@ function JourneyPage() {
     );
   }
 
+  // Goal date from timeline (startDate + 52 weeks)
+  const goalDateStr = timeline
+    ? (() => {
+        const d = new Date(timeline.endDate);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      })()
+    : null;
+
   return (
     <div
-      className="p-4 pb-2 font-display max-w-lg mx-auto flex flex-col justify-evenly overflow-hidden"
+      className="p-4 pb-2 font-display max-w-lg mx-auto flex flex-col overflow-y-auto"
       style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
     >
       {/* How I Got Here */}
@@ -41,8 +49,6 @@ function JourneyPage() {
         How I Got Here
       </div>
       <JourneyTimeline goalGrade={GOAL_GRADE} />
-      <div className="mt-1" />
-      <HoldTypeTimeline goalGrade={GOAL_GRADE} />
 
       <hr className="border-border/30 my-1.5" />
 
@@ -50,7 +56,7 @@ function JourneyPage() {
       <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
         Year at a Glance
       </div>
-      {heatmap && <YearCalendar data={heatmap} />}
+      {heatmap && <YearCalendar data={heatmap} goalDate={goalDateStr} />}
     </div>
   );
 }

@@ -33,7 +33,7 @@ function AnalyticsPage() {
 
   return (
     <div
-      className="p-4 pb-2 font-display max-w-lg mx-auto flex flex-col justify-evenly overflow-hidden"
+      className="p-4 pb-2 font-display max-w-lg mx-auto flex flex-col justify-start gap-2 overflow-hidden"
       style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
     >
       {/* Focus */}
