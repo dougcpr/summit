@@ -54,7 +54,7 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
         >
           <CaretLeft size={20} weight="bold" />
         </button>
-        <span className="text-xs font-display tracking-widest opacity-70">
+        <span className="text-xs font-display tracking-widest opacity-70 border border-border/30 rounded-full px-3 py-0.5">
           {selectedYear}
         </span>
         <button
