@@ -89,7 +89,7 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
               <div className="grid grid-cols-7 gap-[1px]">
                 {/* Blank offset cells */}
                 {Array.from({ length: firstDay }).map((_, i) => (
-                  <div key={`blank-${i}`} className="h-3.5" />
+                  <div key={`blank-${i}`} className="aspect-square" />
                 ))}
                 {/* Day cells */}
                 {Array.from({ length: daysInMonth }).map((_, dayIdx) => {
@@ -138,7 +138,7 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                   return (
                     <div
                       key={day}
-                      className="h-3.5 rounded-[2px] flex items-center justify-center"
+                      className="aspect-square rounded-[2px] flex items-center justify-center"
                       style={{
                         backgroundColor: bg,
                         backgroundImage,
