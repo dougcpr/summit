@@ -7,12 +7,11 @@ import { JourneyTimeline } from "../components/analytics/journey-timeline";
 import { HoldTypeTimeline } from "../components/analytics/hold-type-timeline";
 import { ActivityHeatmap } from "../components/analytics/activity-heatmap";
 import { Focus } from "../components/analytics/focus";
+import { GOAL_GRADE } from "../lib/grades";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
 });
-
-const GOAL_GRADE = "V5";
 
 function AnalyticsPage() {
   const ensureCache = useMutation(api.analyticsCache.ensureCache);

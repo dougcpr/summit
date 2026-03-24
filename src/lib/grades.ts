@@ -44,3 +44,5 @@ export const holdTypeConfig: Record<HoldType, { label: string; letter: string; c
   crimp: { label: "Crimp", letter: "C", color: "var(--color-accent)", bgColor: "rgba(89, 149, 163, 0.35)" },
   sloper: { label: "Sloper", letter: "S", color: "var(--color-tertiary)", bgColor: "rgba(106, 153, 78, 0.35)" },
 };
+
+export const GOAL_GRADE = "V5";
