@@ -46,34 +46,34 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
   return (
     <div>
       {/* Year navigation */}
-      <div className="flex items-center justify-center gap-3 mb-1">
+      <div className="flex items-center justify-center gap-4 mb-1">
         <button
           onClick={() => canGoBack && setSelectedYear((y) => y - 1)}
-          className={`p-1 ${canGoBack ? "opacity-50 hover:opacity-100" : "opacity-15 cursor-default"}`}
+          className={`p-2 -m-1 ${canGoBack ? "opacity-50 hover:opacity-100" : "opacity-15 cursor-default"}`}
           disabled={!canGoBack}
         >
-          <CaretLeft size={14} weight="bold" />
+          <CaretLeft size={20} weight="bold" />
         </button>
         <span className="text-xs font-display tracking-widest opacity-70">
           {selectedYear}
         </span>
         <button
           onClick={() => canGoForward && setSelectedYear((y) => y + 1)}
-          className={`p-1 ${canGoForward ? "opacity-50 hover:opacity-100" : "opacity-15 cursor-default"}`}
+          className={`p-2 -m-1 ${canGoForward ? "opacity-50 hover:opacity-100" : "opacity-15 cursor-default"}`}
           disabled={!canGoForward}
         >
-          <CaretRight size={14} weight="bold" />
+          <CaretRight size={20} weight="bold" />
         </button>
       </div>
 
       {/* 3x4 month grid */}
-      <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+      <div className="grid grid-cols-2 gap-x-2 gap-y-1">
         {MONTH_NAMES.map((monthName, monthIdx) => {
           const daysInMonth = getDaysInMonth(selectedYear, monthIdx);
           const firstDay = getFirstDayOfMonth(selectedYear, monthIdx);
 
           return (
-            <div key={monthName} className="border border-border/10 rounded-md p-1">
+            <div key={monthName} className="border border-border/10 rounded-md px-1 py-0.5">
               <div className="text-[6px] uppercase tracking-wider opacity-50 text-center mb-0.5 font-bold">
                 {monthName}
               </div>
@@ -86,7 +86,7 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                 ))}
               </div>
               {/* Day cells */}
-              <div className="grid grid-cols-7 gap-[2px]">
+              <div className="grid grid-cols-7 gap-[1px]">
                 {/* Blank offset cells */}
                 {Array.from({ length: firstDay }).map((_, i) => (
                   <div key={`blank-${i}`} className="aspect-square" />
