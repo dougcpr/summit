@@ -66,18 +66,26 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
       </div>
 
       {/* 3x4 month grid */}
-      <div className="grid grid-cols-3 gap-x-1 gap-y-0.5">
+      <div className="grid grid-cols-3 gap-x-3 gap-y-2">
         {MONTH_NAMES.map((monthName, monthIdx) => {
           const daysInMonth = getDaysInMonth(selectedYear, monthIdx);
           const firstDay = getFirstDayOfMonth(selectedYear, monthIdx);
 
           return (
-            <div key={monthName}>
-              <div className="text-[6px] uppercase tracking-wider opacity-40 text-center mb-0.5">
+            <div key={monthName} className="border border-border/10 rounded-md p-1">
+              <div className="text-[6px] uppercase tracking-wider opacity-50 text-center mb-0.5 font-bold">
                 {monthName}
               </div>
+              {/* Day-of-week headers */}
+              <div className="grid grid-cols-7 gap-[1px] mb-px">
+                {DAY_HEADERS.map((d, i) => (
+                  <div key={i} className="text-[4px] text-center opacity-25">
+                    {d}
+                  </div>
+                ))}
+              </div>
               {/* Day cells */}
-              <div className="grid grid-cols-7 gap-[1px]">
+              <div className="grid grid-cols-7 gap-[2px]">
                 {/* Blank offset cells */}
                 {Array.from({ length: firstDay }).map((_, i) => (
                   <div key={`blank-${i}`} className="aspect-square" />
