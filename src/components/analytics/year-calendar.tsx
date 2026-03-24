@@ -98,12 +98,14 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                   const count = dayMap.get(dateStr);
                   const isFuture = dateStr > todayStr;
                   const isGoalDate = goalDate === dateStr;
+                  const isToday = dateStr === todayStr;
 
                   let bg = EMPTY_COLOR;
                   let border = "none";
+                  let boxShadow: string | undefined;
 
-                  if (isGoalDate) {
-                    border = "2px solid rgba(202, 164, 43, 0.9)";
+                  if (isToday) {
+                    border = "2px solid var(--color-border)";
                   }
 
                   const isRest = !isFuture && count === undefined && dateStr >= earliestDate && dateStr <= todayStr;
@@ -114,10 +116,23 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                     const grade = GRADES[count - 1];
                     if (grade) {
                       bg = colorMap[grade];
-                      if (!isGoalDate) {
+                      if (!isToday) {
                         border = "1px solid rgba(128,128,128,0.15)";
                       }
                     }
+                  }
+
+                  // Checkered flag pattern for goal date
+                  let backgroundImage: string | undefined;
+                  if (isGoalDate) {
+                    backgroundImage = `
+                      repeating-conic-gradient(
+                        #3b3b3b 0% 25%,
+                        #f5f0e1 0% 50%
+                      )`;
+                    bg = "transparent";
+                    border = "none";
+                    boxShadow = "inset 0 0 0 1px rgba(202, 164, 43, 0.9)";
                   }
 
                   return (
@@ -126,7 +141,10 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                       className="aspect-square rounded-[2px] flex items-center justify-center"
                       style={{
                         backgroundColor: bg,
+                        backgroundImage,
+                        backgroundSize: isGoalDate ? "4px 4px" : undefined,
                         border,
+                        boxShadow,
                         boxSizing: "border-box",
                       }}
                     >
