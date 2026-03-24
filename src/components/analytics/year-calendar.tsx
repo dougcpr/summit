@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, Moon } from "@phosphor-icons/react";
 import { GRADES, colorMap } from "../../lib/grades";
 
 const EMPTY_COLOR = "#f6f1e3";
@@ -24,9 +24,10 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
   const currentYear = now.getFullYear();
   const todayStr = `${currentYear}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-  // Determine earliest year from data
-  const years = data.map((d) => parseInt(d.date.substring(0, 4), 10));
-  const earliestYear = years.length > 0 ? Math.min(...years) : currentYear;
+  // Determine earliest date/year from data
+  const sortedDates = data.map((d) => d.date).sort();
+  const earliestDate = sortedDates.length > 0 ? sortedDates[0] : todayStr;
+  const earliestYear = sortedDates.length > 0 ? parseInt(earliestDate.substring(0, 4), 10) : currentYear;
 
   const [selectedYear, setSelectedYear] = useState(currentYear);
 
@@ -96,6 +97,8 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                     border = "2px solid rgba(202, 164, 43, 0.9)";
                   }
 
+                  const isRest = !isFuture && count === undefined && dateStr >= earliestDate && dateStr <= todayStr;
+
                   if (isFuture) {
                     bg = "rgba(59,59,59,0.04)";
                   } else if (count !== undefined && count > 0) {
@@ -111,13 +114,15 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                   return (
                     <div
                       key={day}
-                      className="aspect-square rounded-[2px]"
+                      className="aspect-square rounded-[2px] flex items-center justify-center"
                       style={{
                         backgroundColor: bg,
                         border,
                         boxSizing: "border-box",
                       }}
-                    />
+                    >
+                      {isRest && <Moon size={6} weight="fill" className="opacity-20" />}
+                    </div>
                   );
                 })}
               </div>
