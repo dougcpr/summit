@@ -53,6 +53,8 @@ export function Focus({ goalGrade }: { goalGrade: string }) {
   const inRestPeriod = !activeWeeks.has(currentWeekStart.getTime()) && daysSinceLastClimb <= REST_DAYS && daysSinceLastClimb > 0;
   const restDaysRemaining = inRestPeriod ? Math.max(0, REST_DAYS - daysSinceLastClimb) : REST_DAYS;
 
+  if (inRestPeriod && restDaysRemaining === 0) return null;
+
   if (needsRest || inRestPeriod) {
     return (
       <div className="flex items-center justify-center gap-2 py-2">
