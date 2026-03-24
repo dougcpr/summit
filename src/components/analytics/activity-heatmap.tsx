@@ -4,7 +4,7 @@ import { Moon } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
 import { GRADES, colorMap, borderColorMap } from "../../lib/grades";
 
-const emptyColor = "#f6f1e3";
+const emptyColor = "var(--color-neutral-bg)";
 const CELL_SIZE = 24;
 const CELL_GAP = 3;
 

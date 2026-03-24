@@ -30,6 +30,19 @@
     overscroll-behavior: none;
   }
 
+  @media (prefers-color-scheme: dark) {
+    body {
+      --color-neutral-bg: rgb(26, 31, 54);
+      --color-card-bg: rgb(34, 40, 66);
+      --color-border: rgb(213, 213, 213);
+      --color-primary: #7cb65b;
+      --color-secondary: #d4a49c;
+      --color-tertiary: #7cb65b;
+      --color-accent: #6bb0c0;
+      --color-danger: #e05555;
+    }
+  }
+
   input, textarea, select, button {
     font-family: inherit;
   }

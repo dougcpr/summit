@@ -2,7 +2,8 @@ import { useState } from "react";
 import { CaretLeft, CaretRight, Moon } from "@phosphor-icons/react";
 import { GRADES, colorMap } from "../../lib/grades";
 
-const EMPTY_COLOR = "#f6f1e3";
+// Uses CSS variable so it responds to dark mode
+const EMPTY_COLOR = "var(--color-neutral-bg)";
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -108,13 +109,13 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                   const isRest = !isFuture && count === undefined && dateStr >= earliestDate && dateStr <= todayStr;
 
                   if (isFuture) {
-                    bg = "rgba(59,59,59,0.04)";
+                    bg = "rgba(128,128,128,0.08)";
                   } else if (count !== undefined && count > 0) {
                     const grade = GRADES[count - 1];
                     if (grade) {
                       bg = colorMap[grade];
                       if (!isGoalDate) {
-                        border = "1px solid rgba(59,59,59,0.1)";
+                        border = "1px solid rgba(128,128,128,0.15)";
                       }
                     }
                   }
