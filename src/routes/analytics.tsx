@@ -2,12 +2,10 @@ import { useQuery, useMutation } from "convex/react";
 import { useEffect } from "react";
 import { api } from "@convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
-import { Pyramid } from "../components/analytics/pyramid";
-import { JourneyTimeline } from "../components/analytics/journey-timeline";
-import { HoldTypeTimeline } from "../components/analytics/hold-type-timeline";
-import { ActivityHeatmap } from "../components/analytics/activity-heatmap";
-import { Focus } from "../components/analytics/focus";
 import { GOAL_GRADE } from "../lib/grades";
+import { Pyramid } from "../components/analytics/pyramid";
+import { HoldTypeTimeline } from "../components/analytics/hold-type-timeline";
+import { Focus } from "../components/analytics/focus";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
@@ -17,7 +15,6 @@ function AnalyticsPage() {
   const ensureCache = useMutation(api.analyticsCache.ensureCache);
   useEffect(() => { ensureCache({ goalGrade: GOAL_GRADE }); }, [GOAL_GRADE]);
 
-  // Empty state check
   const heatmap = useQuery(api.analytics.heatmapData);
   const isEmpty = heatmap && heatmap.length < 10;
 
@@ -42,7 +39,7 @@ function AnalyticsPage() {
       {/* Focus */}
       <Focus goalGrade={GOAL_GRADE} />
 
-      {/* Chapter 1: Where I Am */}
+      {/* Where I Am */}
       <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
         Where I Am
       </div>
@@ -50,20 +47,11 @@ function AnalyticsPage() {
 
       <hr className="border-border/30 my-1.5" />
 
-      {/* Chapter 2: How I Got Here */}
+      {/* Hold Levels */}
       <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
-        How I Got Here
+        Hold Levels
       </div>
-      <JourneyTimeline goalGrade={GOAL_GRADE} />
-      <div className="mt-1" />
       <HoldTypeTimeline goalGrade={GOAL_GRADE} />
-      <hr className="border-border/30 my-1.5" />
-
-      {/* Chapter 3: Activity */}
-      <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
-        Activity
-      </div>
-      <ActivityHeatmap />
     </div>
   );
 }
