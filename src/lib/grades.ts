@@ -15,21 +15,7 @@ const lightColorMap: Record<string, string> = {
   V10: "rgba(100, 100, 100, 0.8)",
 };
 
-const darkColorOverrides: Record<string, string> = {
-  V4: "rgba(160, 165, 175, 0.8)",
-  V10: "rgba(170, 170, 170, 0.8)",
-};
-
-function isDarkMode(): boolean {
-  return typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
-
-export const colorMap: Record<string, string> = new Proxy(lightColorMap, {
-  get(target, prop: string) {
-    if (isDarkMode() && prop in darkColorOverrides) return darkColorOverrides[prop];
-    return target[prop];
-  },
-});
+export const colorMap: Record<string, string> = lightColorMap;
 
 export const fadedColorMap: Record<string, string> = Object.fromEntries(
   Object.entries(colorMap).map(([k, v]) => [k, v.replace("0.8)", "0.3)")]),

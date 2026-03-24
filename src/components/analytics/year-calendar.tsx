@@ -67,7 +67,7 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
       </div>
 
       {/* 3x4 month grid */}
-      <div className="grid grid-cols-3 gap-x-3 gap-y-2">
+      <div className="grid grid-cols-2 gap-x-3 gap-y-2">
         {MONTH_NAMES.map((monthName, monthIdx) => {
           const daysInMonth = getDaysInMonth(selectedYear, monthIdx);
           const firstDay = getFirstDayOfMonth(selectedYear, monthIdx);
