@@ -9,7 +9,7 @@ import { HoldTypePicker } from "../components/log/hold-type-picker";
 import { ActionButtons } from "../components/log/action-buttons";
 import { TodaySummary } from "../components/log/today-summary";
 import { ClimbList } from "../components/log/climb-list";
-import { Focus } from "../components/analytics/focus";
+
 import { formatDisplayDate, normalizeToNoon, getLocalDayRange } from "../lib/dates";
 import type { HoldType } from "../lib/grades";
 
@@ -63,12 +63,8 @@ function LogPage() {
     selectedDate.getMonth() === today.getMonth() &&
     selectedDate.getDate() === today.getDate();
 
-  const goalGrade = localStorage.getItem("summit-goal-grade") || "V5";
-
   return (
     <div className="p-4 font-display max-w-lg mx-auto flex flex-col gap-4 overflow-hidden" style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}>
-      <Focus goalGrade={goalGrade} />
-
       <div className="flex-1 min-h-0">
         <NoteEditor selectedDate={selectedDate} />
       </div>
