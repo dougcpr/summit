@@ -6,7 +6,6 @@ import {
   computeHoldTypeBreakdown,
   computeTimelineMilestones,
   computeHoldTypeTimelines,
-  computeCoachNudges,
 } from "./analyticsHelpers";
 import { CACHE_VERSION } from "./analyticsCache";
 
@@ -123,21 +122,4 @@ export const holdTypeTimelines = query({
   },
 });
 
-// --- Coach Nudges ---
-
-export const coachNudges = query({
-  args: { goalGrade: v.string() },
-  handler: async (ctx, args) => {
-    const userId = await getUserId(ctx);
-    const cached = await readCache(ctx, userId, `v${CACHE_VERSION}:coachNudges:${args.goalGrade}`);
-    if (cached.hit) return cached.value as ReturnType<typeof computeCoachNudges>;
-
-    const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
-    const climbs = await ctx.db
-      .query("climbs")
-      .withIndex("by_user_date", (q: any) => q.eq("userId", userId).gte("climbedAt", ninetyDaysAgo))
-      .collect();
-    return computeCoachNudges(climbs, args.goalGrade);
-  },
-});
 

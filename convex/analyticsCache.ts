@@ -7,7 +7,6 @@ import {
   computeHoldTypeBreakdown,
   computeTimelineMilestones,
   computeHoldTypeTimelines,
-  computeCoachNudges,
   type ClimbDoc,
 } from "./analyticsHelpers";
 
@@ -92,7 +91,6 @@ export const recompute = internalMutation({
     await upsertCache(ctx, userId, `v${cv}:holdTypeBreakdown:${goalGrade}`, computeHoldTypeBreakdown(recentClimbs, goalGrade));
     await upsertCache(ctx, userId, `v${cv}:timelineMilestones:${goalGrade}`, computeTimelineMilestones(allClimbs, goalGrade));
     await upsertCache(ctx, userId, `v${cv}:holdTypeTimelines:${goalGrade}`, computeHoldTypeTimelines(allClimbs, goalGrade));
-    await upsertCache(ctx, userId, `v${cv}:coachNudges:${goalGrade}`, computeCoachNudges(recentClimbs, goalGrade));
   },
 });
 
