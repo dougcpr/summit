@@ -5,7 +5,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { GOAL_GRADE } from "../lib/grades";
 import { Pyramid } from "../components/analytics/pyramid";
 import { HoldTypeTimeline } from "../components/analytics/hold-type-timeline";
-import { Focus } from "../components/analytics/focus";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
@@ -36,9 +35,6 @@ function AnalyticsPage() {
       className="p-4 pb-2 font-display max-w-lg mx-auto flex flex-col justify-start gap-2 overflow-hidden"
       style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
     >
-      {/* Focus */}
-      <Focus goalGrade={GOAL_GRADE} />
-
       {/* Where I Am */}
       <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
         Where I Am
