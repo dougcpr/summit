@@ -69,11 +69,15 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
       {/* 3x4 month grid */}
       <div className="grid grid-cols-2 gap-x-2 gap-y-1">
         {MONTH_NAMES.map((monthName, monthIdx) => {
+          const monthPrefix = `${selectedYear}-${String(monthIdx + 1).padStart(2, "0")}`;
+          const hasData = data.some((d) => d.date.startsWith(monthPrefix));
+          if (!hasData) return null;
+
           const daysInMonth = getDaysInMonth(selectedYear, monthIdx);
           const firstDay = getFirstDayOfMonth(selectedYear, monthIdx);
 
           return (
-            <div key={monthName} className="border border-border/10 rounded-md px-1 py-0.5">
+            <div key={monthName} className="border border-border/30 rounded-md px-1 py-0.5">
               <div className="text-[6px] uppercase tracking-wider opacity-50 text-center mb-0.5 font-bold">
                 {monthName}
               </div>
