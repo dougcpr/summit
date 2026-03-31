@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { CaretLeft, CaretRight, Moon } from "@phosphor-icons/react";
-import { GRADES, colorMap } from "../../lib/grades";
+import { useNavigate } from "@tanstack/react-router";
+import { CaretLeft, CaretRight, Moon, Trophy } from "@phosphor-icons/react";
+import { GRADES, colorMap, COMPETITION_DATES } from "../../lib/grades";
 
 // Uses CSS variable so it responds to dark mode
 const EMPTY_COLOR = "var(--color-neutral-bg)";
@@ -21,6 +22,7 @@ function getFirstDayOfMonth(year: number, month: number): number {
 }
 
 export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDate?: string | null }) {
+  const navigate = useNavigate();
   const now = new Date();
   const currentYear = now.getFullYear();
   const todayStr = `${currentYear}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -39,6 +41,8 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
       dayMap.set(entry.date, entry.count);
     }
   }
+
+  const compDates = new Set(COMPETITION_DATES.map((c) => c.date));
 
   const canGoBack = selectedYear > earliestYear;
   const canGoForward = selectedYear < currentYear;
@@ -69,15 +73,16 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
       {/* 3x4 month grid */}
       <div className="grid grid-cols-2 gap-x-2 gap-y-1">
         {MONTH_NAMES.map((monthName, monthIdx) => {
-          const monthPrefix = `${selectedYear}-${String(monthIdx + 1).padStart(2, "0")}`;
-          const hasData = data.some((d) => d.date.startsWith(monthPrefix));
-          if (!hasData) return null;
+          // Hide months before the earliest recorded date
+          const monthEnd = `${selectedYear}-${String(monthIdx + 1).padStart(2, "0")}-${String(getDaysInMonth(selectedYear, monthIdx)).padStart(2, "0")}`;
+          if (monthEnd < earliestDate) return null;
 
           const daysInMonth = getDaysInMonth(selectedYear, monthIdx);
           const firstDay = getFirstDayOfMonth(selectedYear, monthIdx);
+          const isCurrentMonth = selectedYear === currentYear && monthIdx === now.getMonth();
 
           return (
-            <div key={monthName} className="border border-border/30 rounded-md px-1 py-0.5">
+            <div key={monthName} className={`border border-border/30 rounded-md px-1 py-0.5${isCurrentMonth ? " border-border/80" : ""}`}>
               <div className="text-[6px] uppercase tracking-wider opacity-50 text-center mb-0.5 font-bold">
                 {monthName}
               </div>
@@ -102,6 +107,7 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                   const count = dayMap.get(dateStr);
                   const isFuture = dateStr > todayStr;
                   const isGoalDate = goalDate === dateStr;
+                  const isCompDate = compDates.has(dateStr);
                   const isToday = dateStr === todayStr;
 
                   let bg = EMPTY_COLOR;
@@ -139,10 +145,18 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                     boxShadow = "inset 0 0 0 1px rgba(202, 164, 43, 0.9)";
                   }
 
+                  // Competition date styling
+                  if (isCompDate && !isGoalDate) {
+                    bg = "rgba(228, 196, 77, 0.25)";
+                    if (!isToday) {
+                      border = "1px solid rgba(202, 164, 43, 0.6)";
+                    }
+                  }
+
                   return (
                     <div
                       key={day}
-                      className="aspect-square rounded-[2px] flex items-center justify-center"
+                      className={`aspect-square rounded-[2px] flex items-center justify-center${!isFuture ? " cursor-pointer hover:ring-1 hover:ring-border/50" : ""}`}
                       style={{
                         backgroundColor: bg,
                         backgroundImage,
@@ -151,8 +165,10 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                         boxShadow,
                         boxSizing: "border-box",
                       }}
+                      onClick={!isFuture ? () => navigate({ to: "/log", search: { date: dateStr } }) : undefined}
                     >
-                      {isRest && <Moon size={6} weight="fill" className="opacity-20" />}
+                      {isCompDate && !isGoalDate && <Trophy size={6} weight="fill" className="opacity-60" style={{ color: "rgba(202, 164, 43, 1)" }} />}
+                      {isRest && !isCompDate && <Moon size={6} weight="fill" className="opacity-20" />}
                     </div>
                   );
                 })}

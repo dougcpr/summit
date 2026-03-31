@@ -1,6 +1,6 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { useClerk } from "@clerk/clerk-react";
-import { PencilSimple, Compass, ChartBar, SignOut } from "@phosphor-icons/react";
+import { PencilSimple, CalendarDots, ChartBar, SignOut } from "@phosphor-icons/react";
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -23,20 +23,20 @@ function RootLayout() {
           <PencilSimple size={24} weight="bold" />
         </Link>
         <Link
-          to="/journey"
-          className="flex flex-col items-center p-2 rounded-lg text-sm"
-          activeProps={{ className: "text-primary bg-primary/10" }}
-          inactiveProps={{ className: "text-border/50 hover:text-border" }}
-        >
-          <Compass size={24} weight="bold" />
-        </Link>
-        <Link
           to="/analytics"
           className="flex flex-col items-center p-2 rounded-lg text-sm"
           activeProps={{ className: "text-primary bg-primary/10" }}
           inactiveProps={{ className: "text-border/50 hover:text-border" }}
         >
           <ChartBar size={24} weight="bold" />
+        </Link>
+        <Link
+          to="/journey"
+          className="flex flex-col items-center p-2 rounded-lg text-sm"
+          activeProps={{ className: "text-primary bg-primary/10" }}
+          inactiveProps={{ className: "text-border/50 hover:text-border" }}
+        >
+          <CalendarDots size={24} weight="bold" />
         </Link>
         <div className="flex-1" />
         <button
@@ -64,15 +64,6 @@ function RootLayout() {
           <span>Log</span>
         </Link>
         <Link
-          to="/journey"
-          className="flex-1 flex flex-col items-center py-2 text-sm"
-          activeProps={{ className: "text-primary" }}
-          inactiveProps={{ className: "text-border/50" }}
-        >
-          <Compass size={24} weight="bold" />
-          <span>Journey</span>
-        </Link>
-        <Link
           to="/analytics"
           className="flex-1 flex flex-col items-center py-2 text-sm"
           activeProps={{ className: "text-primary" }}
@@ -80,6 +71,15 @@ function RootLayout() {
         >
           <ChartBar size={24} weight="bold" />
           <span>Analytics</span>
+        </Link>
+        <Link
+          to="/journey"
+          className="flex-1 flex flex-col items-center py-2 text-sm"
+          activeProps={{ className: "text-primary" }}
+          inactiveProps={{ className: "text-border/50" }}
+        >
+          <CalendarDots size={24} weight="bold" />
+          <span>Journey</span>
         </Link>
         <button
           onClick={() => signOut()}

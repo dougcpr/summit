@@ -48,3 +48,8 @@ export const holdTypeConfig: Record<HoldType, { label: string; letter: string; c
 };
 
 export const GOAL_GRADE = "V5";
+
+export const COMPETITION_DATES = [
+  { date: "2026-05-15", label: "Comp" },
+  { date: "2026-08-01", label: "Comp" },
+];

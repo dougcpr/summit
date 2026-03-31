@@ -5,6 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { GOAL_GRADE } from "../lib/grades";
 import { Pyramid } from "../components/analytics/pyramid";
 import { HoldTypeTimeline } from "../components/analytics/hold-type-timeline";
+import { RecentMonths } from "../components/analytics/recent-months";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
@@ -32,7 +33,7 @@ function AnalyticsPage() {
 
   return (
     <div
-      className="p-4 pb-2 font-display max-w-lg mx-auto flex flex-col justify-start gap-2 overflow-hidden"
+      className="p-4 pb-2 font-display max-w-lg mx-auto flex flex-col justify-start gap-2 overflow-y-auto"
       style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
     >
       {/* Where I Am */}
@@ -48,6 +49,14 @@ function AnalyticsPage() {
         Hold Levels
       </div>
       <HoldTypeTimeline goalGrade={GOAL_GRADE} />
+
+      <hr className="border-border/30 my-1.5" />
+
+      {/* Consistency */}
+      <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
+        Consistency
+      </div>
+      {heatmap && <RecentMonths data={heatmap} />}
     </div>
   );
 }
