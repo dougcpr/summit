@@ -49,7 +49,7 @@ export function HoldTypeTimeline({ goalGrade }: HoldTypeTimelineProps) {
     <div className="px-2 pb-1">
       <div className="relative">
         {/* Month grid lines - clipped to this container */}
-        <div className="absolute inset-0 ml-16 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 ml-20 overflow-hidden pointer-events-none">
           {monthTicks.map((tick) => (
             <div
               key={"line-" + tick.label + tick.pct}
@@ -60,11 +60,11 @@ export function HoldTypeTimeline({ goalGrade }: HoldTypeTimelineProps) {
         </div>
 
         {/* Month labels */}
-        <div className="relative h-4 ml-16">
+        <div className="relative h-5 ml-20">
           {monthTicks.map((tick) => (
             <span
               key={tick.label + tick.pct}
-              className="absolute text-[9px] opacity-40 font-display"
+              className="absolute text-[11px] opacity-40 font-display"
               style={{ left: `${tick.pct}%`, transform: "translateX(calc(-100% - 3px))" }}
             >
               {tick.label}
@@ -72,7 +72,7 @@ export function HoldTypeTimeline({ goalGrade }: HoldTypeTimelineProps) {
           ))}
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
         {timelines.map((tl) => {
           const Icon = holdIcons[tl.holdType as HoldType];
           const hasMilestones = tl.milestones.length > 0;
@@ -81,13 +81,13 @@ export function HoldTypeTimeline({ goalGrade }: HoldTypeTimelineProps) {
           return (
             <div key={tl.holdType} className="flex items-center gap-2">
               <div
-                className="flex items-center gap-1 w-16 rounded-md px-1.5 py-0.5"
+                className="flex items-center gap-1.5 w-20 rounded-md px-2 py-1"
                 style={{ backgroundColor: holdTypeConfig[tl.holdType as HoldType]?.bgColor }}
               >
-                {Icon && <Icon size={14} weight="bold" />}
-                <span className="text-[10px] capitalize">{tl.holdType}</span>
+                {Icon && <Icon size={16} weight="bold" />}
+                <span className="text-xs capitalize">{tl.holdType}</span>
               </div>
-              <div className="relative flex-1" style={{ height: "18px" }}>
+              <div className="relative flex-1" style={{ height: "24px" }}>
                 {/* Grade milestones */}
                 {tl.milestones.map((ms) => {
                   const bg = colorMap[ms.grade] || "var(--color-border)";
@@ -100,7 +100,7 @@ export function HoldTypeTimeline({ goalGrade }: HoldTypeTimelineProps) {
                       style={{ left: `${pct(ms.date)}%`, top: "50%", transform: "translate(-50%, -55%)" }}
                     >
                       <span
-                        className="text-[8px] font-display font-bold leading-none rounded-full px-1 py-0.5 border"
+                        className="text-[10px] font-display font-bold leading-none rounded-full px-1.5 py-0.5 border"
                         style={{ backgroundColor: bg, color: textColor, borderColor: borderBg }}
                       >
                         {ms.grade}
