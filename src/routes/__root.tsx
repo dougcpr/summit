@@ -12,7 +12,7 @@ function RootLayout() {
   return (
     <div className="flex flex-col md:flex-row min-h-dvh bg-neutral-bg">
       {/* Desktop sidebar */}
-      <nav className="hidden md:flex flex-col w-16 border-r-2 border-border bg-card-bg items-center py-4 gap-4">
+      <nav className="hidden md:flex flex-col w-16 border-r border-border/20 bg-card-bg items-center py-4 gap-4">
         <Link
           to="/log"
           search={{ date: undefined }}
@@ -52,7 +52,7 @@ function RootLayout() {
       </main>
 
       {/* Mobile bottom tab bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 flex border-t-2 border-border bg-card-bg" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 flex border-t border-border/20 bg-card-bg" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <Link
           to="/log"
           search={{ date: undefined }}

@@ -51,14 +51,14 @@ export function RecentMonths({ data }: { data: HeatmapEntry[] }) {
         const firstDay = getFirstDayOfMonth(year, month);
 
         return (
-          <div key={`${year}-${month}`} className={`border border-border/30 rounded-md px-1.5 py-1${isCurrent ? " border-border/80" : ""}`}>
-            <div className="text-[8px] uppercase tracking-wider opacity-50 text-center mb-1 font-bold">
+          <div key={`${year}-${month}`} className={`border border-border/15 rounded-md px-1.5 py-1${isCurrent ? " border-border/40" : ""}`}>
+            <div className="text-[8px] uppercase tracking-wider text-muted text-center mb-1 font-bold">
               {MONTH_NAMES[month]}
             </div>
             {/* Day-of-week headers */}
             <div className="grid grid-cols-7 gap-[2px] mb-0.5">
               {DAY_HEADERS.map((d, i) => (
-                <div key={i} className="text-[6px] text-center opacity-25">
+                <div key={i} className="text-[6px] text-center text-muted/60">
                   {d}
                 </div>
               ))}

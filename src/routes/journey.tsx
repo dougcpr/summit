@@ -23,7 +23,7 @@ function JourneyPage() {
         className="p-4 font-display max-w-lg mx-auto flex items-center justify-center"
         style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
       >
-        <p className="text-center opacity-50">
+        <p className="text-center text-muted">
           Log some more climbs to see your journey!
         </p>
       </div>
@@ -44,7 +44,7 @@ function JourneyPage() {
       style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
     >
       {/* Year at a Glance */}
-      <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
+      <div className="text-[10px] uppercase tracking-widest text-muted mb-1">
         Year at a Glance
       </div>
       {heatmap && <YearCalendar data={heatmap} goalDate={goalDateStr} />}

@@ -6,8 +6,9 @@
   --color-tertiary: #6a994e;
   --color-accent: #5995a3;
   --color-neutral-bg: #f6f1e3;
-  --color-card-bg: #ffffff;
-  --color-border: #3b3b3b;
+  --color-card-bg: #f9f6ed;
+  --color-border: #4a4033;
+  --color-muted: #8a7e6b;
   --color-danger: #c44545;
 
   --font-family-display: "VT323", monospace;

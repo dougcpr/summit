@@ -12,7 +12,7 @@ export function ActionButtons({ onAttempt, onSend, disabled }: ActionButtonsProp
       <button
         onClick={onAttempt}
         disabled={disabled}
-        className="flex-1 flex items-center justify-center py-4 text-border border-2 border-border rounded-lg active:brightness-90 disabled:opacity-30 disabled:active:brightness-100"
+        className="flex-1 flex items-center justify-center py-4 text-border rounded-lg active:brightness-90 disabled:opacity-30 disabled:active:brightness-100"
         style={{ backgroundColor: "#d96c4f" }}
       >
         <Plus size={32} weight="bold" />
@@ -20,7 +20,7 @@ export function ActionButtons({ onAttempt, onSend, disabled }: ActionButtonsProp
       <button
         onClick={onSend}
         disabled={disabled}
-        className="flex-1 flex items-center justify-center py-4 bg-primary text-border border-2 border-border rounded-lg active:brightness-90 disabled:opacity-30 disabled:active:brightness-100"
+        className="flex-1 flex items-center justify-center py-4 bg-primary text-border rounded-lg active:brightness-90 disabled:opacity-30 disabled:active:brightness-100"
       >
         <Check size={32} weight="bold" />
       </button>

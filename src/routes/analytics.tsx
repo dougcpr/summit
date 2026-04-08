@@ -24,7 +24,7 @@ function AnalyticsPage() {
         className="p-4 font-display max-w-lg mx-auto flex items-center justify-center"
         style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
       >
-        <p className="text-center opacity-50">
+        <p className="text-center text-muted">
           Log some more climbs to see your analytics!
         </p>
       </div>
@@ -37,23 +37,23 @@ function AnalyticsPage() {
       style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
     >
       {/* Where I Am */}
-      <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
+      <div className="text-[10px] uppercase tracking-widest text-muted mb-1">
         Where I Am
       </div>
       <Pyramid goalGrade={GOAL_GRADE} />
 
-      <hr className="border-border/30 my-1.5" />
+      <hr className="border-border/15 my-3" />
 
       {/* Hold Levels */}
-      <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
+      <div className="text-[10px] uppercase tracking-widest text-muted mb-1">
         Hold Levels
       </div>
       <HoldTypeTimeline goalGrade={GOAL_GRADE} />
 
-      <hr className="border-border/30 my-1.5" />
+      <hr className="border-border/15 my-3" />
 
       {/* Consistency */}
-      <div className="text-[10px] uppercase tracking-widest opacity-70 mb-1">
+      <div className="text-[10px] uppercase tracking-widest text-muted mb-1">
         Consistency
       </div>
       {heatmap && <RecentMonths data={heatmap} />}

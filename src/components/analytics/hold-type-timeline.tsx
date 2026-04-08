@@ -64,7 +64,7 @@ export function HoldTypeTimeline({ goalGrade }: HoldTypeTimelineProps) {
           {monthTicks.map((tick) => (
             <span
               key={tick.label + tick.pct}
-              className="absolute text-[11px] opacity-40 font-display"
+              className="absolute text-[11px] text-muted font-display"
               style={{ left: `${tick.pct}%`, transform: "translateX(calc(-100% - 3px))" }}
             >
               {tick.label}

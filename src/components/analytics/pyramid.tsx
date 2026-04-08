@@ -47,7 +47,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
   return (
     <div className="px-2">
       <div className="flex justify-end">
-        <span className="text-xs opacity-50 font-display">{totalClimbs} climbs</span>
+        <span className="text-xs text-muted font-display">{totalClimbs} climbs</span>
       </div>
       <div className="flex flex-col gap-1">
         {activeRows.map((row) => {

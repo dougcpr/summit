@@ -58,7 +58,7 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
         >
           <CaretLeft size={20} weight="bold" />
         </button>
-        <span className="text-xs font-display tracking-widest opacity-70 border border-border/30 rounded-full px-3 py-0.5">
+        <span className="text-xs font-display tracking-widest text-muted border border-border/20 rounded-full px-3 py-0.5">
           {selectedYear}
         </span>
         <button
@@ -82,14 +82,14 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
           const isCurrentMonth = selectedYear === currentYear && monthIdx === now.getMonth();
 
           return (
-            <div key={monthName} className={`border border-border/30 rounded-md px-1 py-0.5${isCurrentMonth ? " border-border/80" : ""}`}>
-              <div className="text-[6px] uppercase tracking-wider opacity-50 text-center mb-0.5 font-bold">
+            <div key={monthName} className={`border border-border/15 rounded-md px-1 py-0.5${isCurrentMonth ? " border-border/40" : ""}`}>
+              <div className="text-[6px] uppercase tracking-wider text-muted text-center mb-0.5 font-bold">
                 {monthName}
               </div>
               {/* Day-of-week headers */}
               <div className="grid grid-cols-7 gap-[1px] mb-px">
                 {DAY_HEADERS.map((d, i) => (
-                  <div key={i} className="text-[4px] text-center opacity-25">
+                  <div key={i} className="text-[4px] text-center text-muted/60">
                     {d}
                   </div>
                 ))}
@@ -137,8 +137,8 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                   if (isGoalDate) {
                     backgroundImage = `
                       repeating-conic-gradient(
-                        #3b3b3b 0% 25%,
-                        #f5f0e1 0% 50%
+                        var(--color-border) 0% 25%,
+                        var(--color-neutral-bg) 0% 50%
                       )`;
                     bg = "transparent";
                     border = "none";
