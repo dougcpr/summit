@@ -1,6 +1,8 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
+import { getGoalGradeFromCache } from "./analyticsCache";
 
 async function getUserId(ctx: {
   auth: { getUserIdentity: () => Promise<{ tokenIdentifier: string } | null> };
@@ -130,11 +132,19 @@ export const remove = mutation({
       .query("climbs")
       .withIndex("by_project", (q) => q.eq("projectId", args.id))
       .collect();
-    for (const c of climbs) await ctx.db.patch(c._id, { projectId: undefined });
+    for (const c of climbs) await ctx.db.delete(c._id);
 
     await ctx.storage.delete(project.photoStorageId);
 
     await ctx.db.delete(args.id);
+
+    if (climbs.length > 0) {
+      const goalGrade = await getGoalGradeFromCache(ctx, userId);
+      await ctx.scheduler.runAfter(0, internal.analyticsCache.recompute, {
+        userId,
+        goalGrade,
+      });
+    }
   },
 });
 
