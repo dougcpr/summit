@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMutation } from "convex/react";
-import { X } from "@phosphor-icons/react";
+import { X, Circle, CircleHalf, CheckCircle, type Icon } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { VocabChipPicker } from "./vocab-chip-picker";
@@ -12,10 +12,10 @@ interface MoveDetailSheetProps {
   onClose: () => void;
 }
 
-const STATES: { value: MoveState; label: string; emoji: string }[] = [
-  { value: "todo", label: "todo", emoji: "⚪" },
-  { value: "working", label: "working", emoji: "🔵" },
-  { value: "done", label: "done", emoji: "🟢" },
+const STATES: { value: MoveState; label: string; Icon: Icon; color: string }[] = [
+  { value: "todo",    label: "todo",    Icon: Circle,      color: "var(--color-secondary)" },
+  { value: "working", label: "working", Icon: CircleHalf,  color: "var(--color-accent)" },
+  { value: "done",    label: "done",    Icon: CheckCircle, color: "var(--color-primary)" },
 ];
 
 export function MoveDetailSheet({ move, onClose }: MoveDetailSheetProps) {
@@ -99,13 +99,15 @@ export function MoveDetailSheet({ move, onClose }: MoveDetailSheetProps) {
                 <button
                   key={s.value}
                   onClick={() => handleStateChange(s.value)}
-                  className={`flex-1 py-2 rounded-md text-sm font-display ${
+                  className={`flex-1 py-2 rounded-md text-sm font-display flex items-center justify-center gap-1.5 ${
                     sel
-                      ? "bg-primary text-border font-bold"
+                      ? "text-border font-bold"
                       : "bg-card-bg text-border/70 border border-border/20"
                   }`}
+                  style={sel ? { backgroundColor: s.color } : undefined}
                 >
-                  {s.emoji} {s.label}
+                  <s.Icon size={18} weight={sel ? "fill" : "bold"} />
+                  {s.label}
                 </button>
               );
             })}
