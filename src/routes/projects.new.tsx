@@ -33,7 +33,7 @@ function NewProjectPage() {
         holdType,
         photoStorageId,
       });
-      navigate({ to: "/projects/$projectId", params: { projectId: id } });
+      navigate({ to: "/projects/$projectId", params: { projectId: id }, search: { status: "active" } });
     } catch (err) {
       setCreating(false);
       alert(err instanceof Error ? err.message : "Failed to create project");

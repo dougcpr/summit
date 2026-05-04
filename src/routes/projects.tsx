@@ -69,7 +69,7 @@ function ProjectsPage() {
               key={p._id}
               project={p}
               onClick={() =>
-                navigate({ to: "/projects/$projectId", params: { projectId: p._id } })
+                navigate({ to: "/projects/$projectId", params: { projectId: p._id }, search: { status } })
               }
             />
           ))}
