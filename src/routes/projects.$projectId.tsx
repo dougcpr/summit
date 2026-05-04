@@ -108,6 +108,10 @@ function ProjectDetailPage() {
           {project.grade}
         </span>
         <span className="text-muted">{holdCfg?.label}</span>
+        <span className="text-muted">·</span>
+        <span className="text-muted">
+          {attempts} {attempts === 1 ? "attempt" : "attempts"}
+        </span>
         {project.status === "sent" && (
           <span className="text-xs text-primary font-bold">✓ Sent</span>
         )}
@@ -120,11 +124,8 @@ function ProjectDetailPage() {
         onMarkerTap={(m) => setSelectedMoveId(m._id as Id<"projectMoves">)}
       />
 
-      <div className="flex items-center gap-3">
+      <div className="flex">
         <AttemptButton projectId={id} grade={project.grade} holdType={project.holdType} />
-        <p className="text-sm text-muted">
-          {attempts} {attempts === 1 ? "attempt" : "attempts"}
-        </p>
       </div>
 
       <MoveDetailSheet move={selectedMove} onClose={() => setSelectedMoveId(null)} />
