@@ -38,7 +38,6 @@ function ProjectDetailPage() {
   }
 
   const holdCfg = holdTypeConfig[project.holdType as HoldType];
-  const movesDone = moves.filter((m) => m.state === "done").length;
   const attempts = (allClimbs ?? []).filter((c) => c.projectId === id).length;
   const selectedMove =
     selectedMoveId ? moves.find((m) => m._id === selectedMoveId) ?? null : null;
@@ -124,7 +123,7 @@ function ProjectDetailPage() {
       <div className="flex items-center gap-3">
         <AttemptButton projectId={id} grade={project.grade} holdType={project.holdType} />
         <p className="text-sm text-muted">
-          {movesDone} / {moves.length} done · {attempts} attempts
+          {attempts} {attempts === 1 ? "attempt" : "attempts"}
         </p>
       </div>
 
