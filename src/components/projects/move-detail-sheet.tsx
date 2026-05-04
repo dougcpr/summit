@@ -31,6 +31,16 @@ export function MoveDetailSheet({ move, onClose }: MoveDetailSheetProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [move?._id]);
 
+  useEffect(() => {
+    if (!move) return;
+    if (notesDraft === move.notes) return;
+    const timer = setTimeout(() => {
+      updateNotes({ id: move._id as Id<"projectMoves">, notes: notesDraft });
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notesDraft, move?._id]);
+
   if (!move) return null;
 
   const handleStateChange = (next: MoveState) => {

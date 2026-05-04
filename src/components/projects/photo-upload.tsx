@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useMutation } from "convex/react";
 import { Camera } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
@@ -17,6 +17,12 @@ export function PhotoUpload({ onUploaded }: PhotoUploadProps) {
   const [status, setStatus] = useState<Status>("idle");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   const handleFile = async (file: File) => {
     setStatus("uploading");
@@ -62,7 +68,6 @@ export function PhotoUpload({ onUploaded }: PhotoUploadProps) {
         ref={inputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         onChange={handleChange}
         className="hidden"
       />

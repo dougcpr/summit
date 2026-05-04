@@ -74,20 +74,27 @@ function ProjectDetailPage() {
             <DotsThree size={24} weight="bold" />
           </button>
           {menuOpen && (
-            <div className="absolute right-0 top-8 bg-card-bg border border-border/20 rounded-md shadow-md z-30 w-32">
-              <button
-                onClick={handleRename}
-                className="block w-full text-left px-3 py-2 text-sm text-border hover:bg-neutral-bg"
-              >
-                Rename
-              </button>
-              <button
-                onClick={handleDelete}
-                className="block w-full text-left px-3 py-2 text-sm text-red-700 hover:bg-neutral-bg"
-              >
-                Delete
-              </button>
-            </div>
+            <>
+              <div
+                onClick={() => setMenuOpen(false)}
+                className="fixed inset-0 z-20"
+                aria-label="Close menu"
+              />
+              <div className="absolute right-0 top-8 bg-card-bg border border-border/20 rounded-md shadow-md z-30 w-32">
+                <button
+                  onClick={handleRename}
+                  className="block w-full text-left px-3 py-2 text-sm text-border hover:bg-neutral-bg"
+                >
+                  Rename
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="block w-full text-left px-3 py-2 text-sm text-red-700 hover:bg-neutral-bg"
+                >
+                  Delete
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>
