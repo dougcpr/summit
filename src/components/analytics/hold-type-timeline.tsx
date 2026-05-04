@@ -75,8 +75,6 @@ export function HoldTypeTimeline({ goalGrade }: HoldTypeTimelineProps) {
         <div className="flex flex-col gap-2">
         {timelines.map((tl) => {
           const Icon = holdIcons[tl.holdType as HoldType];
-          const hasMilestones = tl.milestones.length > 0;
-          const lastDate = hasMilestones ? Math.max(...tl.milestones.map((m) => m.date)) : 0;
 
           return (
             <div key={tl.holdType} className="flex items-center gap-2">
