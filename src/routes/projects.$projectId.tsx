@@ -101,7 +101,7 @@ function ProjectDetailPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center justify-center gap-2 text-sm">
         <span
           className="px-2 py-0.5 rounded-full text-xs font-bold text-border"
           style={{ backgroundColor: holdCfg?.color ?? "var(--color-primary)" }}
@@ -121,11 +121,12 @@ function ProjectDetailPage() {
         onMarkerTap={(m) => setSelectedMoveId(m._id as Id<"projectMoves">)}
       />
 
-      <p className="text-sm text-muted text-center">
-        {movesDone} / {moves.length} done · {attempts} attempts
-      </p>
-
-      <AttemptButton projectId={id} grade={project.grade} holdType={project.holdType} />
+      <div className="flex items-center gap-3">
+        <AttemptButton projectId={id} grade={project.grade} holdType={project.holdType} />
+        <p className="text-sm text-muted">
+          {movesDone} / {moves.length} done · {attempts} attempts
+        </p>
+      </div>
 
       <MoveDetailSheet move={selectedMove} onClose={() => setSelectedMoveId(null)} />
     </div>

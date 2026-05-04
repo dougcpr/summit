@@ -29,13 +29,13 @@ export function AttemptButton({ projectId, grade, holdType }: AttemptButtonProps
   return (
     <button
       onClick={handleClick}
-      className={`w-full py-4 rounded-lg flex items-center justify-center gap-2 text-border font-display font-bold active:brightness-90 ${
+      aria-label="Log attempt"
+      className={`shrink-0 w-14 h-14 rounded-lg flex items-center justify-center text-border active:brightness-90 ${
         pulsing ? "animate-pulse" : ""
       }`}
       style={{ backgroundColor: "#d96c4f" }}
     >
-      <Plus size={24} weight="bold" />
-      <span>attempt today</span>
+      <Plus size={28} weight="bold" />
     </button>
   );
 }
