@@ -124,7 +124,7 @@ function ProjectDetailPage() {
         onMarkerTap={(m) => setSelectedMoveId(m._id as Id<"projectMoves">)}
       />
 
-      <div className="flex">
+      <div className="flex w-full max-w-md mx-auto">
         <AttemptButton projectId={id} grade={project.grade} holdType={project.holdType} />
       </div>
 
