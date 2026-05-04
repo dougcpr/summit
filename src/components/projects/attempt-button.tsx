@@ -30,7 +30,7 @@ export function AttemptButton({ projectId, grade, holdType }: AttemptButtonProps
     <button
       onClick={handleClick}
       aria-label="Log attempt"
-      className={`shrink-0 w-14 h-14 rounded-lg flex items-center justify-center text-border active:brightness-90 ${
+      className={`flex-1 h-14 rounded-lg flex items-center justify-center text-border active:brightness-90 ${
         pulsing ? "animate-pulse" : ""
       }`}
       style={{ backgroundColor: "#d96c4f" }}
