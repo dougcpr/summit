@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation } from "convex/react";
 import { CaretLeft, DotsThree } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
-import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { Id } from "@convex/_generated/dataModel";
 import { holdTypeConfig, type HoldType } from "../lib/grades";
 import { ProjectCanvas } from "../components/projects/project-canvas";
 import { MoveDetailSheet } from "../components/projects/move-detail-sheet";
@@ -23,7 +23,7 @@ function ProjectDetailPage() {
   const renameProject = useMutation(api.projects.rename);
   const deleteProject = useMutation(api.projects.remove);
 
-  const [selectedMove, setSelectedMove] = useState<Doc<"projectMoves"> | null>(null);
+  const [selectedMoveId, setSelectedMoveId] = useState<Id<"projectMoves"> | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   // All hooks must run before any early return — keep loading checks below this line.
@@ -40,6 +40,8 @@ function ProjectDetailPage() {
   const holdCfg = holdTypeConfig[project.holdType as HoldType];
   const movesDone = moves.filter((m) => m.state === "done").length;
   const attempts = (allClimbs ?? []).filter((c) => c.projectId === id).length;
+  const selectedMove =
+    selectedMoveId ? moves.find((m) => m._id === selectedMoveId) ?? null : null;
 
   const handleRename = () => {
     const next = prompt("Rename project", project.name);
@@ -116,7 +118,7 @@ function ProjectDetailPage() {
         projectId={id}
         photoUrl={project.photoUrl}
         moves={moves}
-        onMarkerTap={setSelectedMove}
+        onMarkerTap={(m) => setSelectedMoveId(m._id as Id<"projectMoves">)}
       />
 
       <p className="text-sm text-muted text-center">
@@ -125,7 +127,7 @@ function ProjectDetailPage() {
 
       <AttemptButton projectId={id} grade={project.grade} holdType={project.holdType} />
 
-      <MoveDetailSheet move={selectedMove} onClose={() => setSelectedMove(null)} />
+      <MoveDetailSheet move={selectedMove} onClose={() => setSelectedMoveId(null)} />
     </div>
   );
 }
