@@ -15,6 +15,7 @@ function JourneyPage() {
 
   const heatmap = useQuery(api.analytics.heatmapData);
   const timeline = useQuery(api.analytics.timelineMilestones, { goalGrade: GOAL_GRADE });
+  const trainingData = useQuery(api.analytics.trainingByDate);
   const isEmpty = heatmap && heatmap.length < 10;
 
   if (heatmap && isEmpty) {
@@ -47,7 +48,7 @@ function JourneyPage() {
       <div className="text-[10px] uppercase tracking-widest text-muted mb-1">
         Year at a Glance
       </div>
-      {heatmap && <YearCalendar data={heatmap} goalDate={goalDateStr} />}
+      {heatmap && <YearCalendar data={heatmap} trainingData={trainingData ?? []} goalDate={goalDateStr} />}
     </div>
   );
 }
