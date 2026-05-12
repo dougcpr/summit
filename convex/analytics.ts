@@ -122,4 +122,25 @@ export const holdTypeTimelines = query({
   },
 });
 
+// --- Training Sessions By Date (for Year Calendar) ---
+
+export const trainingByDate = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getUserId(ctx);
+    const sessions = await ctx.db
+      .query("trainingSessions")
+      .withIndex("by_user_date", (q: any) => q.eq("userId", userId))
+      .collect();
+
+    const counts: Record<string, number> = {};
+    for (const s of sessions) {
+      const d = new Date(s.trainedAt);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      counts[key] = (counts[key] || 0) + 1;
+    }
+
+    return Object.entries(counts).map(([date, count]) => ({ date, count }));
+  },
+});
 
