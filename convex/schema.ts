@@ -56,4 +56,10 @@ export default defineSchema({
     vocabTags: v.array(v.string()),
     notes: v.string(),
   }).index("by_project", ["projectId"]),
+
+  trainingSessions: defineTable({
+    userId: v.string(),
+    type: v.union(v.literal("fingerboard")),
+    trainedAt: v.number(),
+  }).index("by_user_date", ["userId", "trainedAt"]),
 });
