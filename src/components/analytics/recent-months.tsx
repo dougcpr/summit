@@ -5,7 +5,6 @@ import { GRADES, colorMap } from "../../lib/grades";
 const EMPTY_COLOR = "var(--color-neutral-bg)";
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
-const lightTextGrades = new Set(["V4", "V5", "V6", "V7", "V8", "V10"]);
 
 interface HeatmapEntry {
   date: string;   // "YYYY-MM-DD"
@@ -89,8 +88,7 @@ export function RecentMonths({
                 const day = dayIdx + 1;
                 const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                 const count = dayMap.get(dateStr);
-                const trainingCount = trainingMap.get(dateStr);
-                const hasTraining = trainingCount !== undefined && trainingCount > 0;
+                const hasTraining = (trainingMap.get(dateStr) ?? 0) > 0;
                 const hasClimb = count !== undefined && count > 0;
                 const isFuture = dateStr > todayStr;
                 const isToday = dateStr === todayStr;
@@ -127,7 +125,7 @@ export function RecentMonths({
                 return (
                   <div
                     key={day}
-                    className={`relative aspect-square rounded-[3px] flex items-center justify-center${!isFuture ? " cursor-pointer hover:ring-1 hover:ring-border/50" : ""}`}
+                    className={`aspect-square rounded-[3px] flex items-center justify-center${!isFuture ? " cursor-pointer hover:ring-1 hover:ring-border/50" : ""}`}
                     style={{
                       backgroundColor: bg,
                       backgroundImage,
@@ -138,21 +136,6 @@ export function RecentMonths({
                     onClick={!isFuture ? () => navigate({ to: "/log", search: { date: dateStr } }) : undefined}
                   >
                     {isRest && <Moon size={8} weight="fill" className="opacity-20" />}
-                    {hasTraining && (
-                      <span
-                        className="absolute font-display font-bold leading-none select-none"
-                        style={{
-                          top: 1,
-                          right: 2,
-                          fontSize: 8,
-                          color: hasClimb
-                            ? (lightTextGrades.has(GRADES[count - 1]) ? "white" : "var(--color-border)")
-                            : "#4a4a52",
-                        }}
-                      >
-                        {trainingCount}
-                      </span>
-                    )}
                   </div>
                 );
               })}
