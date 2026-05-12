@@ -21,8 +21,22 @@ function getFirstDayOfMonth(year: number, month: number): number {
   return new Date(year, month, 1).getDay();
 }
 
-export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDate?: string | null }) {
+interface TrainingEntry {
+  date: string;  // "YYYY-MM-DD"
+  count: number;
+}
+
+export function YearCalendar({
+  data,
+  trainingData = [],
+  goalDate,
+}: {
+  data: HeatmapEntry[];
+  trainingData?: TrainingEntry[];
+  goalDate?: string | null;
+}) {
   const navigate = useNavigate();
+  const lightTextGrades = new Set(["V4", "V5", "V6", "V7", "V8", "V10"]);
   const now = new Date();
   const currentYear = now.getFullYear();
   const todayStr = `${currentYear}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -39,6 +53,13 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
   for (const entry of data) {
     if (entry.date.startsWith(String(selectedYear))) {
       dayMap.set(entry.date, entry.count);
+    }
+  }
+
+  const trainingMap = new Map<string, number>();
+  for (const entry of trainingData) {
+    if (entry.date.startsWith(String(selectedYear))) {
+      trainingMap.set(entry.date, entry.count);
     }
   }
 
@@ -109,6 +130,9 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                   const isGoalDate = goalDate === dateStr;
                   const isCompDate = compDates.has(dateStr);
                   const isToday = dateStr === todayStr;
+                  const trainingCount = trainingMap.get(dateStr);
+                  const hasTraining = trainingCount !== undefined && trainingCount > 0;
+                  const hasClimb = count !== undefined && count > 0;
 
                   let bg = EMPTY_COLOR;
                   let border = "none";
@@ -118,11 +142,13 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                     border = "2px solid var(--color-border)";
                   }
 
-                  const isRest = !isFuture && count === undefined && dateStr >= earliestDate && dateStr <= todayStr;
+                  const isRest = !isFuture && !hasClimb && !hasTraining && dateStr >= earliestDate && dateStr <= todayStr;
+
+                  let backgroundImageFromTraining: string | undefined;
 
                   if (isFuture) {
                     bg = "rgba(128,128,128,0.08)";
-                  } else if (count !== undefined && count > 0) {
+                  } else if (hasClimb) {
                     const grade = GRADES[count - 1];
                     if (grade) {
                       bg = colorMap[grade];
@@ -130,10 +156,16 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                         border = "1px solid rgba(128,128,128,0.15)";
                       }
                     }
+                  } else if (hasTraining) {
+                    bg = "rgba(74,74,82,0.12)";
+                    backgroundImageFromTraining = "radial-gradient(#4a4a52 1px, transparent 1.4px)";
+                    if (!isToday) {
+                      border = "1px solid rgba(74,74,82,0.25)";
+                    }
                   }
 
                   // Checkered flag pattern for goal date
-                  let backgroundImage: string | undefined;
+                  let backgroundImage: string | undefined = backgroundImageFromTraining;
                   if (isGoalDate) {
                     backgroundImage = `
                       repeating-conic-gradient(
@@ -156,11 +188,11 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                   return (
                     <div
                       key={day}
-                      className={`aspect-square rounded-[2px] flex items-center justify-center${!isFuture ? " cursor-pointer hover:ring-1 hover:ring-border/50" : ""}`}
+                      className={`relative aspect-square rounded-[2px] flex items-center justify-center${!isFuture ? " cursor-pointer hover:ring-1 hover:ring-border/50" : ""}`}
                       style={{
                         backgroundColor: bg,
                         backgroundImage,
-                        backgroundSize: isGoalDate ? "4px 4px" : undefined,
+                        backgroundSize: isGoalDate ? "4px 4px" : (backgroundImageFromTraining && !isGoalDate ? "5px 5px" : undefined),
                         border,
                         boxShadow,
                         boxSizing: "border-box",
@@ -169,6 +201,21 @@ export function YearCalendar({ data, goalDate }: { data: HeatmapEntry[]; goalDat
                     >
                       {isCompDate && !isGoalDate && <Trophy size={6} weight="fill" className="opacity-60" style={{ color: "rgba(202, 164, 43, 1)" }} />}
                       {isRest && !isCompDate && <Moon size={6} weight="fill" className="opacity-20" />}
+                      {hasTraining && !isGoalDate && (
+                        <span
+                          className="absolute font-display font-bold leading-none select-none"
+                          style={{
+                            top: 1,
+                            right: 2,
+                            fontSize: 6,
+                            color: hasClimb
+                              ? (lightTextGrades.has(GRADES[count - 1]) ? "white" : "var(--color-border)")
+                              : "#4a4a52",
+                          }}
+                        >
+                          {trainingCount}
+                        </span>
+                      )}
                     </div>
                   );
                 })}
