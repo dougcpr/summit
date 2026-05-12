@@ -1,5 +1,38 @@
 import { mutation } from "./_generated/server";
 
+export const clearProjects = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const climbsWithProject = await ctx.db.query("climbs").collect();
+    let climbsUpdated = 0;
+    for (const c of climbsWithProject) {
+      if ((c as { projectId?: unknown }).projectId !== undefined) {
+        await ctx.db.patch(c._id, { projectId: undefined });
+        climbsUpdated++;
+      }
+    }
+
+    const moves = await ctx.db.query("projectMoves").collect();
+    for (const m of moves) await ctx.db.delete(m._id);
+
+    const projects = await ctx.db.query("projects").collect();
+    for (const p of projects) {
+      try {
+        await ctx.storage.delete(p.photoStorageId);
+      } catch {
+        // photo already gone
+      }
+      await ctx.db.delete(p._id);
+    }
+
+    return {
+      climbsUpdated,
+      movesDeleted: moves.length,
+      projectsDeleted: projects.length,
+    };
+  },
+});
+
 export const backfillUnknownHoldTypes = mutation({
   args: {},
   handler: async (ctx) => {
