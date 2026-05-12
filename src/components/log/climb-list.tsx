@@ -13,6 +13,7 @@ const holdIcons: Record<HoldType, React.ElementType> = {
 
 interface ClimbListProps {
   climbs: Doc<"climbs">[];
+  trainingSessions: Doc<"trainingSessions">[];
 }
 
 function ClimbChip({ climb }: { climb: Doc<"climbs"> }) {
@@ -39,7 +40,28 @@ function ClimbChip({ climb }: { climb: Doc<"climbs"> }) {
   );
 }
 
-export function ClimbList({ climbs }: ClimbListProps) {
+function FingerboardChip({ sessions }: { sessions: Doc<"trainingSessions">[] }) {
+  const removeTraining = useMutation(api.training.remove);
+  if (sessions.length === 0) return null;
+
+  const handleDelete = () => {
+    removeTraining({ id: sessions[0]._id as Id<"trainingSessions"> });
+  };
+
+  return (
+    <button
+      onClick={handleDelete}
+      className="flex items-center gap-1 px-2.5 py-1.5 rounded-full shrink-0 active:brightness-90"
+      style={{ backgroundColor: "#4a4a52" }}
+    >
+      <span className="text-sm font-display text-white font-bold">
+        FB ×{sessions.length}
+      </span>
+    </button>
+  );
+}
+
+export function ClimbList({ climbs, trainingSessions }: ClimbListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [hiddenCount, setHiddenCount] = useState(0);
 
@@ -58,7 +80,7 @@ export function ClimbList({ climbs }: ClimbListProps) {
 
   useEffect(() => {
     calcHidden();
-  }, [climbs, calcHidden]);
+  }, [climbs, trainingSessions, calcHidden]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -67,7 +89,7 @@ export function ClimbList({ climbs }: ClimbListProps) {
     return () => el.removeEventListener("scroll", calcHidden);
   }, [calcHidden]);
 
-  if (climbs.length === 0) {
+  if (climbs.length === 0 && trainingSessions.length === 0) {
     return (
       <p className="text-sm text-muted py-2">
         No climbs yet.
@@ -87,6 +109,11 @@ export function ClimbList({ climbs }: ClimbListProps) {
             <ClimbChip climb={climb} />
           </span>
         ))}
+        {trainingSessions.length > 0 && (
+          <span data-chip>
+            <FingerboardChip sessions={trainingSessions} />
+          </span>
+        )}
       </div>
       {hiddenCount > 0 && (
         <div className="absolute right-0 top-0 bottom-1 flex items-center pl-4 pointer-events-none" style={{ background: "linear-gradient(to right, transparent, var(--color-neutral-bg) 50%)" }}>
