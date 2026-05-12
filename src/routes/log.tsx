@@ -36,6 +36,9 @@ function LogPage() {
   const { startTime, endTime } = getLocalDayRange(selectedDate);
   const climbs = useQuery(api.climbs.getByDate, { startTime, endTime });
 
+  const addTraining = useMutation(api.training.add);
+  const trainingSessions = useQuery(api.training.getByDate, { startTime, endTime });
+
   const goBack = () => {
     const d = new Date(selectedDate);
     d.setDate(d.getDate() - 1);
@@ -57,6 +60,13 @@ function LogPage() {
     });
   };
 
+  const handleLogTraining = () => {
+    addTraining({
+      type: "fingerboard",
+      trainedAt: normalizeToNoon(selectedDate),
+    });
+  };
+
   const today = new Date();
   const isToday =
     selectedDate.getFullYear() === today.getFullYear() &&
@@ -74,7 +84,7 @@ function LogPage() {
       <div className="flex items-center gap-3 shrink-0 pt-3 pb-1">
         <TodaySummary climbs={climbs ?? []} />
         <div className="flex-1 min-w-0">
-          <ClimbList climbs={climbs ?? []} />
+          <ClimbList climbs={climbs ?? []} trainingSessions={trainingSessions ?? []} />
         </div>
       </div>
 
@@ -85,6 +95,7 @@ function LogPage() {
         <ActionButtons
           onAttempt={() => handleLog(false)}
           onSend={() => handleLog(true)}
+          onFingerboard={handleLogTraining}
         />
       </div>
 
