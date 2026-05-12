@@ -46,7 +46,6 @@ export const add = mutation({
     completed: v.boolean(),
     holdType: v.string(),
     climbedAt: v.number(),
-    projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
