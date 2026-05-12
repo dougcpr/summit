@@ -3,6 +3,7 @@ import { Moon } from "@phosphor-icons/react";
 import { GRADES, colorMap } from "../../lib/grades";
 
 const EMPTY_COLOR = "var(--color-neutral-bg)";
+const TRAINING_FILL = "rgba(74,74,82,0.32)";
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -108,7 +109,12 @@ export function RecentMonths({
                 } else if (hasClimb) {
                   const grade = GRADES[count - 1];
                   if (grade) {
-                    bg = colorMap[grade];
+                    if (hasTraining) {
+                      backgroundImage = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                      bg = "transparent";
+                    } else {
+                      bg = colorMap[grade];
+                    }
                     if (!isToday) {
                       border = "1px solid rgba(128,128,128,0.15)";
                     }

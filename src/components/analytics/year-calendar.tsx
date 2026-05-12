@@ -5,6 +5,7 @@ import { GRADES, colorMap, COMPETITION_DATES } from "../../lib/grades";
 
 // Uses CSS variable so it responds to dark mode
 const EMPTY_COLOR = "var(--color-neutral-bg)";
+const TRAINING_FILL = "rgba(74,74,82,0.32)";
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -143,34 +144,43 @@ export function YearCalendar({
 
                   const isRest = !isFuture && !hasClimb && !hasTraining && dateStr >= earliestDate && dateStr <= todayStr;
 
-                  let backgroundImageFromTraining: string | undefined;
+                  let dotPattern: string | undefined;
+                  let splitGradient: string | undefined;
 
                   if (isFuture) {
                     bg = "rgba(128,128,128,0.08)";
                   } else if (hasClimb) {
                     const grade = GRADES[count - 1];
                     if (grade) {
-                      bg = colorMap[grade];
+                      if (hasTraining) {
+                        splitGradient = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                        bg = "transparent";
+                      } else {
+                        bg = colorMap[grade];
+                      }
                       if (!isToday) {
                         border = "1px solid rgba(128,128,128,0.15)";
                       }
                     }
                   } else if (hasTraining) {
                     bg = "rgba(74,74,82,0.12)";
-                    backgroundImageFromTraining = "radial-gradient(#4a4a52 1px, transparent 1.4px)";
+                    dotPattern = "radial-gradient(#4a4a52 1px, transparent 1.4px)";
                     if (!isToday) {
                       border = "1px solid rgba(74,74,82,0.25)";
                     }
                   }
 
+                  let backgroundImage: string | undefined = splitGradient ?? dotPattern;
+                  let backgroundSize: string | undefined = dotPattern && !splitGradient ? "5px 5px" : undefined;
+
                   // Checkered flag pattern for goal date
-                  let backgroundImage: string | undefined = backgroundImageFromTraining;
                   if (isGoalDate) {
                     backgroundImage = `
                       repeating-conic-gradient(
                         var(--color-border) 0% 25%,
                         var(--color-neutral-bg) 0% 50%
                       )`;
+                    backgroundSize = "4px 4px";
                     bg = "transparent";
                     border = "none";
                     boxShadow = "inset 0 0 0 1px rgba(202, 164, 43, 0.9)";
@@ -179,6 +189,10 @@ export function YearCalendar({
                   // Competition date styling
                   if (isCompDate && !isGoalDate) {
                     bg = "rgba(228, 196, 77, 0.25)";
+                    if (splitGradient) {
+                      backgroundImage = undefined;
+                      backgroundSize = undefined;
+                    }
                     if (!isToday) {
                       border = "1px solid rgba(202, 164, 43, 0.6)";
                     }
@@ -191,7 +205,7 @@ export function YearCalendar({
                       style={{
                         backgroundColor: bg,
                         backgroundImage,
-                        backgroundSize: isGoalDate ? "4px 4px" : (backgroundImageFromTraining && !isGoalDate ? "5px 5px" : undefined),
+                        backgroundSize,
                         border,
                         boxShadow,
                         boxSizing: "border-box",
