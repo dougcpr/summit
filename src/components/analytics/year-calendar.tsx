@@ -36,7 +36,6 @@ export function YearCalendar({
   goalDate?: string | null;
 }) {
   const navigate = useNavigate();
-  const lightTextGrades = new Set(["V4", "V5", "V6", "V7", "V8", "V10"]);
   const now = new Date();
   const currentYear = now.getFullYear();
   const todayStr = `${currentYear}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -188,7 +187,7 @@ export function YearCalendar({
                   return (
                     <div
                       key={day}
-                      className={`relative aspect-square rounded-[2px] flex items-center justify-center${!isFuture ? " cursor-pointer hover:ring-1 hover:ring-border/50" : ""}`}
+                      className={`aspect-square rounded-[2px] flex items-center justify-center${!isFuture ? " cursor-pointer hover:ring-1 hover:ring-border/50" : ""}`}
                       style={{
                         backgroundColor: bg,
                         backgroundImage,
@@ -201,21 +200,6 @@ export function YearCalendar({
                     >
                       {isCompDate && !isGoalDate && <Trophy size={6} weight="fill" className="opacity-60" style={{ color: "rgba(202, 164, 43, 1)" }} />}
                       {isRest && !isCompDate && <Moon size={6} weight="fill" className="opacity-20" />}
-                      {hasTraining && !isGoalDate && (
-                        <span
-                          className="absolute font-display font-bold leading-none select-none"
-                          style={{
-                            top: 1,
-                            right: 2,
-                            fontSize: 6,
-                            color: hasClimb
-                              ? (lightTextGrades.has(GRADES[count - 1]) ? "white" : "var(--color-border)")
-                              : "#4a4a52",
-                          }}
-                        >
-                          {trainingCount}
-                        </span>
-                      )}
                     </div>
                   );
                 })}

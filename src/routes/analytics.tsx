@@ -16,6 +16,7 @@ function AnalyticsPage() {
   useEffect(() => { ensureCache({ goalGrade: GOAL_GRADE }); }, [GOAL_GRADE]);
 
   const heatmap = useQuery(api.analytics.heatmapData);
+  const trainingData = useQuery(api.analytics.trainingByDate);
   const isEmpty = heatmap && heatmap.length < 10;
 
   if (heatmap && isEmpty) {
@@ -56,7 +57,7 @@ function AnalyticsPage() {
       <div className="text-[10px] uppercase tracking-widest text-muted mb-1">
         Consistency
       </div>
-      {heatmap && <RecentMonths data={heatmap} />}
+      {heatmap && <RecentMonths data={heatmap} trainingData={trainingData ?? []} />}
     </div>
   );
 }
