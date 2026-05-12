@@ -15,6 +15,7 @@ import type * as climbs from "../climbs.js";
 import type * as migrations from "../migrations.js";
 import type * as notes from "../notes.js";
 import type * as projects from "../projects.js";
+import type * as training from "../training.js";
 
 import type {
   ApiFromModules,
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   migrations: typeof migrations;
   notes: typeof notes;
   projects: typeof projects;
+  training: typeof training;
 }>;
 
 /**
