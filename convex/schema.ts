@@ -29,7 +29,7 @@ export default defineSchema({
 
   trainingSessions: defineTable({
     userId: v.string(),
-    type: v.union(v.literal("fingerboard")),
+    type: v.union(v.literal("fingerboard"), v.literal("strength")),
     trainedAt: v.number(),
   }).index("by_user_date", ["userId", "trainedAt"]),
 });
