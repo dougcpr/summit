@@ -125,8 +125,7 @@ export function RecentMonths({
                 } else if (hasTraining) {
                   const fill = hasFingerboard ? TRAINING_FILL : STRENGTH_FILL;
                   const borderColor = hasFingerboard ? "rgba(107,92,196,0.4)" : "rgba(245,158,11,0.5)";
-                  backgroundImage = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${fill} 50% 100%)`;
-                  bg = "transparent";
+                  bg = fill;
                   if (!isToday) {
                     border = `1px solid ${borderColor}`;
                   }
@@ -147,9 +146,9 @@ export function RecentMonths({
                     {isRest && <Moon size={8} weight="fill" className="opacity-20" />}
                     {hasTraining && !hasClimb && !isFuture && (
                       hasStrength ? (
-                        <Barbell size={6} weight="fill" className="absolute opacity-40" style={{ top: 1, left: 1 }} />
+                        <Barbell size={8} weight="fill" className="opacity-50" />
                       ) : (
-                        <Moon size={6} weight="fill" className="absolute opacity-30" style={{ top: 1, left: 1 }} />
+                        <Moon size={8} weight="fill" className="opacity-50" />
                       )
                     )}
                   </div>
