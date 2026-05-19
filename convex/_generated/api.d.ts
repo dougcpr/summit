@@ -14,7 +14,6 @@ import type * as analyticsHelpers from "../analyticsHelpers.js";
 import type * as climbs from "../climbs.js";
 import type * as migrations from "../migrations.js";
 import type * as notes from "../notes.js";
-import type * as projects from "../projects.js";
 import type * as training from "../training.js";
 
 import type {
@@ -30,7 +29,6 @@ declare const fullApi: ApiFromModules<{
   climbs: typeof climbs;
   migrations: typeof migrations;
   notes: typeof notes;
-  projects: typeof projects;
   training: typeof training;
 }>;
 
