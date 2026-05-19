@@ -167,8 +167,7 @@ export function YearCalendar({
                   } else if (hasTraining) {
                     const fill = hasFingerboard ? TRAINING_FILL : STRENGTH_FILL;
                     const borderColor = hasFingerboard ? "rgba(107,92,196,0.4)" : "rgba(245,158,11,0.5)";
-                    splitGradient = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${fill} 50% 100%)`;
-                    bg = "transparent";
+                    bg = fill;
                     if (!isToday) {
                       border = `1px solid ${borderColor}`;
                     }
@@ -220,9 +219,9 @@ export function YearCalendar({
                       {isRest && !isCompDate && <Moon size={6} weight="fill" className="opacity-20" />}
                       {hasTraining && !hasClimb && !isCompDate && !isFuture && (
                         hasStrength ? (
-                          <Barbell size={5} weight="fill" className="absolute opacity-40" style={{ top: 0, left: 0 }} />
+                          <Barbell size={6} weight="fill" className="opacity-50" />
                         ) : (
-                          <Moon size={5} weight="fill" className="absolute opacity-30" style={{ top: 0, left: 0 }} />
+                          <Moon size={6} weight="fill" className="opacity-50" />
                         )
                       )}
                     </div>
