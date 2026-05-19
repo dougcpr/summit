@@ -28,7 +28,7 @@ export const getByDate = query({
 
 export const add = mutation({
   args: {
-    type: v.union(v.literal("fingerboard")),
+    type: v.union(v.literal("fingerboard"), v.literal("strength")),
     trainedAt: v.number(),
   },
   handler: async (ctx, args) => {
