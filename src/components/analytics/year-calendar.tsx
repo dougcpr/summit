@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { CaretLeft, CaretRight, Moon, Trophy } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, Moon, Trophy, Barbell } from "@phosphor-icons/react";
 import { GRADES, colorMap, COMPETITION_DATES } from "../../lib/grades";
 
 // Uses CSS variable so it responds to dark mode
 const EMPTY_COLOR = "var(--color-neutral-bg)";
 const TRAINING_FILL = "rgba(107,92,196,0.45)";
+const STRENGTH_FILL = "rgba(245,158,11,0.5)";
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -25,6 +26,8 @@ function getFirstDayOfMonth(year: number, month: number): number {
 interface TrainingEntry {
   date: string;  // "YYYY-MM-DD"
   count: number;
+  hasFingerboard: boolean;
+  hasStrength: boolean;
 }
 
 export function YearCalendar({
@@ -56,10 +59,13 @@ export function YearCalendar({
     }
   }
 
-  const trainingMap = new Map<string, number>();
+  const trainingMap = new Map<string, { hasFingerboard: boolean; hasStrength: boolean }>();
   for (const entry of trainingData) {
     if (entry.date.startsWith(String(selectedYear))) {
-      trainingMap.set(entry.date, entry.count);
+      trainingMap.set(entry.date, {
+        hasFingerboard: entry.hasFingerboard,
+        hasStrength: entry.hasStrength,
+      });
     }
   }
 
@@ -130,8 +136,10 @@ export function YearCalendar({
                   const isGoalDate = goalDate === dateStr;
                   const isCompDate = compDates.has(dateStr);
                   const isToday = dateStr === todayStr;
-                  const trainingCount = trainingMap.get(dateStr);
-                  const hasTraining = trainingCount !== undefined && trainingCount > 0;
+                  const trainingInfo = trainingMap.get(dateStr);
+                  const hasTraining = trainingInfo !== undefined;
+                  const hasFingerboard = trainingInfo?.hasFingerboard ?? false;
+                  const hasStrength = trainingInfo?.hasStrength ?? false;
                   const hasClimb = count !== undefined && count > 0;
 
                   let bg = EMPTY_COLOR;
@@ -144,7 +152,6 @@ export function YearCalendar({
 
                   const isRest = !isFuture && !hasClimb && !hasTraining && dateStr >= earliestDate && dateStr <= todayStr;
 
-                  let dotPattern: string | undefined;
                   let splitGradient: string | undefined;
 
                   if (isFuture) {
@@ -152,26 +159,23 @@ export function YearCalendar({
                   } else if (hasClimb) {
                     const grade = GRADES[count - 1];
                     if (grade) {
-                      if (hasTraining) {
-                        splitGradient = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${TRAINING_FILL} 50% 100%)`;
-                        bg = "transparent";
-                      } else {
-                        bg = colorMap[grade];
-                      }
+                      bg = colorMap[grade];
                       if (!isToday) {
                         border = "1px solid rgba(128,128,128,0.15)";
                       }
                     }
                   } else if (hasTraining) {
-                    splitGradient = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                    const fill = hasFingerboard ? TRAINING_FILL : STRENGTH_FILL;
+                    const borderColor = hasFingerboard ? "rgba(107,92,196,0.4)" : "rgba(245,158,11,0.5)";
+                    splitGradient = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${fill} 50% 100%)`;
                     bg = "transparent";
                     if (!isToday) {
-                      border = "1px solid rgba(107,92,196,0.4)";
+                      border = `1px solid ${borderColor}`;
                     }
                   }
 
-                  let backgroundImage: string | undefined = splitGradient ?? dotPattern;
-                  let backgroundSize: string | undefined = dotPattern && !splitGradient ? "5px 5px" : undefined;
+                  let backgroundImage: string | undefined = splitGradient;
+                  let backgroundSize: string | undefined;
 
                   // Checkered flag pattern for goal date
                   if (isGoalDate) {
@@ -215,7 +219,11 @@ export function YearCalendar({
                       {isCompDate && !isGoalDate && <Trophy size={6} weight="fill" className="opacity-60" style={{ color: "rgba(202, 164, 43, 1)" }} />}
                       {isRest && !isCompDate && <Moon size={6} weight="fill" className="opacity-20" />}
                       {hasTraining && !hasClimb && !isCompDate && !isFuture && (
-                        <Moon size={5} weight="fill" className="absolute opacity-30" style={{ top: 0, left: 0 }} />
+                        hasStrength ? (
+                          <Barbell size={5} weight="fill" className="absolute opacity-40" style={{ top: 0, left: 0 }} />
+                        ) : (
+                          <Moon size={5} weight="fill" className="absolute opacity-30" style={{ top: 0, left: 0 }} />
+                        )
                       )}
                     </div>
                   );
