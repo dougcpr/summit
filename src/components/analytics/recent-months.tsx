@@ -3,7 +3,7 @@ import { Moon, Barbell } from "@phosphor-icons/react";
 import { GRADES, colorMap } from "../../lib/grades";
 
 const EMPTY_COLOR = "var(--color-neutral-bg)";
-const TRAINING_FILL = "rgba(107,92,196,0.45)";
+const TRAINING_FILL = "rgba(74,74,82,0.32)";
 const STRENGTH_FILL = "rgba(245,158,11,0.5)";
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
@@ -124,7 +124,7 @@ export function RecentMonths({
                   }
                 } else if (hasTraining) {
                   const fill = hasFingerboard ? TRAINING_FILL : STRENGTH_FILL;
-                  const borderColor = hasFingerboard ? "rgba(107,92,196,0.4)" : "rgba(245,158,11,0.5)";
+                  const borderColor = hasFingerboard ? "rgba(74,74,82,0.25)" : "rgba(245,158,11,0.5)";
                   bg = fill;
                   if (!isToday) {
                     border = `1px solid ${borderColor}`;
