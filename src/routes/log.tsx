@@ -67,6 +67,13 @@ function LogPage() {
     });
   };
 
+  const handleLogStrength = () => {
+    addTraining({
+      type: "strength",
+      trainedAt: normalizeToNoon(selectedDate),
+    });
+  };
+
   const today = new Date();
   const isToday =
     selectedDate.getFullYear() === today.getFullYear() &&
@@ -96,6 +103,7 @@ function LogPage() {
           onAttempt={() => handleLog(false)}
           onSend={() => handleLog(true)}
           onFingerboard={handleLogTraining}
+          onStrength={handleLogStrength}
         />
       </div>
 
