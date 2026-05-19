@@ -107,7 +107,6 @@ export function RecentMonths({
                 let bg = EMPTY_COLOR;
                 let border = "none";
                 let backgroundImage: string | undefined;
-                let backgroundSize: string | undefined;
 
                 if (isToday) {
                   border = "2px solid var(--color-border)";
@@ -140,7 +139,6 @@ export function RecentMonths({
                     style={{
                       backgroundColor: bg,
                       backgroundImage,
-                      backgroundSize,
                       border,
                       boxSizing: "border-box",
                     }}
