@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useMutation } from "convex/react";
-import { HandGrabbing, Hand, HandPalm } from "@phosphor-icons/react";
+import { HandGrabbing, Hand, HandPalm, Barbell } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import type { HoldType } from "../../lib/grades";
@@ -61,7 +61,31 @@ function FingerboardChip({ sessions }: { sessions: Doc<"trainingSessions">[] }) 
   );
 }
 
+function StrengthChip({ sessions }: { sessions: Doc<"trainingSessions">[] }) {
+  const removeTraining = useMutation(api.training.remove);
+  if (sessions.length === 0) return null;
+
+  const handleDelete = () => {
+    removeTraining({ id: sessions[0]._id as Id<"trainingSessions"> });
+  };
+
+  return (
+    <button
+      onClick={handleDelete}
+      className="flex items-center gap-1 px-2.5 py-1.5 rounded-full shrink-0 active:brightness-90"
+      style={{ backgroundColor: "#4a4a52" }}
+    >
+      <Barbell size={14} weight="bold" className="text-white" />
+      <span className="text-sm font-display text-white font-bold">
+        ×{sessions.length}
+      </span>
+    </button>
+  );
+}
+
 export function ClimbList({ climbs, trainingSessions }: ClimbListProps) {
+  const fingerboardSessions = trainingSessions.filter((s) => s.type === "fingerboard");
+  const strengthSessions = trainingSessions.filter((s) => s.type === "strength");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [hiddenCount, setHiddenCount] = useState(0);
 
@@ -109,9 +133,14 @@ export function ClimbList({ climbs, trainingSessions }: ClimbListProps) {
             <ClimbChip climb={climb} />
           </span>
         ))}
-        {trainingSessions.length > 0 && (
+        {fingerboardSessions.length > 0 && (
           <span data-chip>
-            <FingerboardChip sessions={trainingSessions} />
+            <FingerboardChip sessions={fingerboardSessions} />
+          </span>
+        )}
+        {strengthSessions.length > 0 && (
+          <span data-chip>
+            <StrengthChip sessions={strengthSessions} />
           </span>
         )}
       </div>
