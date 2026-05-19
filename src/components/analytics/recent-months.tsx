@@ -120,9 +120,8 @@ export function RecentMonths({
                     }
                   }
                 } else if (hasTraining) {
-                  bg = "rgba(107,92,196,0.20)";
-                  backgroundImage = "radial-gradient(#6b5cc4 1px, transparent 1.4px)";
-                  backgroundSize = "5px 5px";
+                  backgroundImage = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                  bg = "transparent";
                   if (!isToday) {
                     border = "1px solid rgba(107,92,196,0.4)";
                   }
@@ -131,7 +130,7 @@ export function RecentMonths({
                 return (
                   <div
                     key={day}
-                    className={`aspect-square rounded-[3px] flex items-center justify-center${!isFuture ? " cursor-pointer hover:ring-1 hover:ring-border/50" : ""}`}
+                    className={`relative aspect-square rounded-[3px] flex items-center justify-center${!isFuture ? " cursor-pointer hover:ring-1 hover:ring-border/50" : ""}`}
                     style={{
                       backgroundColor: bg,
                       backgroundImage,
@@ -142,6 +141,9 @@ export function RecentMonths({
                     onClick={!isFuture ? () => navigate({ to: "/log", search: { date: dateStr } }) : undefined}
                   >
                     {isRest && <Moon size={8} weight="fill" className="opacity-20" />}
+                    {hasTraining && !hasClimb && !isFuture && (
+                      <Moon size={6} weight="fill" className="absolute opacity-30" style={{ top: 1, left: 1 }} />
+                    )}
                   </div>
                 );
               })}

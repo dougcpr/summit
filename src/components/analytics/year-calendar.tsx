@@ -163,8 +163,8 @@ export function YearCalendar({
                       }
                     }
                   } else if (hasTraining) {
-                    bg = "rgba(107,92,196,0.20)";
-                    dotPattern = "radial-gradient(#6b5cc4 1px, transparent 1.4px)";
+                    splitGradient = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                    bg = "transparent";
                     if (!isToday) {
                       border = "1px solid rgba(107,92,196,0.4)";
                     }
@@ -201,7 +201,7 @@ export function YearCalendar({
                   return (
                     <div
                       key={day}
-                      className={`aspect-square rounded-[2px] flex items-center justify-center${!isFuture ? " cursor-pointer hover:ring-1 hover:ring-border/50" : ""}`}
+                      className={`relative aspect-square rounded-[2px] flex items-center justify-center${!isFuture ? " cursor-pointer hover:ring-1 hover:ring-border/50" : ""}`}
                       style={{
                         backgroundColor: bg,
                         backgroundImage,
@@ -214,6 +214,9 @@ export function YearCalendar({
                     >
                       {isCompDate && !isGoalDate && <Trophy size={6} weight="fill" className="opacity-60" style={{ color: "rgba(202, 164, 43, 1)" }} />}
                       {isRest && !isCompDate && <Moon size={6} weight="fill" className="opacity-20" />}
+                      {hasTraining && !hasClimb && !isCompDate && !isFuture && (
+                        <Moon size={5} weight="fill" className="absolute opacity-30" style={{ top: 0, left: 0 }} />
+                      )}
                     </div>
                   );
                 })}
