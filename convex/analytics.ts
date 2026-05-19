@@ -133,14 +133,23 @@ export const trainingByDate = query({
       .withIndex("by_user_date", (q: any) => q.eq("userId", userId))
       .collect();
 
-    const counts: Record<string, number> = {};
+    const byDate: Record<string, { count: number; hasFingerboard: boolean; hasStrength: boolean }> = {};
     for (const s of sessions) {
       const d = new Date(s.trainedAt);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-      counts[key] = (counts[key] || 0) + 1;
+      const entry = byDate[key] ?? { count: 0, hasFingerboard: false, hasStrength: false };
+      entry.count++;
+      if (s.type === "fingerboard") entry.hasFingerboard = true;
+      if (s.type === "strength") entry.hasStrength = true;
+      byDate[key] = entry;
     }
 
-    return Object.entries(counts).map(([date, count]) => ({ date, count }));
+    return Object.entries(byDate).map(([date, info]) => ({
+      date,
+      count: info.count,
+      hasFingerboard: info.hasFingerboard,
+      hasStrength: info.hasStrength,
+    }));
   },
 });
 
