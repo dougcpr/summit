@@ -1,9 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Moon } from "@phosphor-icons/react";
+import { Moon, Barbell } from "@phosphor-icons/react";
 import { GRADES, colorMap } from "../../lib/grades";
 
 const EMPTY_COLOR = "var(--color-neutral-bg)";
 const TRAINING_FILL = "rgba(107,92,196,0.45)";
+const STRENGTH_FILL = "rgba(245,158,11,0.5)";
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -15,6 +16,8 @@ interface HeatmapEntry {
 interface TrainingEntry {
   date: string;
   count: number;
+  hasFingerboard: boolean;
+  hasStrength: boolean;
 }
 
 function getDaysInMonth(year: number, month: number): number {
@@ -47,9 +50,12 @@ export function RecentMonths({
     dayMap.set(entry.date, entry.count);
   }
 
-  const trainingMap = new Map<string, number>();
+  const trainingMap = new Map<string, { hasFingerboard: boolean; hasStrength: boolean }>();
   for (const entry of trainingData) {
-    trainingMap.set(entry.date, entry.count);
+    trainingMap.set(entry.date, {
+      hasFingerboard: entry.hasFingerboard,
+      hasStrength: entry.hasStrength,
+    });
   }
 
   // Previous month and current month
@@ -89,7 +95,10 @@ export function RecentMonths({
                 const day = dayIdx + 1;
                 const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                 const count = dayMap.get(dateStr);
-                const hasTraining = (trainingMap.get(dateStr) ?? 0) > 0;
+                const trainingInfo = trainingMap.get(dateStr);
+                const hasTraining = trainingInfo !== undefined;
+                const hasFingerboard = trainingInfo?.hasFingerboard ?? false;
+                const hasStrength = trainingInfo?.hasStrength ?? false;
                 const hasClimb = count !== undefined && count > 0;
                 const isFuture = dateStr > todayStr;
                 const isToday = dateStr === todayStr;
@@ -109,21 +118,18 @@ export function RecentMonths({
                 } else if (hasClimb) {
                   const grade = GRADES[count - 1];
                   if (grade) {
-                    if (hasTraining) {
-                      backgroundImage = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${TRAINING_FILL} 50% 100%)`;
-                      bg = "transparent";
-                    } else {
-                      bg = colorMap[grade];
-                    }
+                    bg = colorMap[grade];
                     if (!isToday) {
                       border = "1px solid rgba(128,128,128,0.15)";
                     }
                   }
                 } else if (hasTraining) {
-                  backgroundImage = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                  const fill = hasFingerboard ? TRAINING_FILL : STRENGTH_FILL;
+                  const borderColor = hasFingerboard ? "rgba(107,92,196,0.4)" : "rgba(245,158,11,0.5)";
+                  backgroundImage = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${fill} 50% 100%)`;
                   bg = "transparent";
                   if (!isToday) {
-                    border = "1px solid rgba(107,92,196,0.4)";
+                    border = `1px solid ${borderColor}`;
                   }
                 }
 
@@ -142,7 +148,11 @@ export function RecentMonths({
                   >
                     {isRest && <Moon size={8} weight="fill" className="opacity-20" />}
                     {hasTraining && !hasClimb && !isFuture && (
-                      <Moon size={6} weight="fill" className="absolute opacity-30" style={{ top: 1, left: 1 }} />
+                      hasStrength ? (
+                        <Barbell size={6} weight="fill" className="absolute opacity-40" style={{ top: 1, left: 1 }} />
+                      ) : (
+                        <Moon size={6} weight="fill" className="absolute opacity-30" style={{ top: 1, left: 1 }} />
+                      )
                     )}
                   </div>
                 );
