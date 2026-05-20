@@ -1,4 +1,4 @@
-import { Plus, Check, Barbell } from "@phosphor-icons/react";
+import { Plus, Check, Barbell, LadderSimple } from "@phosphor-icons/react";
 
 interface ActionButtonsProps {
   onAttempt: () => void;
@@ -29,10 +29,10 @@ export function ActionButtons({ onAttempt, onSend, onFingerboard, onStrength, di
       <button
         onClick={onFingerboard}
         disabled={disabled}
-        className="flex-1 flex items-center justify-center py-4 text-white rounded-lg active:brightness-90 disabled:opacity-30 disabled:active:brightness-100 font-display font-bold text-2xl"
+        className="flex-1 flex items-center justify-center py-4 text-white rounded-lg active:brightness-90 disabled:opacity-30 disabled:active:brightness-100"
         style={{ backgroundColor: "#4a4a52" }}
       >
-        FB
+        <LadderSimple size={32} weight="bold" />
       </button>
       <button
         onClick={onStrength}

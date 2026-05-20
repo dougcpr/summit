@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useMutation } from "convex/react";
-import { HandGrabbing, Hand, HandPalm, Barbell } from "@phosphor-icons/react";
+import { HandGrabbing, Hand, HandPalm, Barbell, LadderSimple } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import type { HoldType } from "../../lib/grades";
@@ -54,8 +54,9 @@ function FingerboardChip({ sessions }: { sessions: Doc<"trainingSessions">[] }) 
       className="flex items-center gap-1 px-2.5 py-1.5 rounded-full shrink-0 active:brightness-90"
       style={{ backgroundColor: "#4a4a52" }}
     >
+      <LadderSimple size={14} weight="bold" className="text-white" />
       <span className="text-sm font-display text-white font-bold">
-        FB ×{sessions.length}
+        ×{sessions.length}
       </span>
     </button>
   );
