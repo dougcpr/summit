@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { CaretLeft, CaretRight, Moon, Trophy, Barbell } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, Moon, Trophy, Barbell, LadderSimple } from "@phosphor-icons/react";
 import { GRADES, colorMap, COMPETITION_DATES } from "../../lib/grades";
 
 // Uses CSS variable so it responds to dark mode
@@ -159,17 +159,38 @@ export function YearCalendar({
                   } else if (hasClimb) {
                     const grade = GRADES[count - 1];
                     if (grade) {
-                      bg = colorMap[grade];
+                      if (hasFingerboard) {
+                        splitGradient = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                        bg = "transparent";
+                      } else if (hasStrength) {
+                        splitGradient = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${STRENGTH_FILL} 50% 100%)`;
+                        bg = "transparent";
+                      } else {
+                        bg = colorMap[grade];
+                      }
                       if (!isToday) {
                         border = "1px solid rgba(128,128,128,0.15)";
                       }
                     }
                   } else if (hasTraining) {
-                    const fill = hasFingerboard ? TRAINING_FILL : STRENGTH_FILL;
-                    const borderColor = hasFingerboard ? "rgba(74,74,82,0.25)" : "rgba(245,158,11,0.5)";
-                    bg = fill;
-                    if (!isToday) {
-                      border = `1px solid ${borderColor}`;
+                    if (hasFingerboard && !hasStrength) {
+                      splitGradient = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                      bg = "transparent";
+                      if (!isToday) {
+                        border = "1px solid rgba(74,74,82,0.25)";
+                      }
+                    } else if (hasStrength && !hasFingerboard) {
+                      bg = STRENGTH_FILL;
+                      if (!isToday) {
+                        border = "1px solid rgba(245,158,11,0.5)";
+                      }
+                    } else {
+                      // FB + strength — yellow / slate diagonal, no icon
+                      splitGradient = `linear-gradient(135deg, ${STRENGTH_FILL} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                      bg = "transparent";
+                      if (!isToday) {
+                        border = "1px solid rgba(74,74,82,0.25)";
+                      }
                     }
                   }
 
@@ -217,12 +238,11 @@ export function YearCalendar({
                     >
                       {isCompDate && !isGoalDate && <Trophy size={6} weight="fill" className="opacity-60" style={{ color: "rgba(202, 164, 43, 1)" }} />}
                       {isRest && !isCompDate && <Moon size={6} weight="fill" className="opacity-20" />}
-                      {hasTraining && !hasClimb && !isCompDate && !isFuture && (
-                        hasStrength ? (
-                          <Barbell size={6} weight="fill" className="opacity-50" />
-                        ) : (
-                          <Moon size={6} weight="fill" className="opacity-50" />
-                        )
+                      {hasFingerboard && !hasStrength && !hasClimb && !isCompDate && !isFuture && (
+                        <LadderSimple size={5} weight="fill" className="absolute opacity-50" style={{ top: 0, left: 0 }} />
+                      )}
+                      {hasStrength && !hasFingerboard && !hasClimb && !isCompDate && !isFuture && (
+                        <Barbell size={6} weight="fill" className="opacity-50" />
                       )}
                     </div>
                   );
