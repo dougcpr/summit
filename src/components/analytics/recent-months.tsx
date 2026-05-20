@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Moon, Barbell } from "@phosphor-icons/react";
+import { Moon, Barbell, LadderSimple } from "@phosphor-icons/react";
 import { GRADES, colorMap } from "../../lib/grades";
 
 const EMPTY_COLOR = "var(--color-neutral-bg)";
@@ -117,17 +117,38 @@ export function RecentMonths({
                 } else if (hasClimb) {
                   const grade = GRADES[count - 1];
                   if (grade) {
-                    bg = colorMap[grade];
+                    if (hasFingerboard) {
+                      backgroundImage = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                      bg = "transparent";
+                    } else if (hasStrength) {
+                      backgroundImage = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${STRENGTH_FILL} 50% 100%)`;
+                      bg = "transparent";
+                    } else {
+                      bg = colorMap[grade];
+                    }
                     if (!isToday) {
                       border = "1px solid rgba(128,128,128,0.15)";
                     }
                   }
                 } else if (hasTraining) {
-                  const fill = hasFingerboard ? TRAINING_FILL : STRENGTH_FILL;
-                  const borderColor = hasFingerboard ? "rgba(74,74,82,0.25)" : "rgba(245,158,11,0.5)";
-                  bg = fill;
-                  if (!isToday) {
-                    border = `1px solid ${borderColor}`;
+                  if (hasFingerboard && !hasStrength) {
+                    backgroundImage = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                    bg = "transparent";
+                    if (!isToday) {
+                      border = "1px solid rgba(74,74,82,0.25)";
+                    }
+                  } else if (hasStrength && !hasFingerboard) {
+                    bg = STRENGTH_FILL;
+                    if (!isToday) {
+                      border = "1px solid rgba(245,158,11,0.5)";
+                    }
+                  } else {
+                    // FB + strength — yellow / slate diagonal, no icon
+                    backgroundImage = `linear-gradient(135deg, ${STRENGTH_FILL} 0 50%, ${TRAINING_FILL} 50% 100%)`;
+                    bg = "transparent";
+                    if (!isToday) {
+                      border = "1px solid rgba(74,74,82,0.25)";
+                    }
                   }
                 }
 
@@ -144,12 +165,11 @@ export function RecentMonths({
                     onClick={!isFuture ? () => navigate({ to: "/log", search: { date: dateStr } }) : undefined}
                   >
                     {isRest && <Moon size={8} weight="fill" className="opacity-20" />}
-                    {hasTraining && !hasClimb && !isFuture && (
-                      hasStrength ? (
-                        <Barbell size={8} weight="fill" className="opacity-50" />
-                      ) : (
-                        <Moon size={8} weight="fill" className="opacity-50" />
-                      )
+                    {hasFingerboard && !hasStrength && !hasClimb && !isFuture && (
+                      <LadderSimple size={6} weight="fill" className="absolute opacity-50" style={{ top: 1, left: 1 }} />
+                    )}
+                    {hasStrength && !hasFingerboard && !hasClimb && !isFuture && (
+                      <Barbell size={8} weight="fill" className="opacity-50" />
                     )}
                   </div>
                 );
