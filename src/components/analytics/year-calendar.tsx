@@ -5,8 +5,7 @@ import { GRADES, colorMap, COMPETITION_DATES } from "../../lib/grades";
 
 // Uses CSS variable so it responds to dark mode
 const EMPTY_COLOR = "var(--color-neutral-bg)";
-const TRAINING_FILL = "rgba(74,74,82,0.32)";
-const STRENGTH_FILL = "rgba(245,158,11,0.5)";
+const TRAINING_ICON = "#1e3a8a"; // tailwind blue-900 — navy for training icons
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -152,49 +151,21 @@ export function YearCalendar({
 
                   const isRest = !isFuture && !hasClimb && !hasTraining && dateStr >= earliestDate && dateStr <= todayStr;
 
-                  let splitGradient: string | undefined;
-
                   if (isFuture) {
                     bg = "rgba(128,128,128,0.08)";
                   } else if (hasClimb) {
                     const grade = GRADES[count - 1];
                     if (grade) {
-                      if (hasFingerboard) {
-                        splitGradient = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${TRAINING_FILL} 50% 100%)`;
-                        bg = "transparent";
-                      } else if (hasStrength) {
-                        splitGradient = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${STRENGTH_FILL} 50% 100%)`;
-                        bg = "transparent";
-                      } else {
-                        bg = colorMap[grade];
-                      }
+                      bg = colorMap[grade];
                       if (!isToday) {
                         border = "1px solid rgba(128,128,128,0.15)";
                       }
                     }
-                  } else if (hasTraining) {
-                    if (hasFingerboard && !hasStrength) {
-                      splitGradient = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${TRAINING_FILL} 50% 100%)`;
-                      bg = "transparent";
-                      if (!isToday) {
-                        border = "1px solid rgba(74,74,82,0.25)";
-                      }
-                    } else if (hasStrength && !hasFingerboard) {
-                      bg = STRENGTH_FILL;
-                      if (!isToday) {
-                        border = "1px solid rgba(245,158,11,0.5)";
-                      }
-                    } else {
-                      // FB + strength — yellow / slate diagonal, no icon
-                      splitGradient = `linear-gradient(135deg, ${STRENGTH_FILL} 0 50%, ${TRAINING_FILL} 50% 100%)`;
-                      bg = "transparent";
-                      if (!isToday) {
-                        border = "1px solid rgba(74,74,82,0.25)";
-                      }
-                    }
                   }
+                  // Training without a climb produces no fill or border —
+                  // the icon block below renders the training indicator.
 
-                  let backgroundImage: string | undefined = splitGradient;
+                  let backgroundImage: string | undefined;
                   let backgroundSize: string | undefined;
 
                   // Checkered flag pattern for goal date
@@ -213,10 +184,6 @@ export function YearCalendar({
                   // Competition date styling
                   if (isCompDate && !isGoalDate) {
                     bg = "rgba(228, 196, 77, 0.25)";
-                    if (splitGradient) {
-                      backgroundImage = undefined;
-                      backgroundSize = undefined;
-                    }
                     if (!isToday) {
                       border = "1px solid rgba(202, 164, 43, 0.6)";
                     }
@@ -238,11 +205,18 @@ export function YearCalendar({
                     >
                       {isCompDate && !isGoalDate && <Trophy size={6} weight="fill" className="opacity-60" style={{ color: "rgba(202, 164, 43, 1)" }} />}
                       {isRest && !isCompDate && <Moon size={6} weight="fill" className="opacity-20" />}
-                      {hasFingerboard && !hasStrength && !hasClimb && !isCompDate && !isFuture && (
-                        <LadderSimple size={5} weight="fill" className="absolute opacity-50" style={{ top: 0, left: 0 }} />
-                      )}
-                      {hasStrength && !hasFingerboard && !hasClimb && !isCompDate && !isFuture && (
-                        <Barbell size={6} weight="fill" className="opacity-50" />
+                      {hasTraining && !hasClimb && !isCompDate && !isGoalDate && !isFuture && (
+                        hasFingerboard && hasStrength ? (
+                          <span className="flex items-center gap-px opacity-50" style={{ color: TRAINING_ICON }}>
+                            <LadderSimple size={4} weight="fill" />
+                            <span className="text-[5px] font-bold leading-none">/</span>
+                            <Barbell size={4} weight="fill" />
+                          </span>
+                        ) : hasFingerboard ? (
+                          <LadderSimple size={6} weight="fill" className="opacity-50" style={{ color: TRAINING_ICON }} />
+                        ) : (
+                          <Barbell size={6} weight="fill" className="opacity-50" style={{ color: TRAINING_ICON }} />
+                        )
                       )}
                     </div>
                   );
