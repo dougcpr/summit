@@ -3,8 +3,7 @@ import { Moon, Barbell, LadderSimple } from "@phosphor-icons/react";
 import { GRADES, colorMap } from "../../lib/grades";
 
 const EMPTY_COLOR = "var(--color-neutral-bg)";
-const TRAINING_FILL = "rgba(74,74,82,0.32)";
-const STRENGTH_FILL = "rgba(245,158,11,0.5)";
+const TRAINING_ICON = "#1e3a8a"; // tailwind blue-900 — navy for training icons
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -117,40 +116,14 @@ export function RecentMonths({
                 } else if (hasClimb) {
                   const grade = GRADES[count - 1];
                   if (grade) {
-                    if (hasFingerboard) {
-                      backgroundImage = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${TRAINING_FILL} 50% 100%)`;
-                      bg = "transparent";
-                    } else if (hasStrength) {
-                      backgroundImage = `linear-gradient(135deg, ${colorMap[grade]} 0 50%, ${STRENGTH_FILL} 50% 100%)`;
-                      bg = "transparent";
-                    } else {
-                      bg = colorMap[grade];
-                    }
+                    bg = colorMap[grade];
                     if (!isToday) {
                       border = "1px solid rgba(128,128,128,0.15)";
                     }
                   }
-                } else if (hasTraining) {
-                  if (hasFingerboard && !hasStrength) {
-                    backgroundImage = `linear-gradient(135deg, ${EMPTY_COLOR} 0 50%, ${TRAINING_FILL} 50% 100%)`;
-                    bg = "transparent";
-                    if (!isToday) {
-                      border = "1px solid rgba(74,74,82,0.25)";
-                    }
-                  } else if (hasStrength && !hasFingerboard) {
-                    bg = STRENGTH_FILL;
-                    if (!isToday) {
-                      border = "1px solid rgba(245,158,11,0.5)";
-                    }
-                  } else {
-                    // FB + strength — yellow / slate diagonal, no icon
-                    backgroundImage = `linear-gradient(135deg, ${STRENGTH_FILL} 0 50%, ${TRAINING_FILL} 50% 100%)`;
-                    bg = "transparent";
-                    if (!isToday) {
-                      border = "1px solid rgba(74,74,82,0.25)";
-                    }
-                  }
                 }
+                // Training without a climb produces no fill or border —
+                // the icon block below renders the training indicator.
 
                 return (
                   <div
@@ -165,11 +138,18 @@ export function RecentMonths({
                     onClick={!isFuture ? () => navigate({ to: "/log", search: { date: dateStr } }) : undefined}
                   >
                     {isRest && <Moon size={8} weight="fill" className="opacity-20" />}
-                    {hasFingerboard && !hasStrength && !hasClimb && !isFuture && (
-                      <LadderSimple size={6} weight="fill" className="absolute opacity-50" style={{ top: 1, left: 1 }} />
-                    )}
-                    {hasStrength && !hasFingerboard && !hasClimb && !isFuture && (
-                      <Barbell size={8} weight="fill" className="opacity-50" />
+                    {hasTraining && !hasClimb && !isFuture && (
+                      hasFingerboard && hasStrength ? (
+                        <span className="flex items-center gap-px opacity-50" style={{ color: TRAINING_ICON }}>
+                          <LadderSimple size={6} weight="fill" />
+                          <span className="text-[7px] font-bold leading-none">/</span>
+                          <Barbell size={6} weight="fill" />
+                        </span>
+                      ) : hasFingerboard ? (
+                        <LadderSimple size={8} weight="fill" className="opacity-50" style={{ color: TRAINING_ICON }} />
+                      ) : (
+                        <Barbell size={8} weight="fill" className="opacity-50" style={{ color: TRAINING_ICON }} />
+                      )
                     )}
                   </div>
                 );
