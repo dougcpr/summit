@@ -184,8 +184,65 @@ export function computeHoldTypeTimelines(climbs: ClimbDoc[], goalGrade: string) 
     return { holdType: ht, milestones };
   });
 
-  // NOTE: `now` is NOT cached — the query layer adds it at read time.
-  return { startDate, endDate, timelines };
-}
+  const milestonesByHoldMonth = new Set<string>();
+  for (const tl of timelines) {
+    for (const ms of tl.milestones) {
+      const d = new Date(ms.date);
+      milestonesByHoldMonth.add(`${tl.holdType}:${d.getFullYear()}-${d.getMonth()}`);
+    }
+  }
 
+  const monthly: Record<string, {
+    monthStart: number;
+    holds: Record<string, { count: number; highestCompletedGrade: string | null; highestCompletedIdx: number }>;
+  }> = {};
+
+  for (const c of sorted) {
+    const holdType = c.holdType.toLowerCase();
+    if (!holdTypes.includes(holdType as (typeof holdTypes)[number])) continue;
+
+    const d = new Date(c.climbedAt);
+    const monthStart = new Date(d.getFullYear(), d.getMonth(), 1).getTime();
+    const monthKey = `${d.getFullYear()}-${d.getMonth()}`;
+    const month = monthly[monthKey] ?? {
+      monthStart,
+      holds: {
+        jug: { count: 0, highestCompletedGrade: null, highestCompletedIdx: -1 },
+        crimp: { count: 0, highestCompletedGrade: null, highestCompletedIdx: -1 },
+        sloper: { count: 0, highestCompletedGrade: null, highestCompletedIdx: -1 },
+      },
+    };
+    const hold = month.holds[holdType];
+    hold.count++;
+
+    const gi = gradeIdx(c.grade);
+    if (c.completed && gi > hold.highestCompletedIdx && gi <= goalGi) {
+      hold.highestCompletedGrade = c.grade;
+      hold.highestCompletedIdx = gi;
+    }
+
+    monthly[monthKey] = month;
+  }
+
+  const monthlyFocus = Object.entries(monthly)
+    .map(([monthKey, month]) => {
+      const [holdType, info] = Object.entries(month.holds).reduce((best, current) => {
+        if (current[1].count !== best[1].count) return current[1].count > best[1].count ? current : best;
+        return current[1].highestCompletedIdx > best[1].highestCompletedIdx ? current : best;
+      });
+      if (info.count === 0) return null;
+      return {
+        monthStart: month.monthStart,
+        holdType,
+        grade: info.highestCompletedGrade,
+        count: info.count,
+        hasNewGrade: milestonesByHoldMonth.has(`${holdType}:${monthKey}`),
+      };
+    })
+    .filter((focus): focus is NonNullable<typeof focus> => focus !== null)
+    .sort((a, b) => a.monthStart - b.monthStart);
+
+  // NOTE: `now` is NOT cached — the query layer adds it at read time.
+  return { startDate, endDate, timelines, monthlyFocus };
+}
 
