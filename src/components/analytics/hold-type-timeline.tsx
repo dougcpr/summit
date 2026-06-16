@@ -14,6 +14,7 @@ const holdIcons: Record<HoldType, React.ElementType> = {
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 const HOLD_TYPES: HoldType[] = ["jug", "crimp", "sloper"];
+const MARKER_RADIUS_PX = 6;
 
 type Timeline = {
   holdType: string;
@@ -90,6 +91,10 @@ function buildMonthTicks(rangeStart: number, rangeEnd: number, pct: (ts: number)
 
   ticks.push({ label: MONTHS[new Date(rangeEnd).getMonth()], pct: 100, key: `${rangeEnd}-end`, edge: "end" });
   return ticks;
+}
+
+function markerLeft(pct: number) {
+  return `clamp(${MARKER_RADIUS_PX}px, ${pct}%, calc(100% - ${MARKER_RADIUS_PX}px))`;
 }
 
 function computeMonthlyFocus(climbs: Climb[], timelines: Timeline[], goalGrade: string) {
@@ -175,7 +180,7 @@ function TimelinePanel({
   });
 
   return (
-    <div className="relative">
+    <div className="relative overflow-hidden">
       {/* Month grid lines - clipped to this container */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {monthTicks.map((tick) => (
@@ -214,19 +219,18 @@ function TimelinePanel({
               {showMilestones && milestones.map((ms) => {
                   const bg = colorMap[ms.grade] || "var(--color-border)";
                   const borderBg = borderColorMap[ms.grade] || "var(--color-border)";
-                  const textColor = ms.grade === "V4" ? "white" : "var(--color-border)";
                   return (
                     <div
                       key={`${ms.grade}-${ms.date}`}
                       className="absolute"
-                      style={{ left: `${pct(ms.date)}%`, top: "50%", transform: "translate(-50%, -55%)" }}
+                      style={{ left: markerLeft(pct(ms.date)), top: "50%", transform: "translate(-50%, -50%)" }}
+                      title={`${holdTypeConfig[tl.holdType as HoldType]?.label ?? tl.holdType}: ${ms.grade}`}
                     >
                       <span
-                        className="text-[10px] font-display font-bold leading-none rounded-full px-1.5 py-0.5 border"
-                        style={{ backgroundColor: bg, color: textColor, borderColor: borderBg }}
-                      >
-                        {ms.grade}
-                      </span>
+                        className="block h-3 w-3 rounded-full border"
+                        style={{ backgroundColor: bg, borderColor: borderBg }}
+                        aria-label={`${holdTypeConfig[tl.holdType as HoldType]?.label ?? tl.holdType}: ${ms.grade}`}
+                      />
                     </div>
                   );
               })}
@@ -234,24 +238,21 @@ function TimelinePanel({
                   const monthEnd = new Date(focus.monthStart);
                   monthEnd.setMonth(monthEnd.getMonth() + 1);
                   const markerDate = focus.monthStart + (monthEnd.getTime() - focus.monthStart) / 2;
-                  const grade = focus.grade ?? `${focus.count}`;
                   const bg = focus.grade ? colorMap[focus.grade] || "var(--color-border)" : "rgba(74, 64, 51, 0.12)";
                   const borderBg = focus.hasNewGrade ? "#e4c44d" : focus.grade ? borderColorMap[focus.grade] || "var(--color-border)" : "rgba(74, 64, 51, 0.25)";
-                  const textColor = focus.grade === "V4" ? "white" : "var(--color-border)";
 
                   return (
                     <div
                       key={`${focus.holdType}-${focus.monthStart}`}
                       className="absolute"
-                      style={{ left: `${pct(markerDate)}%`, top: "50%", transform: "translate(-50%, -55%)" }}
+                      style={{ left: markerLeft(pct(markerDate)), top: "50%", transform: "translate(-50%, -50%)" }}
                     >
                       <span
-                        className="text-[10px] font-display font-bold leading-none rounded-full px-1.5 py-0.5 border-2"
-                        style={{ backgroundColor: bg, color: textColor, borderColor: borderBg }}
-                        title={`${holdTypeConfig[focus.holdType as HoldType]?.label ?? focus.holdType}: ${focus.count} climbs`}
-                      >
-                        {grade}
-                      </span>
+                        className="block h-3 w-3 rounded-full border-2"
+                        style={{ backgroundColor: bg, borderColor: borderBg }}
+                        title={`${holdTypeConfig[focus.holdType as HoldType]?.label ?? focus.holdType}: ${focus.count} climbs${focus.grade ? `, ${focus.grade}` : ""}`}
+                        aria-label={`${holdTypeConfig[focus.holdType as HoldType]?.label ?? focus.holdType}: ${focus.count} climbs${focus.grade ? `, ${focus.grade}` : ""}`}
+                      />
                     </div>
                   );
               })}
