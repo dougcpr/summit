@@ -34,16 +34,12 @@ function AnalyticsPage() {
 
   return (
     <div
-      className="p-3 pb-2 font-display max-w-lg mx-auto flex flex-col justify-start gap-1.5 overflow-y-auto"
+      className="p-3 pb-2 font-display max-w-lg mx-auto flex flex-col justify-start gap-[clamp(0.375rem,1.1vh,0.75rem)] overflow-y-auto"
       style={{ height: "calc(100dvh - 4rem - env(safe-area-inset-bottom))" }}
     >
-      {/* Where I Am */}
-      <div className="text-[10px] uppercase tracking-widest text-muted">
-        Where I Am
-      </div>
       <Pyramid goalGrade={GOAL_GRADE} />
 
-      <hr className="border-border/15 my-1.5" />
+      <hr className="border-border/15 my-[clamp(0.375rem,1vh,0.75rem)]" />
 
       {/* Hold Levels */}
       <div className="text-[10px] uppercase tracking-widest text-muted">
@@ -51,7 +47,7 @@ function AnalyticsPage() {
       </div>
       <HoldTypeTimeline goalGrade={GOAL_GRADE} />
 
-      <hr className="border-border/15 my-1.5" />
+      <hr className="border-border/15 my-[clamp(0.375rem,1vh,0.75rem)]" />
 
       {/* Consistency */}
       <div className="text-[10px] uppercase tracking-widest text-muted">

@@ -46,7 +46,8 @@ export function Pyramid({ goalGrade }: PyramidProps) {
 
   return (
     <div className="px-2">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-widest text-muted">Where I Am</span>
         <span className="text-xs text-muted font-display">{totalClimbs} climbs</span>
       </div>
       <div className="flex flex-col gap-1">
@@ -60,7 +61,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
           return (
             <div key={row.label}>
               <div
-                className="h-8 rounded-lg flex items-center justify-center font-display text-sm transition-all overflow-hidden relative mx-auto"
+                className="h-[clamp(2rem,4.1vh,2.375rem)] rounded-lg flex items-center justify-center font-display text-sm transition-all overflow-hidden relative mx-auto"
                 style={{
                   width: `${barWidth}%`,
                   backgroundColor: isGoal ? "transparent" : fadedColor,

@@ -208,13 +208,13 @@ function TimelinePanel({
         ))}
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-[clamp(0.375rem,0.9vh,0.5rem)]">
         {timelines.map((tl) => {
           const milestones = tl.milestones.filter((ms) => ms.date >= rangeStart && ms.date <= rangeEnd);
           const rowFocusItems = focusItems.filter((focus) => focus.holdType === tl.holdType);
 
           return (
-            <div key={tl.holdType} className="relative" style={{ height: "20px" }}>
+            <div key={tl.holdType} className="relative h-[clamp(1.25rem,2.7vh,1.5rem)]">
               {/* Grade milestones */}
               {showMilestones && milestones.map((ms) => {
                   const bg = colorMap[ms.grade] || "var(--color-border)";
@@ -349,13 +349,13 @@ function HoldTypeTimelineContent({ climbs, data, goalGrade }: { climbs: Climb[];
 
       <div className="flex gap-2">
         <div className="w-20 shrink-0 pt-4">
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-[clamp(0.375rem,0.9vh,0.5rem)]">
             {timelines.map((tl) => {
               const Icon = holdIcons[tl.holdType as HoldType];
               return (
                 <div
                   key={tl.holdType}
-                  className="flex h-5 items-center gap-1.5 rounded-md px-2"
+                  className="flex h-[clamp(1.25rem,2.7vh,1.5rem)] items-center gap-1.5 rounded-md px-2"
                   style={{ backgroundColor: holdTypeConfig[tl.holdType as HoldType]?.bgColor }}
                 >
                   {Icon && <Icon size={14} weight="bold" />}
