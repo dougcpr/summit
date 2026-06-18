@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { colorMap, borderColorMap } from "../../lib/grades";
+import { colorMap, borderColorMap, gradeTextColor } from "../../lib/grades";
 import { Mountains, FlagCheckered, FirstAid, Heartbeat } from "@phosphor-icons/react";
 
 interface JourneyTimelineProps {
@@ -35,7 +35,6 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
         {/* Grade milestones with lines to bar */}
         {firstSends.map((ms) => {
           const bg = colorMap[ms.grade] || "var(--color-border)";
-          const textColor = ms.grade === "V4" ? "white" : "var(--color-border)";
           return (
             <div
               key={ms.grade}
@@ -46,7 +45,7 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
                 className="text-xs font-display font-bold leading-none rounded-lg px-1.5 py-0.5"
                 style={{
                   backgroundColor: bg,
-                  color: textColor,
+                  color: gradeTextColor(ms.grade),
                   border: `2px solid ${borderColorMap[ms.grade] || bg}`,
                 }}
               >

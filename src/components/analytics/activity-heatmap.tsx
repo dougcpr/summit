@@ -2,14 +2,11 @@ import { useRef, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { Moon } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
-import { GRADES, colorMap, borderColorMap } from "../../lib/grades";
+import { GRADES, colorMap, borderColorMap, gradeTextColor } from "../../lib/grades";
 
 const emptyColor = "var(--color-neutral-bg)";
 const CELL_SIZE = 24;
 const CELL_GAP = 3;
-
-// Grades whose backgrounds are too dark for dark text
-const lightTextGrades = new Set(["V4", "V5", "V6", "V7", "V8", "V10"]);
 
 function getWeekStart(date: Date): Date {
   const d = new Date(date);
@@ -179,9 +176,7 @@ export function ActivityHeatmap() {
                     className="font-display text-[10px] leading-none select-none"
                     style={{
                       whiteSpace: "nowrap",
-                      color: lightTextGrades.has(grade)
-                        ? "white"
-                        : "var(--color-border)",
+                      color: gradeTextColor(grade),
                     }}
                   >
                     {grade}

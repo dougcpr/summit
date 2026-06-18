@@ -1,7 +1,7 @@
 import { useQuery } from "convex/react";
 import { HandGrabbing, Hand, HandPalm } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
-import { colorMap, fadedColorMap, borderColorMap } from "../../lib/grades";
+import { colorMap, fadedColorMap, borderColorMap, gradeTextColor } from "../../lib/grades";
 import type { HoldType } from "../../lib/grades";
 
 const holdIcons: Record<HoldType, React.ElementType> = {
@@ -64,7 +64,7 @@ export function Pyramid({ goalGrade }: PyramidProps) {
                 style={{
                   width: `${barWidth}%`,
                   backgroundColor: isGoal ? "transparent" : fadedColor,
-                  color: isGoal ? "var(--color-border)" : row.label === "V4" ? "white" : "var(--color-border)",
+                  color: isGoal ? "var(--color-border)" : gradeTextColor(row.label),
                   border: isGoal ? "2px dashed var(--color-border)" : `2px solid ${borderColorMap[row.label] || gradeColor}`,
                   minWidth: "3rem",
                 }}

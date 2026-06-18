@@ -3,6 +3,7 @@ import { useMutation } from "convex/react";
 import { HandGrabbing, Hand, HandPalm, Barbell, LadderSimple } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import { colorMap, fadedColorMap, borderColorMap, gradeTextColor } from "../../lib/grades";
 import type { HoldType } from "../../lib/grades";
 
 const holdIcons: Record<HoldType, React.ElementType> = {
@@ -20,6 +21,9 @@ function ClimbChip({ climb }: { climb: Doc<"climbs"> }) {
   const removeClimb = useMutation(api.climbs.remove);
   const holdType = climb.holdType.toLowerCase() as HoldType;
   const HoldIcon = holdIcons[holdType];
+  const gradeColor = colorMap[climb.grade] || "var(--color-primary)";
+  const chipColor = climb.completed ? gradeColor : fadedColorMap[climb.grade] || gradeColor;
+  const textColor = climb.completed ? gradeTextColor(climb.grade) : "var(--color-border)";
   const handleDelete = () => {
     removeClimb({ id: climb._id as Id<"climbs"> });
   };
@@ -29,13 +33,14 @@ function ClimbChip({ climb }: { climb: Doc<"climbs"> }) {
       onClick={handleDelete}
       className="flex items-center gap-1 px-2.5 py-1.5 rounded-full shrink-0 active:brightness-90"
       style={{
-        backgroundColor: climb.completed ? "var(--color-primary)" : "#d96c4f",
+        backgroundColor: chipColor,
+        border: `1px solid ${borderColorMap[climb.grade] || gradeColor}`,
       }}
     >
-      <span className="text-sm font-display text-border font-bold">
+      <span className="text-sm font-display font-bold" style={{ color: textColor }}>
         {climb.grade}
       </span>
-      {HoldIcon && <HoldIcon size={14} weight="bold" className="text-border/70" />}
+      {HoldIcon && <HoldIcon size={14} weight="bold" style={{ color: textColor, opacity: 0.7 }} />}
     </button>
   );
 }
