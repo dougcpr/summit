@@ -193,11 +193,11 @@ function TimelinePanel({
       </div>
 
       {/* Month labels */}
-      <div className="relative h-5">
+      <div className="relative h-4">
         {monthTicks.map((tick) => (
           <span
             key={tick.key}
-            className="absolute text-[11px] text-muted font-display"
+            className="absolute text-[10px] text-muted font-display"
             style={{
               left: `${tick.pct}%`,
               transform: tick.edge === "start" ? "translateX(0)" : tick.edge === "end" ? "translateX(-100%)" : "translateX(-50%)",
@@ -208,13 +208,13 @@ function TimelinePanel({
         ))}
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1.5">
         {timelines.map((tl) => {
           const milestones = tl.milestones.filter((ms) => ms.date >= rangeStart && ms.date <= rangeEnd);
           const rowFocusItems = focusItems.filter((focus) => focus.holdType === tl.holdType);
 
           return (
-            <div key={tl.holdType} className="relative" style={{ height: "24px" }}>
+            <div key={tl.holdType} className="relative" style={{ height: "20px" }}>
               {/* Grade milestones */}
               {showMilestones && milestones.map((ms) => {
                   const bg = colorMap[ms.grade] || "var(--color-border)";
@@ -326,27 +326,40 @@ function HoldTypeTimelineContent({ climbs, data, goalGrade }: { climbs: Climb[];
   if (allDates.length === 0 && monthlyFocus.length === 0) return <div className="h-[6rem]" />;
 
   return (
-    <div className="px-2 pb-1">
+    <div className="px-2">
       <div className="mb-1 flex items-center justify-between">
         <span className="text-[11px] text-muted font-display">{yearWindows[activeYear]?.label}</span>
-        <span className="text-[11px] text-muted font-display">
-          {activeYear + 1}/{yearWindows.length}
-        </span>
+        <div className="flex items-center gap-1.5">
+          {yearWindows.length > 1 && yearWindows.map((year) => (
+            <button
+              key={year.index}
+              type="button"
+              className="h-2 w-2 rounded-full transition-colors"
+              style={{ backgroundColor: year.index === activeYear ? "var(--color-border)" : "rgba(74, 64, 51, 0.25)" }}
+              aria-label={`Show year ${year.index + 1}`}
+              aria-current={year.index === activeYear ? "true" : undefined}
+              onClick={() => scrollToYear(year.index)}
+            />
+          ))}
+          <span className="text-[11px] text-muted font-display">
+            {activeYear + 1}/{yearWindows.length}
+          </span>
+        </div>
       </div>
 
       <div className="flex gap-2">
-        <div className="w-20 shrink-0 pt-5">
-          <div className="flex flex-col gap-2">
+        <div className="w-20 shrink-0 pt-4">
+          <div className="flex flex-col gap-1.5">
             {timelines.map((tl) => {
               const Icon = holdIcons[tl.holdType as HoldType];
               return (
                 <div
                   key={tl.holdType}
-                  className="flex h-6 items-center gap-1.5 rounded-md px-2"
+                  className="flex h-5 items-center gap-1.5 rounded-md px-2"
                   style={{ backgroundColor: holdTypeConfig[tl.holdType as HoldType]?.bgColor }}
                 >
-                  {Icon && <Icon size={16} weight="bold" />}
-                  <span className="text-xs capitalize">{tl.holdType}</span>
+                  {Icon && <Icon size={14} weight="bold" />}
+                  <span className="text-[11px] capitalize">{tl.holdType}</span>
                 </div>
               );
             })}
@@ -374,21 +387,6 @@ function HoldTypeTimelineContent({ climbs, data, goalGrade }: { climbs: Climb[];
         </div>
       </div>
 
-      {yearWindows.length > 1 && (
-        <div className="mt-2 flex items-center justify-center gap-1.5">
-          {yearWindows.map((year) => (
-            <button
-              key={year.index}
-              type="button"
-              className="h-2 w-2 rounded-full transition-colors"
-              style={{ backgroundColor: year.index === activeYear ? "var(--color-border)" : "rgba(74, 64, 51, 0.25)" }}
-              aria-label={`Show year ${year.index + 1}`}
-              aria-current={year.index === activeYear ? "true" : undefined}
-              onClick={() => scrollToYear(year.index)}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
