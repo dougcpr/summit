@@ -5,6 +5,7 @@ import { GRADES, colorMap, COMPETITION_DATES } from "../../lib/grades";
 
 // Uses CSS variable so it responds to dark mode
 const EMPTY_COLOR = "var(--color-neutral-bg)";
+const SINGLE_CLIMB_COLOR = "rgba(49, 95, 141, 0.8)";
 const TRAINING_ICON = "#1e3a8a"; // tailwind blue-900 — navy for training icons
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
@@ -33,10 +34,12 @@ export function YearCalendar({
   data,
   trainingData = [],
   goalDate,
+  singleColor = false,
 }: {
   data: HeatmapEntry[];
   trainingData?: TrainingEntry[];
   goalDate?: string | null;
+  singleColor?: boolean;
 }) {
   const navigate = useNavigate();
   const now = new Date();
@@ -156,7 +159,7 @@ export function YearCalendar({
                   } else if (hasClimb) {
                     const grade = GRADES[count - 1];
                     if (grade) {
-                      bg = colorMap[grade];
+                      bg = singleColor ? SINGLE_CLIMB_COLOR : colorMap[grade];
                       if (!isToday) {
                         border = "1px solid rgba(128,128,128,0.15)";
                       }

@@ -6,8 +6,7 @@ import { GOAL_GRADE } from "../lib/grades";
 import { Pyramid } from "../components/analytics/pyramid";
 import { HoldTypeTimeline } from "../components/analytics/hold-type-timeline";
 import { RecentMonths } from "../components/analytics/recent-months";
-
-const CONSISTENCY_BLUE_KEY = "summit-consistency-blue";
+import { CONSISTENCY_BLUE_CHANGE_EVENT, getConsistencyBluePreference } from "../lib/preferences";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
@@ -16,14 +15,17 @@ export const Route = createFileRoute("/analytics")({
 function AnalyticsPage() {
   const ensureCache = useMutation(api.analyticsCache.ensureCache);
   useEffect(() => { ensureCache({ goalGrade: GOAL_GRADE }); }, [GOAL_GRADE]);
-  const [consistencyBlue, setConsistencyBlue] = useState(() =>
-    localStorage.getItem(CONSISTENCY_BLUE_KEY) === "true"
-  );
+  const [consistencyBlue, setConsistencyBlue] = useState(getConsistencyBluePreference);
 
-  const toggleConsistencyBlue = (enabled: boolean) => {
-    setConsistencyBlue(enabled);
-    localStorage.setItem(CONSISTENCY_BLUE_KEY, String(enabled));
-  };
+  useEffect(() => {
+    const refreshConsistencyBlue = () => setConsistencyBlue(getConsistencyBluePreference());
+    window.addEventListener(CONSISTENCY_BLUE_CHANGE_EVENT, refreshConsistencyBlue);
+    window.addEventListener("storage", refreshConsistencyBlue);
+    return () => {
+      window.removeEventListener(CONSISTENCY_BLUE_CHANGE_EVENT, refreshConsistencyBlue);
+      window.removeEventListener("storage", refreshConsistencyBlue);
+    };
+  }, []);
 
   const heatmap = useQuery(api.analytics.heatmapData);
   const trainingData = useQuery(api.analytics.trainingByDate);
@@ -60,26 +62,8 @@ function AnalyticsPage() {
       <hr className="border-border/15 my-[clamp(0.375rem,1vh,0.75rem)]" />
 
       {/* Consistency */}
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-widest text-muted">Consistency</span>
-        <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted">
-          Blue
-          <input
-            type="checkbox"
-            className="peer sr-only"
-            checked={consistencyBlue}
-            onChange={(e) => toggleConsistencyBlue(e.currentTarget.checked)}
-          />
-          <span
-            className="h-4 w-7 rounded-full border border-border/25 bg-border/10 p-0.5 transition-colors peer-checked:bg-accent/80"
-            aria-hidden="true"
-          >
-            <span
-              className="block h-3 w-3 rounded-full bg-card-bg shadow-sm transition-transform"
-              style={{ transform: consistencyBlue ? "translateX(0.75rem)" : "translateX(0)" }}
-            />
-          </span>
-        </label>
+      <div className="text-[10px] uppercase tracking-widest text-muted">
+        Consistency
       </div>
       {heatmap && <RecentMonths data={heatmap} trainingData={trainingData ?? []} singleColor={consistencyBlue} />}
     </div>
