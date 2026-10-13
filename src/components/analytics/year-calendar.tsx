@@ -202,7 +202,7 @@ export function YearCalendar({
                     >
                       {isCompDate && !isGoalDate && <Trophy size={6} weight="fill" className="opacity-60" style={{ color: "rgba(202, 164, 43, 1)" }} />}
                       {isRest && !isCompDate && <Moon size={6} weight="fill" className="opacity-20" />}
-                      {hasTraining && !hasClimb && !isCompDate && !isGoalDate && !isFuture && <TrainingIcons types={trainingInfo} size={8} />}
+                      {hasTraining && !hasClimb && !isCompDate && !isGoalDate && !isFuture && <TrainingIcons types={trainingInfo} size={12} />}
                     </div>
                   );
                 })}
