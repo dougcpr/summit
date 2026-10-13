@@ -29,7 +29,7 @@ export function JourneyTimeline({ goalGrade }: JourneyTimelineProps) {
         {/* Bar track */}
         <div
           className="absolute bottom-0 left-0 right-0 h-6 rounded-lg"
-          style={{ backgroundColor: "#f6f1e3", border: "1px solid rgba(59,59,59,0.1)" }}
+          style={{ backgroundColor: "var(--color-neutral-bg)", border: "1px solid rgba(59,59,59,0.1)" }}
         />
 
         {/* Grade milestones with lines to bar */}

@@ -15,7 +15,7 @@ export function ActionButtons({ onAttempt, onSend, onFingerboard, onStrength, di
         onClick={onAttempt}
         disabled={disabled}
         className="flex-1 flex items-center justify-center py-4 text-border rounded-lg active:brightness-90 disabled:opacity-30 disabled:active:brightness-100"
-        style={{ backgroundColor: "#d96c4f" }}
+        style={{ backgroundColor: "var(--color-attempt)" }}
       >
         <Plus size={32} weight="bold" />
       </button>
@@ -30,7 +30,7 @@ export function ActionButtons({ onAttempt, onSend, onFingerboard, onStrength, di
         onClick={onFingerboard}
         disabled={disabled}
         className="flex-1 flex items-center justify-center py-4 text-white rounded-lg active:brightness-90 disabled:opacity-30 disabled:active:brightness-100"
-        style={{ backgroundColor: "#4a4a52" }}
+        style={{ backgroundColor: "var(--color-training)" }}
       >
         <LadderSimple size={32} weight="bold" />
       </button>
@@ -38,7 +38,7 @@ export function ActionButtons({ onAttempt, onSend, onFingerboard, onStrength, di
         onClick={onStrength}
         disabled={disabled}
         className="flex-1 flex items-center justify-center py-4 text-white rounded-lg active:brightness-90 disabled:opacity-30 disabled:active:brightness-100"
-        style={{ backgroundColor: "#4a4a52" }}
+        style={{ backgroundColor: "var(--color-training)" }}
       >
         <Barbell size={32} weight="bold" />
       </button>
