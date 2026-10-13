@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { trainingType } from "./schema";
 
 async function getUserId(ctx: {
   auth: { getUserIdentity: () => Promise<{ tokenIdentifier: string } | null> };
@@ -28,7 +29,7 @@ export const getByDate = query({
 
 export const add = mutation({
   args: {
-    type: v.union(v.literal("fingerboard"), v.literal("strength")),
+    type: trainingType,
     trainedAt: v.number(),
   },
   handler: async (ctx, args) => {

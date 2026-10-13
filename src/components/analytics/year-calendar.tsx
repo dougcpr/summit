@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { CaretLeft, CaretRight, Moon, Trophy, Barbell, LadderSimple } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, Moon, Trophy } from "@phosphor-icons/react";
 import { GRADES, colorMap, COMPETITION_DATES } from "../../lib/grades";
+import { TrainingIcons } from "./training-icons";
 
 // Uses CSS variable so it responds to dark mode
 const EMPTY_COLOR = "var(--color-neutral-bg)";
 const SINGLE_CLIMB_COLOR = "rgba(49, 95, 141, 0.8)";
-const TRAINING_ICON = "#1e3a8a"; // tailwind blue-900 — navy for training icons
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -26,8 +26,7 @@ function getFirstDayOfMonth(year: number, month: number): number {
 interface TrainingEntry {
   date: string;  // "YYYY-MM-DD"
   count: number;
-  hasFingerboard: boolean;
-  hasStrength: boolean;
+  types: string[];
 }
 
 export function YearCalendar({
@@ -61,13 +60,10 @@ export function YearCalendar({
     }
   }
 
-  const trainingMap = new Map<string, { hasFingerboard: boolean; hasStrength: boolean }>();
+  const trainingMap = new Map<string, string[]>();
   for (const entry of trainingData) {
     if (entry.date.startsWith(String(selectedYear))) {
-      trainingMap.set(entry.date, {
-        hasFingerboard: entry.hasFingerboard,
-        hasStrength: entry.hasStrength,
-      });
+      trainingMap.set(entry.date, entry.types ?? []);
     }
   }
 
@@ -139,9 +135,7 @@ export function YearCalendar({
                   const isCompDate = compDates.has(dateStr);
                   const isToday = dateStr === todayStr;
                   const trainingInfo = trainingMap.get(dateStr);
-                  const hasTraining = trainingInfo !== undefined;
-                  const hasFingerboard = trainingInfo?.hasFingerboard ?? false;
-                  const hasStrength = trainingInfo?.hasStrength ?? false;
+                  const hasTraining = trainingInfo !== undefined && trainingInfo.length > 0;
                   const hasClimb = count !== undefined && count > 0;
 
                   let bg = EMPTY_COLOR;
@@ -208,19 +202,7 @@ export function YearCalendar({
                     >
                       {isCompDate && !isGoalDate && <Trophy size={6} weight="fill" className="opacity-60" style={{ color: "rgba(202, 164, 43, 1)" }} />}
                       {isRest && !isCompDate && <Moon size={6} weight="fill" className="opacity-20" />}
-                      {hasTraining && !hasClimb && !isCompDate && !isGoalDate && !isFuture && (
-                        hasFingerboard && hasStrength ? (
-                          <span className="flex items-center gap-px opacity-50" style={{ color: TRAINING_ICON }}>
-                            <LadderSimple size={4} weight="fill" />
-                            <span className="text-[5px] font-bold leading-none">/</span>
-                            <Barbell size={4} weight="fill" />
-                          </span>
-                        ) : hasFingerboard ? (
-                          <LadderSimple size={6} weight="fill" className="opacity-50" style={{ color: TRAINING_ICON }} />
-                        ) : (
-                          <Barbell size={6} weight="fill" className="opacity-50" style={{ color: TRAINING_ICON }} />
-                        )
-                      )}
+                      {hasTraining && !hasClimb && !isCompDate && !isGoalDate && !isFuture && <TrainingIcons types={trainingInfo} size={6} />}
                     </div>
                   );
                 })}

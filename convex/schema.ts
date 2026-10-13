@@ -1,6 +1,14 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
+export const trainingType = v.union(
+  v.literal("fingerboard"),
+  v.literal("strength"),
+  v.literal("volleyball"),
+  v.literal("walking"),
+  v.literal("basketball"),
+);
+
 export default defineSchema({
   climbs: defineTable({
     userId: v.string(),
@@ -29,7 +37,7 @@ export default defineSchema({
 
   trainingSessions: defineTable({
     userId: v.string(),
-    type: v.union(v.literal("fingerboard"), v.literal("strength")),
+    type: trainingType,
     trainedAt: v.number(),
   }).index("by_user_date", ["userId", "trainedAt"]),
 });

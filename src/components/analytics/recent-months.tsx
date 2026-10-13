@@ -1,10 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Moon, Barbell, LadderSimple } from "@phosphor-icons/react";
+import { Moon } from "@phosphor-icons/react";
 import { GRADES, colorMap } from "../../lib/grades";
+import { TrainingIcons } from "./training-icons";
 
 const EMPTY_COLOR = "var(--color-neutral-bg)";
 const SINGLE_CLIMB_COLOR = "rgba(49, 95, 141, 0.8)";
-const TRAINING_ICON = "#1e3a8a"; // tailwind blue-900 — navy for training icons
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -16,8 +16,7 @@ interface HeatmapEntry {
 interface TrainingEntry {
   date: string;
   count: number;
-  hasFingerboard: boolean;
-  hasStrength: boolean;
+  types: string[];
 }
 
 function getDaysInMonth(year: number, month: number): number {
@@ -52,12 +51,9 @@ export function RecentMonths({
     dayMap.set(entry.date, entry.count);
   }
 
-  const trainingMap = new Map<string, { hasFingerboard: boolean; hasStrength: boolean }>();
+  const trainingMap = new Map<string, string[]>();
   for (const entry of trainingData) {
-    trainingMap.set(entry.date, {
-      hasFingerboard: entry.hasFingerboard,
-      hasStrength: entry.hasStrength,
-    });
+    trainingMap.set(entry.date, entry.types ?? []);
   }
 
   // Previous month and current month
@@ -98,9 +94,7 @@ export function RecentMonths({
                 const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                 const count = dayMap.get(dateStr);
                 const trainingInfo = trainingMap.get(dateStr);
-                const hasTraining = trainingInfo !== undefined;
-                const hasFingerboard = trainingInfo?.hasFingerboard ?? false;
-                const hasStrength = trainingInfo?.hasStrength ?? false;
+                const hasTraining = trainingInfo !== undefined && trainingInfo.length > 0;
                 const hasClimb = count !== undefined && count > 0;
                 const isFuture = dateStr > todayStr;
                 const isToday = dateStr === todayStr;
@@ -141,19 +135,7 @@ export function RecentMonths({
                     onClick={!isFuture ? () => navigate({ to: "/log", search: { date: dateStr } }) : undefined}
                   >
                     {isRest && <Moon size={8} weight="fill" className="opacity-20" />}
-                    {hasTraining && !hasClimb && !isFuture && (
-                      hasFingerboard && hasStrength ? (
-                        <span className="flex items-center gap-px opacity-50" style={{ color: TRAINING_ICON }}>
-                          <LadderSimple size={6} weight="fill" />
-                          <span className="text-[7px] font-bold leading-none">/</span>
-                          <Barbell size={6} weight="fill" />
-                        </span>
-                      ) : hasFingerboard ? (
-                        <LadderSimple size={8} weight="fill" className="opacity-50" style={{ color: TRAINING_ICON }} />
-                      ) : (
-                        <Barbell size={8} weight="fill" className="opacity-50" style={{ color: TRAINING_ICON }} />
-                      )
-                    )}
+                    {hasTraining && !hasClimb && !isFuture && <TrainingIcons types={trainingInfo} size={8} />}
                   </div>
                 );
               })}

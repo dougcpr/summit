@@ -1,10 +1,11 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useMutation } from "convex/react";
-import { HandGrabbing, Hand, HandPalm, Barbell, LadderSimple } from "@phosphor-icons/react";
+import { HandGrabbing, Hand, HandPalm } from "@phosphor-icons/react";
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { colorMap, fadedColorMap, borderColorMap, gradeTextColor } from "../../lib/grades";
 import type { HoldType } from "../../lib/grades";
+import { ACTIVITIES, activityIcon } from "../../lib/activities";
 
 const holdIcons: Record<HoldType, React.ElementType> = {
   jug: HandGrabbing,
@@ -45,9 +46,9 @@ function ClimbChip({ climb }: { climb: Doc<"climbs"> }) {
   );
 }
 
-function FingerboardChip({ sessions }: { sessions: Doc<"trainingSessions">[] }) {
+function ActivityChip({ sessions }: { sessions: Doc<"trainingSessions">[] }) {
   const removeTraining = useMutation(api.training.remove);
-  if (sessions.length === 0) return null;
+  const Icon = activityIcon(sessions[0].type);
 
   const handleDelete = () => {
     removeTraining({ id: sessions[0]._id as Id<"trainingSessions"> });
@@ -59,29 +60,7 @@ function FingerboardChip({ sessions }: { sessions: Doc<"trainingSessions">[] }) 
       className="flex items-center gap-1 px-2.5 py-1.5 rounded-full shrink-0 active:brightness-90"
       style={{ backgroundColor: "var(--color-training)" }}
     >
-      <LadderSimple size={14} weight="bold" className="text-white" />
-      <span className="text-sm font-display text-white font-bold">
-        ×{sessions.length}
-      </span>
-    </button>
-  );
-}
-
-function StrengthChip({ sessions }: { sessions: Doc<"trainingSessions">[] }) {
-  const removeTraining = useMutation(api.training.remove);
-  if (sessions.length === 0) return null;
-
-  const handleDelete = () => {
-    removeTraining({ id: sessions[0]._id as Id<"trainingSessions"> });
-  };
-
-  return (
-    <button
-      onClick={handleDelete}
-      className="flex items-center gap-1 px-2.5 py-1.5 rounded-full shrink-0 active:brightness-90"
-      style={{ backgroundColor: "var(--color-training)" }}
-    >
-      <Barbell size={14} weight="bold" className="text-white" />
+      <Icon size={14} weight="bold" className="text-white" />
       <span className="text-sm font-display text-white font-bold">
         ×{sessions.length}
       </span>
@@ -90,8 +69,9 @@ function StrengthChip({ sessions }: { sessions: Doc<"trainingSessions">[] }) {
 }
 
 export function ClimbList({ climbs, trainingSessions }: ClimbListProps) {
-  const fingerboardSessions = trainingSessions.filter((s) => s.type === "fingerboard");
-  const strengthSessions = trainingSessions.filter((s) => s.type === "strength");
+  const activityGroups = ACTIVITIES.map((a) => trainingSessions.filter((s) => s.type === a.type)).filter(
+    (group) => group.length > 0,
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
   const [hiddenCount, setHiddenCount] = useState(0);
 
@@ -139,16 +119,11 @@ export function ClimbList({ climbs, trainingSessions }: ClimbListProps) {
             <ClimbChip climb={climb} />
           </span>
         ))}
-        {fingerboardSessions.length > 0 && (
-          <span data-chip>
-            <FingerboardChip sessions={fingerboardSessions} />
+        {activityGroups.map((group) => (
+          <span key={group[0].type} data-chip>
+            <ActivityChip sessions={group} />
           </span>
-        )}
-        {strengthSessions.length > 0 && (
-          <span data-chip>
-            <StrengthChip sessions={strengthSessions} />
-          </span>
-        )}
+        ))}
       </div>
       {hiddenCount > 0 && (
         <div className="absolute right-0 top-0 bottom-1 flex items-center pl-4 pointer-events-none" style={{ background: "linear-gradient(to right, transparent, var(--color-neutral-bg) 50%)" }}>

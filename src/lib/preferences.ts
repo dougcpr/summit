@@ -12,8 +12,7 @@ export function setConsistencyBluePreference(enabled: boolean): void {
 
 export const THEMES = [
   { id: "retro", label: "Retro", swatches: ["#f6f1e3", "#6a994e", "#d96c4f", "#4a4033"], themeColor: "#f6f1e3" },
-  { id: "watercolor", label: "Watercolor", swatches: ["#fbf7f1", "#8fb8a3", "#e3a9b4", "#82a3d1"], themeColor: "#fbf7f1" },
-  { id: "minimal", label: "Warm Minimal", swatches: ["#f4efe8", "#a9b18f", "#c98463", "#3b332d"], themeColor: "#f4efe8" },
+  { id: "watercolor", label: "Watercolor", swatches: ["#fbf7f1", "#4f8a70", "#c98290", "#4f78b0"], themeColor: "#fbf7f1" },
 ] as const;
 
 export type ThemeId = (typeof THEMES)[number]["id"];
