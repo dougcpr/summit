@@ -135,7 +135,7 @@ export function RecentMonths({
                     onClick={!isFuture ? () => navigate({ to: "/log", search: { date: dateStr } }) : undefined}
                   >
                     {isRest && <Moon size={8} weight="fill" className="opacity-20" />}
-                    {hasTraining && !hasClimb && !isFuture && <TrainingIcons types={trainingInfo} size={8} />}
+                    {hasTraining && !hasClimb && !isFuture && <TrainingIcons types={trainingInfo} size={14} />}
                   </div>
                 );
               })}
