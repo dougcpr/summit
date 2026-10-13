@@ -1,6 +1,7 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { useClerk } from "@clerk/clerk-react";
 import { PencilSimple, CalendarDots, ChartBar, SignOut } from "@phosphor-icons/react";
+import { ThemePicker } from "../components/theme-picker";
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -39,6 +40,7 @@ function RootLayout() {
           <CalendarDots size={24} weight="bold" />
         </Link>
         <div className="flex-1" />
+        <ThemePicker variant="sidebar" />
         <button
           onClick={() => signOut()}
           className="flex flex-col items-center p-2 rounded-lg text-sm text-border/50 hover:text-border"
@@ -81,6 +83,7 @@ function RootLayout() {
           <CalendarDots size={24} weight="bold" />
           <span>Journey</span>
         </Link>
+        <ThemePicker variant="tabbar" />
         <button
           onClick={() => signOut()}
           className="flex-1 flex flex-col items-center py-2 text-sm text-border/50"

@@ -57,7 +57,7 @@ function FingerboardChip({ sessions }: { sessions: Doc<"trainingSessions">[] }) 
     <button
       onClick={handleDelete}
       className="flex items-center gap-1 px-2.5 py-1.5 rounded-full shrink-0 active:brightness-90"
-      style={{ backgroundColor: "#4a4a52" }}
+      style={{ backgroundColor: "var(--color-training)" }}
     >
       <LadderSimple size={14} weight="bold" className="text-white" />
       <span className="text-sm font-display text-white font-bold">
@@ -79,7 +79,7 @@ function StrengthChip({ sessions }: { sessions: Doc<"trainingSessions">[] }) {
     <button
       onClick={handleDelete}
       className="flex items-center gap-1 px-2.5 py-1.5 rounded-full shrink-0 active:brightness-90"
-      style={{ backgroundColor: "#4a4a52" }}
+      style={{ backgroundColor: "var(--color-training)" }}
     >
       <Barbell size={14} weight="bold" className="text-white" />
       <span className="text-sm font-display text-white font-bold">
