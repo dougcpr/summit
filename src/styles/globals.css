@@ -19,36 +19,21 @@
 
 /* Themes override the @theme tokens. "retro" is the default above. */
 [data-theme="watercolor"] {
-  --color-primary: #8fb8a3;
-  --color-secondary: #e3a9b4;
-  --color-tertiary: #8fb8a3;
-  --color-accent: #82a3d1;
+  --color-primary: #4f8a70;
+  --color-secondary: #c98290;
+  --color-tertiary: #4f8a70;
+  --color-accent: #4f78b0;
   --color-neutral-bg: #fbf7f1;
   --color-card-bg: #fffdf9;
-  --color-border: #464660;
-  --color-muted: #8f8aa3;
-  --color-danger: #d1707a;
+  --color-border: #2e2d47;
+  --color-muted: #665f80;
+  --color-danger: #b04a57;
   --color-attempt: #eba08a;
-  --color-training: #6e7193;
+  --color-training: #545779;
 
   --font-family-display: "Patrick Hand", "Comic Sans MS", cursive;
 }
 
-[data-theme="minimal"] {
-  --color-primary: #a9b18f;
-  --color-secondary: #d6b9a1;
-  --color-tertiary: #a9b18f;
-  --color-accent: #9aa9a6;
-  --color-neutral-bg: #f4efe8;
-  --color-card-bg: #faf7f2;
-  --color-border: #3b332d;
-  --color-muted: #9b9086;
-  --color-danger: #b5574b;
-  --color-attempt: #c98463;
-  --color-training: #5b524b;
-
-  --font-family-display: "Inter", system-ui, sans-serif;
-}
 
 @layer base {
   * {
@@ -74,10 +59,10 @@
   /* Watercolor: soft pigment washes bleeding into paper */
   [data-theme="watercolor"] body {
     background-image:
-      radial-gradient(ellipse 60% 45% at 12% 8%, rgba(227, 169, 180, 0.28), transparent 70%),
-      radial-gradient(ellipse 55% 40% at 92% 22%, rgba(130, 163, 209, 0.24), transparent 70%),
-      radial-gradient(ellipse 70% 45% at 30% 95%, rgba(143, 184, 163, 0.26), transparent 70%),
-      radial-gradient(ellipse 45% 35% at 85% 85%, rgba(235, 160, 138, 0.18), transparent 70%);
+      radial-gradient(ellipse 60% 45% at 12% 8%, rgba(227, 169, 180, 0.2), transparent 70%),
+      radial-gradient(ellipse 55% 40% at 92% 22%, rgba(130, 163, 209, 0.17), transparent 70%),
+      radial-gradient(ellipse 70% 45% at 30% 95%, rgba(143, 184, 163, 0.18), transparent 70%),
+      radial-gradient(ellipse 45% 35% at 85% 85%, rgba(235, 160, 138, 0.13), transparent 70%);
     background-attachment: fixed;
   }
 
@@ -86,16 +71,7 @@
   }
 
   [data-theme="watercolor"] .bg-card-bg {
-    background-color: color-mix(in srgb, var(--color-card-bg) 70%, transparent);
+    background-color: color-mix(in srgb, var(--color-card-bg) 88%, transparent);
     backdrop-filter: blur(8px);
-  }
-
-  /* Warm minimalism: tighter type, quieter weight */
-  [data-theme="minimal"] body {
-    letter-spacing: -0.01em;
-  }
-
-  [data-theme="minimal"] .font-bold {
-    font-weight: 600;
   }
 }

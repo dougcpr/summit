@@ -12,6 +12,7 @@ import { ClimbList } from "../components/log/climb-list";
 
 import { formatDisplayDate, normalizeToNoon, getLocalDayRange } from "../lib/dates";
 import type { HoldType } from "../lib/grades";
+import type { ActivityType } from "../lib/activities";
 
 export const Route = createFileRoute("/log")({
   component: LogPage,
@@ -60,16 +61,9 @@ function LogPage() {
     });
   };
 
-  const handleLogTraining = () => {
+  const handleLogActivity = (type: ActivityType) => {
     addTraining({
-      type: "fingerboard",
-      trainedAt: normalizeToNoon(selectedDate),
-    });
-  };
-
-  const handleLogStrength = () => {
-    addTraining({
-      type: "strength",
+      type,
       trainedAt: normalizeToNoon(selectedDate),
     });
   };
@@ -102,8 +96,7 @@ function LogPage() {
         <ActionButtons
           onAttempt={() => handleLog(false)}
           onSend={() => handleLog(true)}
-          onFingerboard={handleLogTraining}
-          onStrength={handleLogStrength}
+          onActivity={handleLogActivity}
         />
       </div>
 
