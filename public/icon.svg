@@ -1,74 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <!-- Frosted tile background -->
-    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#eef5ff"/>
-      <stop offset="0.55" stop-color="#cfe0fb"/>
-      <stop offset="1" stop-color="#a9c6f2"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="0.3" cy="0.2" r="0.8">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.9"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
-      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.2"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0.7"/>
-    </linearGradient>
-
-    <!-- Glass facets -->
-    <linearGradient id="peakL" x1="0" y1="0" x2="0.6" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
-      <stop offset="1" stop-color="#7fa6ec" stop-opacity="0.75"/>
-    </linearGradient>
-    <linearGradient id="peakR" x1="1" y1="0" x2="0.3" y2="1">
-      <stop offset="0" stop-color="#5d86e0" stop-opacity="0.85"/>
-      <stop offset="1" stop-color="#2f5bc4" stop-opacity="0.9"/>
-    </linearGradient>
-    <linearGradient id="sideL" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#b9d0fa" stop-opacity="0.85"/>
-      <stop offset="1" stop-color="#5c86e2" stop-opacity="0.8"/>
-    </linearGradient>
-    <linearGradient id="sideR" x1="1" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#93b3f3" stop-opacity="0.8"/>
-      <stop offset="1" stop-color="#3a66cf" stop-opacity="0.85"/>
-    </linearGradient>
-    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.75"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-    </linearGradient>
-
-    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="10"/>
-    </filter>
-    <clipPath id="tileClip">
-      <rect x="0" y="0" width="512" height="512" rx="112"/>
-    </clipPath>
+    <linearGradient id="q0" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5d86e0"/><stop offset="1" stop-color="#2f5bc4"/></linearGradient><linearGradient id="q1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6b54a"/><stop offset="1" stop-color="#e08a1e"/></linearGradient><linearGradient id="q2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2795a"/><stop offset="1" stop-color="#d4482c"/></linearGradient><linearGradient id="q3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5ec48f"/><stop offset="1" stop-color="#2e9a63"/></linearGradient>
+    <clipPath id="clip"><rect width="512" height="512" rx="112"/></clipPath>
   </defs>
-
-  <g clip-path="url(#tileClip)">
-    <rect width="512" height="512" fill="url(#tile)"/>
-    <rect width="512" height="512" fill="url(#glow)"/>
-
-    <!-- Blurred color behind the glass for refraction depth -->
-    <ellipse cx="270" cy="360" rx="170" ry="70" fill="#3d6fd8" opacity="0.35" filter="url(#soft)"/>
-
-    <!-- Mountain facets -->
-    <polygon points="70,410 190,265 250,410" fill="url(#sideL)" stroke="#ffffff" stroke-opacity="0.7" stroke-width="3" stroke-linejoin="round"/>
-    <polygon points="196,410 290,108 360,410" fill="url(#peakR)" stroke="#ffffff" stroke-opacity="0.55" stroke-width="3" stroke-linejoin="round"/>
-    <polygon points="150,410 290,108 250,410" fill="url(#peakL)" stroke="#ffffff" stroke-opacity="0.85" stroke-width="3" stroke-linejoin="round"/>
-    <polygon points="300,410 372,250 442,410" fill="url(#sideR)" stroke="#ffffff" stroke-opacity="0.6" stroke-width="3" stroke-linejoin="round"/>
-
-    <!-- Snow cap -->
-    <polygon points="290,108 262,196 284,182 300,204 314,176" fill="#ffffff" opacity="0.92"/>
-
-    <!-- Base reflection line -->
-    <rect x="62" y="408" width="388" height="4" rx="2" fill="#ffffff" opacity="0.6"/>
-
-    <!-- Glossy top sheen -->
-    <path d="M0,0 H512 V170 C380,215 150,215 0,250 Z" fill="url(#shine)" opacity="0.55"/>
+  <g clip-path="url(#clip)">
+    <rect width="512" height="512" fill="#f6f1e3"/>
+    <rect x="40" y="40" width="212" height="212" rx="56" fill="url(#q0)"/><rect x="260" y="40" width="212" height="212" rx="56" fill="url(#q1)"/><rect x="40" y="260" width="212" height="212" rx="56" fill="url(#q2)"/><rect x="260" y="260" width="212" height="212" rx="56" fill="url(#q3)"/>
+    <g transform="translate(78,78) scale(0.53125)" fill="#ffffff"><path d="M160,80a32,32,0,1,0-32-32A32,32,0,0,0,160,80Zm0-40a8,8,0,1,1-8,8A8,8,0,0,1,160,40Zm94.32,153.88L199.76,101.8A19.85,19.85,0,0,0,182.55,92h0a19.83,19.83,0,0,0-17.2,9.8l-18.7,31.55-37.42-63.5a20,20,0,0,0-34.46,0L1.66,193.91A12,12,0,0,0,12,212H244a12,12,0,0,0,10.32-18.12ZM92,87.87,108.57,116H75.43ZM33,188l28.28-48h61.44L151,188Zm145.86,0L160.56,157l22-37.1L222.94,188Z"/></g><g transform="translate(298,78) scale(0.53125)" fill="#ffffff"><path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20ZM96.83,50a83.49,83.49,0,0,1,17.92-5A84,84,0,0,1,161.26,116H134.93Zm38.1,90h76.2a83.37,83.37,0,0,1-4.69,18,84.07,84.07,0,0,1-84.68,4.79Zm76.2-24H185.29a107.43,107.43,0,0,0-14.4-49.71A108.71,108.71,0,0,0,159.5,50.15,84.21,84.21,0,0,1,211.13,116ZM76.07,62.05,89,84.39a107.44,107.44,0,0,0-35.85,37.32,108.9,108.9,0,0,0-8.28,18A83.65,83.65,0,0,1,76.07,62.05ZM62.79,180.87A84,84,0,0,1,101,105.2L114.14,128,76.07,194A84.68,84.68,0,0,1,62.79,180.87Zm34,25.11,12.92-22.37A107.41,107.41,0,0,0,160,196a109,109,0,0,0,19.59-1.78A83.72,83.72,0,0,1,96.83,206Z"/></g><g transform="translate(78,298) scale(0.53125)" fill="#ffffff"><path d="M244,116V88a20,20,0,0,0-20-20H208V64a20,20,0,0,0-20-20H164a20,20,0,0,0-20,20v52H112V64A20,20,0,0,0,92,44H68A20,20,0,0,0,48,64v4H32A20,20,0,0,0,12,88v28a12,12,0,0,0,0,24v28a20,20,0,0,0,20,20H48v4a20,20,0,0,0,20,20H92a20,20,0,0,0,20-20V140h32v52a20,20,0,0,0,20,20h24a20,20,0,0,0,20-20v-4h16a20,20,0,0,0,20-20V140a12,12,0,0,0,0-24ZM36,164V92H48v72Zm52,24H72V68H88Zm96,0H168V68h16Zm36-24H208V92h12Z"/></g><g transform="translate(298,298) scale(0.53125)" fill="#ffffff"><path d="M152,84a36,36,0,1,0-36-36A36,36,0,0,0,152,84Zm0-48a12,12,0,1,1-12,12A12,12,0,0,1,152,36Zm68,112a12,12,0,0,1-12,12c-37,0-55.27-18.47-70-33.3-1.71-1.72-3.36-3.4-5-5l-8.63,19.85L159,166.23a12,12,0,0,1,5,9.77v56a12,12,0,0,1-24,0V182.17l-25.37-18.12L83,236.78a12,12,0,1,1-22-9.57l50.06-115.13q-10.64.75-25,8.4a159.78,159.78,0,0,0-29.83,21.23,12,12,0,0,1-16.43-17.5c2.61-2.45,64.36-59.67,104.09-25.18,3.94,3.42,7.64,7.16,11.22,10.78C168.43,123.28,181,136,208,136A12,12,0,0,1,220,148Z"/></g>
   </g>
-
-  <!-- Glass rim -->
-  <rect x="5" y="5" width="502" height="502" rx="108" fill="none" stroke="url(#rim)" stroke-width="10"/>
 </svg>
