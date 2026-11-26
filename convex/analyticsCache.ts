@@ -11,7 +11,7 @@ import {
 } from "./analyticsHelpers";
 
 // Bump this when computation logic changes to invalidate stale caches.
-export const CACHE_VERSION = 4;
+export const CACHE_VERSION = 5;
 
 async function upsertCache(
   ctx: { db: any },

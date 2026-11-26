@@ -106,11 +106,22 @@ export function computeHoldTypeBreakdown(recentClimbs: ClimbDoc[], goalGrade: st
         gradeLevel = grade;
       }
     }
+    // Highest grade at or below the goal with 3+ sends in the window, or null if none.
+    // Unlike gradeLevel this has no fallback, so it reflects only what was actually sent.
+    let recentGrade: string | null = null;
+    let recentGradeIdx = -1;
+    for (const [grade, count] of Object.entries(grades)) {
+      const idx = gradeIdx(grade);
+      if (count >= 3 && idx > recentGradeIdx && idx <= goalIdx) {
+        recentGradeIdx = idx;
+        recentGrade = grade;
+      }
+    }
     if (gradeLevelIdx < 0) {
       gradeLevel = suggestedStartGrade;
       gradeLevelIdx = gradeIdx(suggestedStartGrade);
     }
-    return { type, gradeLevel, gradeLevelIdx };
+    return { type, gradeLevel, gradeLevelIdx, recentGrade };
   });
 
   const weakest = types.reduce((a, b) => (a.gradeLevelIdx < b.gradeLevelIdx ? a : b));

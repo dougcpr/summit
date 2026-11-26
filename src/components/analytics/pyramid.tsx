@@ -16,28 +16,20 @@ interface PyramidProps {
 
 export function Pyramid({ goalGrade }: PyramidProps) {
   const data = useQuery(api.analytics.pyramid, { goalGrade });
-  const timelineData = useQuery(api.analytics.holdTypeTimelines, { goalGrade });
+  const breakdown = useQuery(api.analytics.holdTypeBreakdown, { goalGrade });
 
   if (!data) return <div className="h-[9rem]" />;
 
   const totalClimbs = data.rows.reduce((sum, r) => sum + r.attempts, 0);
 
-  // Map grade -> hold types using the same data source as the hold-type timeline
+  // Place each grip at the highest grade it was sent 3+ times in the last 90 days,
+  // so the icons reflect current form rather than all-time bests.
   const holdsByGrade: Record<string, { type: HoldType; Icon: React.ElementType }[]> = {};
-  if (timelineData) {
-    for (const tl of timelineData.timelines) {
-      // Use highest milestone grade for each hold type
-      const maxMilestone = tl.milestones.reduce<{ grade: string; gi: number } | null>((best, ms) => {
-        const gi = parseInt(ms.grade.replace("V", ""), 10);
-        return !best || gi > best.gi ? { grade: ms.grade, gi } : best;
-      }, null);
-      if (maxMilestone) {
-        if (!holdsByGrade[maxMilestone.grade]) holdsByGrade[maxMilestone.grade] = [];
-        holdsByGrade[maxMilestone.grade].push({
-          type: tl.holdType as HoldType,
-          Icon: holdIcons[tl.holdType as HoldType],
-        });
-      }
+  if (breakdown) {
+    for (const t of breakdown.types) {
+      if (!t.recentGrade) continue;
+      const type = t.type as HoldType;
+      (holdsByGrade[t.recentGrade] ??= []).push({ type, Icon: holdIcons[type] });
     }
   }
 
